@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Edit2, Trash2, Plus, Megaphone, AlertCircle, Building2, TrendingUp, PlayCircle, PauseCircle } from 'lucide-react'
 import { createCampaign, updateCampaign, deleteCampaign, updateCampaignStatus } from './actions'
 
-type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } }
+type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } | { company_name: string }[] }
 
 type Campaign = {
   id: string
@@ -158,7 +158,7 @@ export default function CampaignList({
                       <td className="px-6 py-4">
                         <div className="font-medium text-gray-900 mb-1 flex items-center">
                           <Building2 className="w-3.5 h-3.5 mr-1 text-gray-400" />
-                          {campaign.projects?.clients?.company_name || 'Unknown Client'}
+                          {(campaign.projects?.clients as any)?.company_name || (campaign.projects?.clients as any)?.[0]?.company_name || 'Unknown Client'}
                         </div>
                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${platformColors[campaign.platform] || 'bg-gray-100 text-gray-600'}`}>
                           {campaign.platform}
@@ -273,7 +273,7 @@ export default function CampaignList({
                   >
                     <option value="" disabled>-- Select a project --</option>
                     {projects.map(p => (
-                      <option key={p.id} value={p.id}>{p.title} ({p.clients?.company_name})</option>
+                      <option key={p.id} value={p.id}>{p.title} ({(p.clients as any)?.company_name || (p.clients as any)?.[0]?.company_name || 'Unknown Client'})</option>
                     ))}
                   </select>
                 </div>

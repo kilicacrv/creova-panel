@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Plus, Timer, History, Trash2, Edit2, AlertCircle, Building2, CheckSquare } from 'lucide-react'
 import { createTimeEntry, updateTimeEntry, deleteTimeEntry } from '@/app/admin/time/actions'
 
-type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } }
+type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } | { company_name: string }[] }
 type Task = { id: string; project_id: string; title: string }
 
 type TimeEntry = {

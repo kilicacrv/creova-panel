@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle, XCircle, MessageSquare, Calendar, Instagram, Facebook, Linkedin, Twitter, Share2, ImageIcon, AlertCircle } from 'lucide-react'
+import { CheckSquare, X, FileText, Calendar, Share2, ImageIcon, AlertCircle } from 'lucide-react'
 import { updateContentApproval } from './actions'
 
 type ContentItem = {
@@ -51,10 +51,10 @@ export default function ApprovalList({ initialItems }: { initialItems: ContentIt
   }
 
   const platformIcons: Record<string, any> = {
-    instagram: <Instagram className="w-4 h-4" />,
-    facebook: <Facebook className="w-4 h-4" />,
-    linkedin: <Linkedin className="w-4 h-4" />,
-    twitter: <Twitter className="w-4 h-4" />,
+    instagram: <Share2 className="w-4 h-4" />,
+    facebook: <Share2 className="w-4 h-4" />,
+    linkedin: <Share2 className="w-4 h-4" />,
+    twitter: <Share2 className="w-4 h-4" />,
     tiktok: <Share2 className="w-4 h-4" />,
   }
 
@@ -115,7 +115,7 @@ export default function ApprovalList({ initialItems }: { initialItems: ContentIt
                   <div className={`w-full py-2.5 px-4 rounded-lg text-sm font-bold flex items-center justify-center border ${
                     item.status === 'approved' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'
                   }`}>
-                    {item.status === 'approved' ? <CheckCircle className="w-4 h-4 mr-2" /> : <XCircle className="w-4 h-4 mr-2" />}
+                    {item.status === 'approved' ? <CheckSquare className="w-4 h-4 mr-2" /> : <X className="w-4 h-4 mr-2" />}
                     {item.status === 'approved' ? 'Post Approved' : 'Post Rejected'}
                   </div>
                 )}
@@ -163,7 +163,7 @@ export default function ApprovalList({ initialItems }: { initialItems: ContentIt
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-bold text-gray-900 mb-1">
-                    <MessageSquare className="w-4 h-4 inline mr-1 text-blue-600" />
+                    <FileText className="w-4 h-4 inline mr-1 text-blue-600" />
                     Feedback / Revisions (Optional)
                   </label>
                   <textarea 
@@ -185,7 +185,7 @@ export default function ApprovalList({ initialItems }: { initialItems: ContentIt
                     disabled={isSubmitting}
                     className="flex items-center justify-center px-4 py-3 border-2 border-red-100 text-red-600 font-bold rounded-xl hover:bg-red-50 transition-colors disabled:opacity-50"
                   >
-                    <XCircle className="w-4 h-4 mr-2" />
+                    <X className="w-4 h-4 mr-2" />
                     Reject
                   </button>
                   <button 
@@ -193,7 +193,7 @@ export default function ApprovalList({ initialItems }: { initialItems: ContentIt
                     disabled={isSubmitting}
                     className="flex items-center justify-center px-4 py-3 bg-[#1A56DB] text-white font-bold rounded-xl hover:bg-[#1e4eb8] transition-all shadow-lg shadow-blue-200 disabled:opacity-50"
                   >
-                    <CheckCircle className="w-4 h-4 mr-2" />
+                    <CheckSquare className="w-4 h-4 mr-2" />
                     Approve
                   </button>
                 </div>

@@ -13,7 +13,7 @@ export default async function ContentCalendarPage() {
 
   const { data: projects } = await supabase
     .from('projects')
-    .select('id, title, clients(company_name)')
+    .select('id, title, client_id, clients(company_name)')
     .eq('status', 'active')
     .order('title', { ascending: true })
 

@@ -112,7 +112,7 @@ export default async function TeamDashboard() {
                     }`} />
                     <div>
                       <p className="font-medium text-sm text-gray-900 group-hover:text-[#1A56DB] transition-colors">{task.title}</p>
-                      <p className="text-[10px] text-gray-400 uppercase tracking-wider">{task.projects?.title}</p>
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wider">{(task.projects as any)?.title || (task.projects as any)?.[0]?.title || 'No Project'}</p>
                     </div>
                   </div>
                   <div className="text-right">

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Edit2, Trash2, Plus, CalendarDays, AlertCircle, Image as ImageIcon, MessageSquare, Send, CheckCircle, Clock } from 'lucide-react'
 import { createContent, updateContent, deleteContent, updateContentStatus } from './actions'
 
-type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } }
+type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } | { company_name: string }[] }
 
 type ContentItem = {
   id: string
@@ -268,7 +268,7 @@ export default function CalendarList({
                   >
                     <option value="" disabled>-- Select a project --</option>
                     {projects.map(p => (
-                      <option key={p.id} value={p.id}>{p.title} ({p.clients?.company_name})</option>
+                      <option key={p.id} value={p.id}>{p.title} ({(p.clients as any)?.company_name || (p.clients as any)?.[0]?.company_name || 'Unknown Client'})</option>
                     ))}
                   </select>
                 </div>

@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit2, Trash2, Plus, Timer, AlertCircle, Building2, CheckSquare, CalendarDays } from 'lucide-react'
+import { Edit2, Trash2, Plus, Timer, AlertCircle, Building2, CheckSquare, CalendarDays, TrendingUp } from 'lucide-react'
 import { createTimeEntry, updateTimeEntry, deleteTimeEntry } from './actions'
 
-type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } }
+type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } | { company_name: string }[] }
 type Task = { id: string; project_id: string; title: string }
 type Profile = { id: string; full_name: string | null }
 
@@ -166,7 +166,7 @@ export default function TimeList({
                           <div className="font-medium text-gray-900 mb-1 flex items-center">
                             <Building2 className="w-3.5 h-3.5 mr-1 text-gray-400" />
                             {entry.projects.title} 
-                            <span className="text-gray-400 font-normal ml-1">({entry.projects.clients?.company_name})</span>
+                            <span className="text-gray-400 font-normal ml-1">({(entry.projects.clients as any)?.company_name || (entry.projects.clients as any)?.[0]?.company_name || 'Unknown Client'})</span>
                           </div>
                           {entry.tasks && (
                             <div className="text-xs text-gray-500 flex items-center">
@@ -252,7 +252,7 @@ export default function TimeList({
                   >
                     <option value="">-- General / No Project --</option>
                     {projects.map(p => (
-                      <option key={p.id} value={p.id}>{p.title} ({p.clients?.company_name})</option>
+                      <option key={p.id} value={p.id}>{p.title} ({(p.clients as any)?.company_name || (p.clients as any)?.[0]?.company_name || 'Unknown Client'})</option>
                     ))}
                   </select>
                 </div>
@@ -347,5 +347,4 @@ export default function TimeList({
   )
 }
 
-// Additional import needed for local use
-import { TrendingUp } from 'lucide-react'
+// End of file
