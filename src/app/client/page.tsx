@@ -7,12 +7,6 @@ export default async function ClientPage() {
 
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-
   const { data: clientData } = await supabase
     .from('clients')
     .select('*')
@@ -38,16 +32,15 @@ export default async function ClientPage() {
         <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           Welcome, {clientData?.company_name || 'Client'}
         </h1>
-        <p className="text-sm text-gray-500 mb-6">Here you can track your projects, invoices and content.</p>
+        <p className="text-sm text-gray-500 mb-6">Track your projects, invoices and content approvals.</p>
 
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label: 'Active Projects', value: '—', icon: '📋' },
-            { label: 'Pending Invoices', value: '—', icon: '💰' },
-            { label: 'Pending Approvals', value: '—', icon: '✅' },
+            { label: 'Active Projects', value: '—' },
+            { label: 'Pending Invoices', value: '—' },
+            { label: 'Pending Approvals', value: '—' },
           ].map((item) => (
             <div key={item.label} className="bg-white border border-gray-200 rounded-xl p-4">
-              <div className="text-2xl mb-2">{item.icon}</div>
               <div className="text-sm text-gray-500">{item.label}</div>
               <div className="text-xl font-semibold text-gray-900 mt-1">{item.value}</div>
             </div>
@@ -57,8 +50,3 @@ export default async function ClientPage() {
     </div>
   )
 }
-```
-
-İkisini de kaydet. Şimdi GitHub'a gönderelim. Terminale şunu yapıştır:
-```
-git add . && git commit -m "login + 3 portals skeleton" && git push
