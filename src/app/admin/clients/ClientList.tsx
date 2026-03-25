@@ -38,10 +38,14 @@ export default function ClientList({ initialClients }: { initialClients: Client[
     if (!confirm('Are you sure you want to delete this client? All related projects and invoices will be deleted as well.')) return
     
     try {
-      await deleteClient(id)
-      setClients(prev => prev.filter(c => c.id !== id))
+      const result = await deleteClient(id)
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        setClients(prev => prev.filter(c => c.id !== id))
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     }
   }
 
@@ -53,17 +57,21 @@ export default function ClientList({ initialClients }: { initialClients: Client[
     const formData = new FormData(e.currentTarget)
     
     try {
+      let result
       if (editingClient) {
-        await updateClient(editingClient.id, formData)
-        // Opting for optimistic UI or a simple reload logic here.
-        // A full page reload ensures server components re-fetch fresh data.
-        window.location.reload()
+        result = await updateClient(editingClient.id, formData)
       } else {
-        await createClient(formData)
+        result = await createClient(formData)
+      }
+
+      if (result?.error) {
+        setError(result.error)
+        setIsLoading(false)
+      } else {
         window.location.reload()
       }
     } catch (err: any) {
-      setError(err.message)
+      setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }
   }
