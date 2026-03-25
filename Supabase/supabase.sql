@@ -160,7 +160,24 @@ CREATE TABLE IF NOT EXISTS public.time_tracking (
 );
 
 -- ============================================
--- 6. SECURITY: ENABLE RLS
+-- 6. MEDIA PRODUCTION PIPELINE (NEW)
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.media_production (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id UUID NOT NULL REFERENCES public.clients(id) ON DELETE CASCADE,
+  editor_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  media_url TEXT NOT NULL,
+  media_type TEXT CHECK (media_type IN ('image', 'video')),
+  topic_context TEXT, -- Brief context for Gemini captioning
+  status TEXT NOT NULL DEFAULT 'pending_admin' CHECK (status IN ('pending_admin', 'approved', 'rejected', 'ready')),
+  generated_caption TEXT,
+  admin_feedback TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================
+-- 7. SECURITY: ENABLE RLS
 -- ============================================
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
@@ -171,6 +188,7 @@ ALTER TABLE public.proposals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.content_calendar ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ad_campaigns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.time_tracking ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.media_production ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
 -- 7. RLS POLICIES
@@ -218,6 +236,11 @@ CREATE POLICY "Clients can view own ad_campaigns" ON public.ad_campaigns FOR SEL
 -- TIME TRACKING --
 CREATE POLICY "Admins can do everything on time_tracking" ON public.time_tracking FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
 CREATE POLICY "Users can manage own time" ON public.time_tracking FOR ALL USING (user_id = auth.uid());
+
+-- MEDIA PRODUCTION --
+CREATE POLICY "Admins can do everything on media_production" ON public.media_production FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "Team can manage media_production" ON public.media_production FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'team'));
+CREATE POLICY "Clients can view own media_production" ON public.media_production FOR SELECT USING (client_id IN (SELECT id FROM public.clients WHERE user_id = auth.uid()));
 
 -- ============================================
 -- 8. TRIGGERS & INDEXES

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { 
   LayoutDashboard, 
+  Film,
   Users, 
   Briefcase, 
   CheckSquare, 
@@ -23,6 +24,7 @@ import {
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { name: 'Media Production', href: '/admin/media', icon: Film },
   { name: 'Clients', href: '/admin/clients', icon: Users },
   { name: 'Projects', href: '/admin/projects', icon: Briefcase },
   { name: 'Tasks', href: '/admin/tasks', icon: CheckSquare },

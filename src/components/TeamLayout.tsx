@@ -12,7 +12,8 @@ import {
   X,
   LogOut,
   Settings,
-  Sparkles
+  Sparkles,
+  Film
 } from 'lucide-react'
 
 export default function TeamLayout({ children }: { children: React.ReactNode }) {
@@ -21,9 +22,10 @@ export default function TeamLayout({ children }: { children: React.ReactNode }) 
 
   const navigation = [
     { name: 'Dashboard', href: '/team', icon: LayoutDashboard },
+    { name: 'Media Production', href: '/team/media', icon: Film },
     { name: 'My Tasks', href: '/team/tasks', icon: CheckSquare },
     { name: 'Log Time', href: '/team/time', icon: Timer },
-    { name: 'AI Assistant', href: '/admin/ai', icon: Sparkles }, // AI is available for team too
+    { name: 'AI Assistant', href: '/admin/ai', icon: Sparkles },
   ]
 
   const isActive = (path: string) => {
