@@ -9,8 +9,8 @@ export async function uploadMedia(formData: FormData) {
   if (!user) throw new Error('Unauthorized')
 
   const clientId = formData.get('client_id') as string
-  const mediaUrl = formData.get('media_url') as string
-  const mediaType = formData.get('media_type') as string
+  const media_url = formData.get('media_url') as string
+  const media_type = formData.get('media_type') as string
   const topicContext = formData.get('topic_context') as string
 
   const { error } = await supabase
@@ -20,7 +20,7 @@ export async function uploadMedia(formData: FormData) {
       editor_id: user.id,
       media_url,
       media_type,
-      topic_context,
+      topic_context: topicContext,
       status: 'pending_admin'
     })
 

@@ -27,7 +27,11 @@ export default function LoginPage() {
     })
 
     if (error) {
-      setError(error.message || 'An error occurred while sending the login link.')
+      if (error.message.includes('Forbidden use of secret API key')) {
+        setError('CRITICAL: Your Supabase Anon Key is actually a secret "service_role" key. Please use the "anon/public" key from your Supabase settings.')
+      } else {
+        setError(error.message || 'An error occurred while sending the login link.')
+      }
       setLoading(false)
       return
     }
