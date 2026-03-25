@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
-import { Loader2, Chrome, ShieldCheck } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Mail, Loader2, Globe, Shield } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,7 +25,7 @@ export default function LoginPage() {
 
     if (error) {
       setError(error.message)
-      setLoading(true) // Keep loading true to prevent multiple clicks
+      setLoading(false)
     }
   }
 
@@ -35,7 +36,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-10">
           <div className="w-16 h-16 bg-[#1A56DB] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#1A56DB]/20">
-            <ShieldCheck className="w-8 h-8 text-white" />
+            <Shield className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Creova Media Panel</h1>
           <p className="text-gray-500 mt-2">Welcome back! Sign in to manage your agency.</p>
@@ -52,7 +53,7 @@ export default function LoginPage() {
               <Loader2 className="w-6 h-6 animate-spin text-[#1A56DB]" />
             ) : (
               <>
-                <Chrome className="w-6 h-6 text-[#4285F4]" />
+                <Globe className="w-6 h-6 text-[#4285F4]" />
                 Continue with Google
               </>
             )}
@@ -80,7 +81,7 @@ export default function LoginPage() {
         {/* Version info */}
         <div className="mt-8 text-center">
           <span className="text-[10px] text-gray-300 font-mono tracking-tighter uppercase">
-            Build v2.0.1 • Secure OAuth 2.0
+            Build v2.0.2 • Secure OAuth 2.0
           </span>
         </div>
       </div>
