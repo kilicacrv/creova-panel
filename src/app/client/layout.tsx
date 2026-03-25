@@ -7,21 +7,22 @@ export default async function Layout({ children }: { children: React.ReactNode }
   
   const { data: { session } } = await supabase.auth.getSession()
 
-  // Temporary bypass for site preview
-  // if (!session) {
-  //   redirect('/login')
-  // }
+  if (!session) {
+    redirect('/login')
+  }
 
   // Authorize only clients
-  const { data: profile } = session ? await supabase
+  const { data: profile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', session.user.id)
-    .single() : { data: null }
+    .single()
 
-  // if (profile?.role !== 'client' && profile?.role !== 'admin' && profile?.role !== 'team') {
-  //   redirect('/login')
-  // }
+  if (profile?.role !== 'client' && profile?.role !== 'admin' && profile?.role !== 'team') {
+    // Admins and team can technically view the client portal for testing, but they won't see data 
+    // unless they have a matching `user_id` in `clients` table.
+    redirect('/login')
+  }
 
   return <ClientLayout>{children}</ClientLayout>
 }

@@ -8,21 +8,20 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Temporary bypass for site preview
-  // if (!user) redirect('/login')
+  if (!user) redirect('/login')
 
-  const { data: profile } = user ? await supabase
+  const { data: profile } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single() : { data: null }
+    .single()
 
-  // if (profile?.role !== 'admin') redirect('/login')
+  if (profile?.role !== 'admin') redirect('/login')
 
   return (
     <AdminLayout 
-      userEmail={user?.email || 'guest@example.com'} 
-      userName={profile?.full_name || 'Guest Admin'}
+      userEmail={user.email || ''} 
+      userName={profile?.full_name || 'Admin'}
     >
       {children}
     </AdminLayout>
