@@ -58,10 +58,14 @@ export default function TimeList({
     if (!confirm('Are you sure you want to delete this time entry?')) return
     
     try {
-      await deleteTimeEntry(id)
-      setEntries(prev => prev.filter(e => e.id !== id))
+      const result = await deleteTimeEntry(id)
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        setEntries(prev => prev.filter(e => e.id !== id))
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     }
   }
 
@@ -76,14 +80,21 @@ export default function TimeList({
     if (!formData.get('billable')) formData.append('billable', 'false')
     
     try {
+      let result
       if (editingEntry) {
-        await updateTimeEntry(editingEntry.id, formData)
+        result = await updateTimeEntry(editingEntry.id, formData)
       } else {
-        await createTimeEntry(formData)
+        result = await createTimeEntry(formData)
       }
-      window.location.reload()
+
+      if (result?.error) {
+        setError(result.error)
+        setIsLoading(false)
+      } else {
+        window.location.reload()
+      }
     } catch (err: any) {
-      setError(err.message)
+      setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }
   }

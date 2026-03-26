@@ -7,17 +7,19 @@ export async function updateMyTaskStatus(id: string, status: string) {
   const supabase = await createServerSupabaseClient()
   
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error("Unauthorized")
+  if (!user) return { error: "Authentication required" }
 
   // Verify ownership before updating
-  const { data: task } = await supabase
+  const { data: task, error: fetchError } = await supabase
     .from('tasks')
     .select('assigned_to')
     .eq('id', id)
     .single()
 
-  if (task?.assigned_to !== user.id) {
-    throw new Error("You can only update tasks assigned to you.")
+  if (fetchError || !task) return { error: "Task not found" }
+
+  if (task.assigned_to !== user.id) {
+    return { error: "You can only update tasks assigned to you." }
   }
 
   const { error } = await supabase
@@ -25,7 +27,8 @@ export async function updateMyTaskStatus(id: string, status: string) {
     .update({ status })
     .eq('id', id)
 
-  if (error) throw new Error(error.message)
+  if (error) return { error: error.message }
   revalidatePath('/team/tasks')
   revalidatePath('/team')
+  return { success: true }
 }

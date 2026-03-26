@@ -59,19 +59,27 @@ export default function InvoiceList({
     if (!confirm('Are you sure you want to delete this invoice?')) return
     
     try {
-      await deleteInvoice(id)
-      setInvoices(prev => prev.filter(i => i.id !== id))
+      const result = await deleteInvoice(id)
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        setInvoices(prev => prev.filter(i => i.id !== id))
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     }
   }
 
   async function handleMarkPaid(id: string) {
     try {
-      await updateInvoiceStatus(id, 'paid')
-      window.location.reload()
+      const result = await updateInvoiceStatus(id, 'paid')
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        window.location.reload()
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     }
   }
 
@@ -83,14 +91,21 @@ export default function InvoiceList({
     const formData = new FormData(e.currentTarget)
     
     try {
+      let result
       if (editingInvoice) {
-        await updateInvoice(editingInvoice.id, formData)
+        result = await updateInvoice(editingInvoice.id, formData)
       } else {
-        await createInvoice(formData)
+        result = await createInvoice(formData)
       }
-      window.location.reload()
+
+      if (result?.error) {
+        setError(result.error)
+        setIsLoading(false)
+      } else {
+        window.location.reload()
+      }
     } catch (err: any) {
-      setError(err.message)
+      setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }
   }

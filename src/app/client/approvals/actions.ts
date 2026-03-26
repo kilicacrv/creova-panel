@@ -7,7 +7,7 @@ export async function updateContentApproval(id: string, status: 'approved' | 're
   const supabase = await createServerSupabaseClient()
   
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error("Unauthorized")
+  if (!user) return { error: "Authentication required" }
 
   const { error } = await supabase
     .from('content_calendar')
@@ -19,6 +19,7 @@ export async function updateContentApproval(id: string, status: 'approved' | 're
     })
     .eq('id', id)
 
-  if (error) throw new Error(error.message)
+  if (error) return { error: error.message }
   revalidatePath('/client/approvals')
+  return { success: true }
 }

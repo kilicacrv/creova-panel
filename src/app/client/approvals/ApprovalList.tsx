@@ -37,14 +37,18 @@ export default function ApprovalList({ initialItems }: { initialItems: ContentIt
     setError('')
 
     try {
-      await updateContentApproval(selectedItem.id, status, feedback)
-      // Update local state
-      setItems(prev => prev.map(item => 
-        item.id === selectedItem.id ? { ...item, status, feedback } : item
-      ))
-      setIsModalOpen(false)
+      const result = await updateContentApproval(selectedItem.id, status, feedback)
+      if (result?.error) {
+        setError(result.error)
+      } else {
+        // Update local state
+        setItems(prev => prev.map(item => 
+          item.id === selectedItem.id ? { ...item, status, feedback } : item
+        ))
+        setIsModalOpen(false)
+      }
     } catch (err: any) {
-      setError(err.message)
+      setError('An unexpected error occurred.')
     } finally {
       setIsSubmitting(false)
     }

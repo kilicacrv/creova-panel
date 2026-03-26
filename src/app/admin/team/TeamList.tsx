@@ -34,11 +34,16 @@ export default function TeamList({ initialTeam }: { initialTeam: Profile[] }) {
     
     try {
       if (editingMember) {
-        await updateProfile(editingMember.id, formData)
-        window.location.reload()
+        const result = await updateProfile(editingMember.id, formData)
+        if (result?.error) {
+          setError(result.error)
+          setIsLoading(false)
+        } else {
+          window.location.reload()
+        }
       }
     } catch (err: any) {
-      setError(err.message)
+      setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }
   }

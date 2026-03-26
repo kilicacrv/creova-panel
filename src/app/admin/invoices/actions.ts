@@ -3,8 +3,27 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { revalidatePath } from 'next/cache'
 
-export async function createInvoice(formData: FormData) {
+async function checkAdmin() {
   const supabase = await createServerSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Authentication required' }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (profile?.role !== 'admin') {
+    return { error: 'Admin permissions required' }
+  }
+  return { supabase, user }
+}
+
+export async function createInvoice(formData: FormData) {
+  const check = await checkAdmin()
+  if (check.error || !check.supabase) return { error: check.error || 'Server error' }
+  const supabase = check.supabase
   
   const clientId = formData.get('client_id') as string
   const projectId = formData.get('project_id') as string || null
@@ -24,12 +43,15 @@ export async function createInvoice(formData: FormData) {
     notes
   })
 
-  if (error) throw new Error(error.message)
+  if (error) return { error: error.message }
   revalidatePath('/admin/invoices')
+  return { success: true }
 }
 
 export async function updateInvoice(id: string, formData: FormData) {
-  const supabase = await createServerSupabaseClient()
+  const check = await checkAdmin()
+  if (check.error || !check.supabase) return { error: check.error || 'Server error' }
+  const supabase = check.supabase
   
   const clientId = formData.get('client_id') as string
   const projectId = formData.get('project_id') as string || null
@@ -58,20 +80,28 @@ export async function updateInvoice(id: string, formData: FormData) {
 
   const { error } = await supabase.from('invoices').update(payload).eq('id', id)
 
-  if (error) throw new Error(error.message)
+  if (error) return { error: error.message }
   revalidatePath('/admin/invoices')
+  return { success: true }
 }
 
 export async function deleteInvoice(id: string) {
-  const supabase = await createServerSupabaseClient()
+  const check = await checkAdmin()
+  if (check.error || !check.supabase) return { error: check.error || 'Server error' }
+  const supabase = check.supabase
+
   const { error } = await supabase.from('invoices').delete().eq('id', id)
   
-  if (error) throw new Error(error.message)
+  if (error) return { error: error.message }
   revalidatePath('/admin/invoices')
+  return { success: true }
 }
 
 export async function updateInvoiceStatus(id: string, status: string) {
-  const supabase = await createServerSupabaseClient()
+  const check = await checkAdmin()
+  if (check.error || !check.supabase) return { error: check.error || 'Server error' }
+  const supabase = check.supabase
+
   const payload: any = { status }
   if (status === 'paid') {
     payload.paid_at = new Date().toISOString()
@@ -80,6 +110,7 @@ export async function updateInvoiceStatus(id: string, status: string) {
   }
   
   const { error } = await supabase.from('invoices').update(payload).eq('id', id)
-  if (error) throw new Error(error.message)
+  if (error) return { error: error.message }
   revalidatePath('/admin/invoices')
+  return { success: true }
 }

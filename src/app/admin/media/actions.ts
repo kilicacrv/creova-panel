@@ -3,17 +3,34 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { revalidatePath } from 'next/cache'
 
+async function checkAdmin() {
+  const supabase = await createServerSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Authentication required' }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (profile?.role !== 'admin') {
+    return { error: 'Admin permissions required' }
+  }
+  return { supabase, user }
+}
+
 export async function uploadMedia(formData: FormData) {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Unauthorized')
+  if (!user) return { error: 'Authentication required' }
 
   const clientId = formData.get('client_id') as string
   const media_url = formData.get('media_url') as string
   const media_type = formData.get('media_type') as string
   const topicContext = formData.get('topic_context') as string
 
-  const { error } = await supabase
+  const { error: insertError } = await supabase
     .from('media_production')
     .insert({
       client_id: clientId,
@@ -24,13 +41,16 @@ export async function uploadMedia(formData: FormData) {
       status: 'pending_admin'
     })
 
-  if (error) throw error
+  if (insertError) return { error: insertError.message }
   revalidatePath('/team/media')
   revalidatePath('/admin/media')
+  return { success: true }
 }
 
 export async function approveMedia(id: string) {
-  const supabase = await createServerSupabaseClient()
+  const check = await checkAdmin()
+  if (check.error || !check.supabase) return { error: check.error || 'Server error' }
+  const supabase = check.supabase
   
   // 1. Get the media record
   const { data: media, error: fetchError } = await supabase
@@ -39,7 +59,7 @@ export async function approveMedia(id: string) {
     .eq('id', id)
     .single()
 
-  if (fetchError || !media) throw new Error('Media not found')
+  if (fetchError || !media) return { error: fetchError?.message || 'Media not found' }
 
   // 2. Call Gemini to generate a caption
   let generatedCaption = ''
@@ -82,13 +102,17 @@ Keep it professional yet engaging for a premium agency.`
     })
     .eq('id', id)
 
-  if (updateError) throw updateError
+  if (updateError) return { error: updateError.message }
   revalidatePath('/admin/media')
+  return { success: true }
 }
 
 export async function rejectMedia(id: string, feedback: string) {
-  const supabase = await createServerSupabaseClient()
-  const { error } = await supabase
+  const check = await checkAdmin()
+  if (check.error || !check.supabase) return { error: check.error || 'Server error' }
+  const supabase = check.supabase
+
+  const { error: updateError } = await supabase
     .from('media_production')
     .update({ 
       status: 'rejected',
@@ -97,42 +121,45 @@ export async function rejectMedia(id: string, feedback: string) {
     })
     .eq('id', id)
 
-  if (error) throw error
+  if (updateError) return { error: updateError.message }
   revalidatePath('/admin/media')
+  return { success: true }
 }
 
 export async function cleanupMedia() {
-  const supabase = await createServerSupabaseClient()
+  const check = await checkAdmin()
+  if (check.error || !check.supabase) return { error: check.error || 'Server error' }
+  const supabase = check.supabase
   
   // Calculate date 7 days ago
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
   
-  // Note: For real bucket cleanup, we would need to iterate and delete from storage too.
-  // For now, we'll just delete the records. 
-  // In a production app, we'd call supabase.storage.from('media-production').remove([list_of_paths])
-  
-  const { error } = await supabase
+  const { error: deleteError } = await supabase
     .from('media_production')
     .delete()
     .lt('created_at', sevenDaysAgo.toISOString())
 
-  if (error) throw error
+  if (deleteError) return { error: deleteError.message }
   revalidatePath('/admin/media')
+  return { success: true }
 }
 
 export async function deleteMediaItem(id: string, storagePath?: string) {
-  const supabase = await createServerSupabaseClient()
+  const check = await checkAdmin()
+  if (check.error || !check.supabase) return { error: check.error || 'Server error' }
+  const supabase = check.supabase
   
   if (storagePath) {
     await supabase.storage.from('media-production').remove([storagePath])
   }
 
-  const { error } = await supabase
+  const { error: deleteError } = await supabase
     .from('media_production')
     .delete()
     .eq('id', id)
 
-  if (error) throw error
+  if (deleteError) return { error: deleteError.message }
   revalidatePath('/admin/media')
+  return { success: true }
 }

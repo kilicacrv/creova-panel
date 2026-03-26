@@ -52,20 +52,28 @@ export default function TaskList({
     if (!confirm('Are you sure you want to delete this task?')) return
     
     try {
-      await deleteTask(id)
-      setTasks(prev => prev.filter(t => t.id !== id))
+      const result = await deleteTask(id)
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        setTasks(prev => prev.filter(t => t.id !== id))
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     }
   }
 
   async function handleStatusChange(id: string, newStatus: string) {
     try {
       setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus as any } : t))
-      await updateTaskStatus(id, newStatus)
+      const result = await updateTaskStatus(id, newStatus)
+      if (result?.error) {
+        alert(result.error)
+        window.location.reload()
+      }
     } catch (err: any) {
-      alert(err.message)
-      window.location.reload() // Revert UI if fail
+      alert('An unexpected error occurred.')
+      window.location.reload()
     }
   }
 
@@ -77,14 +85,21 @@ export default function TaskList({
     const formData = new FormData(e.currentTarget)
     
     try {
+      let result
       if (editingTask) {
-        await updateTask(editingTask.id, formData)
+        result = await updateTask(editingTask.id, formData)
       } else {
-        await createTask(formData)
+        result = await createTask(formData)
       }
-      window.location.reload()
+
+      if (result?.error) {
+        setError(result.error)
+        setIsLoading(false)
+      } else {
+        window.location.reload()
+      }
     } catch (err: any) {
-      setError(err.message)
+      setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }
   }

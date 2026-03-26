@@ -21,12 +21,16 @@ export default function TeamTaskList({ initialTasks }: { initialTasks: Task[] })
   async function handleStatusChange(id: string, newStatus: string) {
     setLoadingId(id)
     try {
-      await updateMyTaskStatus(id, newStatus)
-      setTasks(prev => prev.map(t => 
-        t.id === id ? { ...t, status: newStatus as any } : t
-      ))
+      const result = await updateMyTaskStatus(id, newStatus)
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        setTasks(prev => prev.map(t => 
+          t.id === id ? { ...t, status: newStatus as any } : t
+        ))
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     } finally {
       setLoadingId(null)
     }

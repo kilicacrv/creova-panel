@@ -46,10 +46,14 @@ export default function ProjectList({ initialProjects, clients }: { initialProje
     if (!confirm('Are you sure you want to delete this project? All related tasks and invoices will be deleted as well.')) return
     
     try {
-      await deleteProject(id)
-      setProjects(prev => prev.filter(p => p.id !== id))
+      const result = await deleteProject(id)
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        setProjects(prev => prev.filter(p => p.id !== id))
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     }
   }
 
@@ -61,15 +65,21 @@ export default function ProjectList({ initialProjects, clients }: { initialProje
     const formData = new FormData(e.currentTarget)
     
     try {
+      let result
       if (editingProject) {
-        await updateProject(editingProject.id, formData)
-        window.location.reload()
+        result = await updateProject(editingProject.id, formData)
       } else {
-        await createProject(formData)
+        result = await createProject(formData)
+      }
+
+      if (result?.error) {
+        setError(result.error)
+        setIsLoading(false)
+      } else {
         window.location.reload()
       }
     } catch (err: any) {
-      setError(err.message)
+      setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }
   }

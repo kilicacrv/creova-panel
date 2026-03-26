@@ -54,19 +54,27 @@ export default function ProposalList({
     if (!confirm('Are you sure you want to delete this proposal?')) return
     
     try {
-      await deleteProposal(id)
-      setProposals(prev => prev.filter(p => p.id !== id))
+      const result = await deleteProposal(id)
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        setProposals(prev => prev.filter(p => p.id !== id))
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     }
   }
 
   async function handleQuickStatus(id: string, status: string) {
     try {
-      await updateProposalStatus(id, status)
-      window.location.reload()
+      const result = await updateProposalStatus(id, status)
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        window.location.reload()
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     }
   }
 
@@ -78,14 +86,21 @@ export default function ProposalList({
     const formData = new FormData(e.currentTarget)
     
     try {
+      let result
       if (editingProposal) {
-        await updateProposal(editingProposal.id, formData)
+        result = await updateProposal(editingProposal.id, formData)
       } else {
-        await createProposal(formData)
+        result = await createProposal(formData)
       }
-      window.location.reload()
+
+      if (result?.error) {
+        setError(result.error)
+        setIsLoading(false)
+      } else {
+        window.location.reload()
+      }
     } catch (err: any) {
-      setError(err.message)
+      setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }
   }

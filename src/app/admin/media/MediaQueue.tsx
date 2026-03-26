@@ -30,12 +30,14 @@ export default function MediaQueue({ initialItems }: { initialItems: any[] }) {
     if (!confirm('Approve this media and generate AI captions?')) return
     setLoadingId(id)
     try {
-      await approveMedia(id)
-      // Successful revalidation will handle UI update in a real Next.js app, 
-      // but for immediate feedback we can optimistic update or reload
-      window.location.reload()
+      const result = await approveMedia(id)
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        window.location.reload()
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     } finally {
       setLoadingId(null)
     }
@@ -46,10 +48,14 @@ export default function MediaQueue({ initialItems }: { initialItems: any[] }) {
     if (!feedback) return
     setLoadingId(id)
     try {
-      await rejectMedia(id, feedback)
-      window.location.reload()
+      const result = await rejectMedia(id, feedback)
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        window.location.reload()
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     } finally {
       setLoadingId(null)
     }
@@ -58,10 +64,14 @@ export default function MediaQueue({ initialItems }: { initialItems: any[] }) {
   async function handleCleanup() {
     if (!confirm('This will delete all media items older than 7 days. Continue?')) return
     try {
-      await cleanupMedia()
-      window.location.reload()
+      const result = await cleanupMedia()
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        window.location.reload()
+      }
     } catch (err: any) {
-      alert(err.message)
+      alert('An unexpected error occurred.')
     }
   }
 
