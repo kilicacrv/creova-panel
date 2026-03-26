@@ -14,7 +14,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
   // Authorize only team members and admins
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('*')
     .eq('id', session.user.id)
     .single()
 
@@ -22,5 +22,5 @@ export default async function Layout({ children }: { children: React.ReactNode }
     redirect('/login')
   }
 
-  return <TeamLayout>{children}</TeamLayout>
+  return <TeamLayout profile={profile}>{children}</TeamLayout>
 }

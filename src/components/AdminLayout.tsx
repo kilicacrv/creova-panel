@@ -19,7 +19,9 @@ import {
   Timer,
   Menu,
   X,
-  LogOut
+  LogOut,
+  Settings,
+  Eye
 } from 'lucide-react'
 
 const navigation = [
@@ -36,6 +38,8 @@ const navigation = [
   { name: 'Social Listening', href: '/admin/listening', icon: Ear },
   { name: 'AI Assistant', href: '/admin/ai', icon: Bot },
   { name: 'Time Tracking', href: '/admin/time', icon: Timer },
+  { name: 'Management', href: '/admin/management', icon: Settings },
+  { name: 'Remote Watch', href: '/admin/watch', icon: Eye },
 ]
 
 export default function AdminLayout({
