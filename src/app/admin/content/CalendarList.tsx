@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Edit2, Trash2, Plus, CalendarDays, AlertCircle, Image as ImageIcon, MessageSquare, Send, CheckCircle, Clock } from 'lucide-react'
+import Image from 'next/image'
 import { createContent, updateContent, deleteContent, updateContentStatus } from './actions'
 
 type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } | { company_name: string }[] }
@@ -159,7 +160,9 @@ export default function CalendarList({
                     <td className="px-6 py-4">
                       <div className="flex items-start">
                         {item.image_url ? (
-                          <img src={item.image_url} alt="" className="w-12 h-12 rounded object-cover border border-gray-200 mr-3 shrink-0" />
+                          <div className="relative w-12 h-12 mr-3 shrink-0">
+                            <Image src={item.image_url} alt="" fill sizes="48px" className="rounded object-cover border border-gray-200" />
+                          </div>
                         ) : (
                           <div className="w-12 h-12 rounded bg-gray-100 border border-gray-200 flex items-center justify-center mr-3 shrink-0">
                             <ImageIcon className="w-5 h-5 text-gray-400" />

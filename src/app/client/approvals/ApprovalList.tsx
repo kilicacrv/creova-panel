@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { CheckSquare, X, FileText, Calendar, Share2, ImageIcon, AlertCircle } from 'lucide-react'
+import Image from 'next/image'
 import { updateContentApproval } from './actions'
 
 type ContentItem = {
@@ -77,7 +78,7 @@ export default function ApprovalList({ initialItems }: { initialItems: ContentIt
               {/* Media Preview */}
               <div className="aspect-square bg-gray-100 flex items-center justify-center relative overflow-hidden">
                 {item.image_url ? (
-                  <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
+                  <Image src={item.image_url} alt={item.title} fill sizes="(max-width: 768px) 100vw, 300px" className="object-cover" />
                 ) : (
                   <div className="flex flex-col items-center text-gray-400">
                     <ImageIcon className="w-12 h-12 mb-2" />
@@ -135,9 +136,9 @@ export default function ApprovalList({ initialItems }: { initialItems: ContentIt
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row">
             
             {/* Preview on Modal (Left) */}
-            <div className="md:w-1/2 bg-gray-100 shrink-0">
+            <div className="md:w-1/2 bg-gray-100 shrink-0 relative min-h-[300px]">
               {selectedItem.image_url ? (
-                <img src={selectedItem.image_url} alt="" className="w-full h-full object-cover" />
+                <Image src={selectedItem.image_url} alt="" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
               ) : (
                 <div className="h-full flex items-center justify-center text-gray-300">
                    <ImageIcon className="w-20 h-20" />

@@ -6,67 +6,89 @@ import { createClient } from '@/lib/supabase'
 import { uploadMedia } from '@/app/admin/media/actions'
 
 export default function MediaUpload({ clients }: { clients: { id: string, company_name: string }[] }) {
-  const [file, setFile] = useState<File | null>(null)
+  const [files, setFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
-  const [progress, setProgress] = useState(0)
+  const [progresses, setProgresses] = useState<{ [key: string]: number }>({})
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const supabase = createClient()
 
+  function handleFileDrop(e: React.DragEvent) {
+    e.preventDefault()
+    if (uploading) return
+    const dropped = Array.from(e.dataTransfer.files)
+    setFiles(prev => [...prev, ...dropped])
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files?.length) {
+      setFiles(prev => [...prev, ...Array.from(e.target.files!)])
+    }
+  }
+
+  function removeFile(index: number) {
+    if (uploading) return
+    setFiles(prev => prev.filter((_, i) => i !== index))
+  }
+
   async function handleUpload(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (!file) return
+    if (files.length === 0) return
     
     setUploading(true)
     setError('')
     setSuccess(false)
-    setProgress(10)
 
     try {
       const formData = new FormData(e.currentTarget)
       const clientId = formData.get('client_id') as string
       const topicContext = formData.get('topic_context') as string
       
-      // 1. Upload to Supabase Storage
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${clientId}/${Date.now()}.${fileExt}`
-      const filePath = `uploads/${fileName}`
+      for (const file of files) {
+        setProgresses(prev => ({ ...prev, [file.name]: 10 }))
+        
+        // 1. Upload to Supabase Storage
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${clientId}/${Date.now()}_${Math.random().toString(36).substr(2, 5)}.${fileExt}`
+        const filePath = `uploads/${fileName}`
 
-      setProgress(30)
+        setProgresses(prev => ({ ...prev, [file.name]: 35 }))
+        
+        const { error: uploadError } = await supabase.storage
+          .from('media-production')
+          .upload(filePath, file, { cacheControl: '3600', upsert: false })
+
+        if (uploadError) throw uploadError
+        
+        setProgresses(prev => ({ ...prev, [file.name]: 75 }))
+
+        // 2. Get Public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('media-production')
+          .getPublicUrl(filePath)
+
+        // 3. Save to Database via Server Action
+        const finalFormData = new FormData()
+        finalFormData.append('client_id', clientId)
+        finalFormData.append('media_url', publicUrl)
+        finalFormData.append('media_type', file.type.startsWith('video') ? 'video' : 'image')
+        finalFormData.append('topic_context', topicContext)
+        finalFormData.append('file_name', file.name)
+        finalFormData.append('file_size', file.size.toString())
+
+        await uploadMedia(finalFormData)
+        setProgresses(prev => ({ ...prev, [file.name]: 100 }))
+      }
       
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('media-production')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        })
-
-      if (uploadError) throw uploadError
-      setProgress(70)
-
-      // 2. Get Public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('media-production')
-        .getPublicUrl(filePath)
-
-      // 3. Save to Database via Server Action
-      const finalFormData = new FormData()
-      finalFormData.append('client_id', clientId)
-      finalFormData.append('media_url', publicUrl)
-      finalFormData.append('media_type', file.type.startsWith('video') ? 'video' : 'image')
-      finalFormData.append('topic_context', topicContext)
-
-      await uploadMedia(finalFormData)
-      
-      setProgress(100)
       setSuccess(true)
-      setFile(null)
+      setFiles([])
+      setProgresses({})
       if (fileInputRef.current) fileInputRef.current.value = ''
     } catch (err: any) {
       console.error(err)
-      setError(err.message || 'Error uploading file')
+      setError(err.message || 'Error uploading files')
     } finally {
       setUploading(false)
     }
@@ -76,20 +98,88 @@ export default function MediaUpload({ clients }: { clients: { id: string, compan
     <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
       <form onSubmit={handleUpload} className="p-8 space-y-6">
         {error && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm flex items-center border border-red-100 animate-in fade-in slide-in-from-top-4">
+          <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm flex items-center border border-red-100">
             <AlertCircle className="w-5 h-5 mr-3 shrink-0" />
             {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-50 text-green-700 p-4 rounded-xl text-sm flex items-center border border-green-100 animate-in fade-in slide-in-from-top-4">
+          <div className="bg-green-50 text-green-700 p-4 rounded-xl text-sm flex items-center border border-green-100">
             <CheckCircle2 className="w-5 h-5 mr-3 shrink-0" />
             Media uploaded successfully and sent for admin approval!
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-gray-700 flex items-center">
+            Upload Media <span className="text-red-500 ml-1">*</span>
+          </label>
+          <div 
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleFileDrop}
+            onClick={() => !uploading && fileInputRef.current?.click()}
+            className={`
+              relative border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center transition-all cursor-pointer min-h-[200px]
+              ${files.length > 0 ? 'border-[#1A56DB]/40 bg-blue-50/20' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300'}
+              ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
+            `}
+          >
+            <input 
+              type="file" 
+              multiple
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              className="hidden"
+              accept=".mp4,.mov,.jpg,.jpeg,.png,.pdf"
+              disabled={uploading}
+            />
+            <div className="w-14 h-14 bg-white shadow-sm border border-gray-100 text-[#1A56DB] rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-105">
+              <Upload className="w-6 h-6" />
+            </div>
+            <p className="font-bold text-gray-900">Drag & drop files here</p>
+            <p className="text-sm text-gray-500 mt-1">MP4, MOV, JPG, PNG, PDF up to 400MB</p>
+          </div>
+        </div>
+
+        {/* File Queue */}
+        {files.length > 0 && (
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-gray-700">Selected Files ({files.length})</h4>
+            <div className="space-y-3">
+              {files.map((f, idx) => {
+                const prog = progresses[f.name] || 0
+                return (
+                  <div key={idx} className="bg-gray-50 border border-gray-100 p-3 rounded-xl flex items-center gap-4">
+                    <div className="w-10 h-10 rounded bg-[#1A56DB]/10 flex items-center justify-center text-[#1A56DB] shrink-0">
+                      {f.type.includes('video') ? <Film className="w-5 h-5" /> : <ImageIcon className="w-5 h-5" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{f.name}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="text-xs text-gray-500">{(f.size / 1024 / 1024).toFixed(2)} MB</p>
+                        {uploading && <span className="text-xs font-bold text-[#1A56DB]">{prog}%</span>}
+                      </div>
+                      {uploading && (
+                        <div className="w-full h-1.5 bg-gray-200 rounded-full mt-2 overflow-hidden">
+                          <div className="h-full bg-[#1A56DB] transition-all duration-300" style={{ width: `${prog}%` }}></div>
+                        </div>
+                      )}
+                    </div>
+                    {!uploading && (
+                      <button type="button" onClick={() => removeFile(idx)} className="p-2 text-gray-400 hover:text-red-500">
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Form Details */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100">
           <div className="space-y-2">
             <label className="text-sm font-semibold text-gray-700 flex items-center">
               Target Client <span className="text-red-500 ml-1">*</span>
@@ -98,7 +188,7 @@ export default function MediaUpload({ clients }: { clients: { id: string, compan
               name="client_id"
               required
               disabled={uploading}
-              className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A56DB] transition-all disabled:opacity-50"
+              className="w-full h-11 px-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
             >
               <option value="">Select a client...</option>
               {clients.map(c => (
@@ -108,100 +198,32 @@ export default function MediaUpload({ clients }: { clients: { id: string, compan
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700">
-              Topic / What is this about?
-            </label>
+            <label className="text-sm font-semibold text-gray-700">Topic / Context</label>
             <input
               name="topic_context"
               type="text"
               placeholder="e.g., Summer collection preview"
               disabled={uploading}
-              className="w-full h-11 px-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A56DB] transition-all disabled:opacity-50"
+              className="w-full h-11 px-4 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
             />
           </div>
         </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-700">Media File (Photo or Video - Max 400MB)</label>
-          <div 
-            onClick={() => !uploading && fileInputRef.current?.click()}
-            className={`
-              relative border-2 border-dashed rounded-2xl p-12 flex flex-col items-center justify-center transition-all cursor-pointer
-              ${file ? 'border-blue-400 bg-blue-50/30' : 'border-gray-200 bg-gray-50 hover:bg-gray-100'}
-              ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
-            `}
-          >
-            <input 
-              type="file" 
-              ref={fileInputRef}
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="hidden"
-              accept="image/*,video/*"
-              disabled={uploading}
-            />
-            {file ? (
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  {file.type.startsWith('video') ? <Film className="w-8 h-8" /> : <ImageIcon className="w-8 h-8" />}
-                </div>
-                <p className="font-semibold text-gray-900 truncate max-w-xs">{file.name}</p>
-                <p className="text-xs text-gray-500 mt-1">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
-                <button 
-                  type="button" 
-                  onClick={(e) => { e.stopPropagation(); setFile(null); }}
-                  className="mt-4 text-xs font-bold text-red-600 hover:text-red-700 hover:underline"
-                >
-                  Change File
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="w-16 h-16 bg-white shadow-sm border border-gray-100 text-[#1A56DB] rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
-                  <Upload className="w-8 h-8" />
-                </div>
-                <p className="font-bold text-gray-900">Drag & drop or click to upload</p>
-                <p className="text-sm text-gray-500 mt-1">Images or MP4 Videos supported</p>
-              </>
-            )}
-          </div>
-        </div>
-
-        {uploading && (
-          <div className="space-y-3">
-            <div className="flex justify-between items-center text-sm">
-              <span className="font-medium text-gray-700 flex items-center">
-                <Loader2 className="w-4 h-4 mr-2 animate-spin text-[#1A56DB]" />
-                Uploading Large Media...
-              </span>
-              <span className="font-bold text-[#1A56DB]">{progress}%</span>
-            </div>
-            <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
-              <div 
-                className="h-full bg-[#1A56DB] transition-all duration-300 shadow-[0_0_12px_rgba(26,86,219,0.3)]"
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
-          </div>
-        )}
 
         <button
           type="submit"
-          disabled={!file || uploading}
+          disabled={files.length === 0 || uploading}
           className={`
-            w-full h-14 rounded-2xl font-bold text-white shadow-lg transition-all flex items-center justify-center
-            ${!file || uploading ? 'bg-gray-300 cursor-not-allowed shadow-none' : 'bg-[#1A56DB] hover:bg-[#1e4eb8] hover:shadow-[#1A56DB]/20'}
+            w-full h-12 rounded-xl font-bold text-white transition-all flex items-center justify-center
+            ${files.length === 0 || uploading ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#1A56DB] hover:bg-[#1e4eb8] shadow-md shadow-[#1A56DB]/20'}
           `}
         >
           {uploading ? (
             <>
               <Loader2 className="w-5 h-5 mr-3 animate-spin" />
-              Processing...
+              Uploading {files.length} files...
             </>
           ) : (
-            <>
-              <CheckCircle2 className="w-5 h-5 mr-3" />
-              Staged for Admin Approval
-            </>
+            'Start Upload'
           )}
         </button>
       </form>

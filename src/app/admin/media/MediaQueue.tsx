@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { 
   CheckCircle2, XCircle, Clock, Copy, Download, Trash2, 
   ExternalLink, MessageSquare, AlertCircle, Loader2, Sparkles,
-  Film, Image as ImageIcon, Search, Calendar
+  Film, Image as ImageIcon, Search, Calendar, User, FileWarning
 } from 'lucide-react'
+import Image from 'next/image'
 import { approveMedia, rejectMedia, deleteMediaItem, cleanupMedia } from './actions'
 
 type MediaItem = {
@@ -17,10 +18,30 @@ type MediaItem = {
   generated_caption: string | null
   admin_feedback: string | null
   created_at: string
+  file_name: string | null
+  file_size: number | null
+  ai_status: 'pending' | 'processing' | 'done' | 'failed'
   clients: { company_name: string }
+  profiles?: { full_name: string } | null
 }
 
-export default function MediaQueue({ initialItems }: { initialItems: any[] }) {
+function formatBytes(bytes?: number | null) {
+  if (!bytes) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+export default function MediaQueue({ 
+  initialItems, 
+  cleanupCount = 0, 
+  cleanupSize = 0 
+}: { 
+  initialItems: any[],
+  cleanupCount?: number,
+  cleanupSize?: number
+}) {
   const [items, setItems] = useState<MediaItem[]>(initialItems)
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [filter, setFilter] = useState('all')
@@ -62,7 +83,13 @@ export default function MediaQueue({ initialItems }: { initialItems: any[] }) {
   }
 
   async function handleCleanup() {
-    if (!confirm('This will delete all media items older than 7 days. Continue?')) return
+    if (cleanupCount === 0) {
+      alert('No media files older than 7 days exist.')
+      return
+    }
+    const msg = `Are you sure you want to clean up?\n\nFiles to delete: ${cleanupCount}\nStorage to free: ${formatBytes(cleanupSize)}`
+    if (!confirm(msg)) return
+    
     try {
       const result = await cleanupMedia()
       if (result?.error) {
@@ -76,9 +103,9 @@ export default function MediaQueue({ initialItems }: { initialItems: any[] }) {
   }
 
   const filteredItems = items.filter(item => {
-    const matchesSearch = item.clients.company_name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesFilter = filter === 'all' || item.status === filter
-    return matchesSearch && matchesFilter
+    const clientMatch = item.clients?.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) || false
+    const matchFilter = filter === 'all' || item.status === filter
+    return clientMatch && matchFilter
   })
 
   return (
@@ -89,13 +116,13 @@ export default function MediaQueue({ initialItems }: { initialItems: any[] }) {
           <input 
             type="text" 
             placeholder="Search client..." 
-            className="bg-transparent border-none focus:ring-0 text-sm w-full"
+            className="bg-transparent border-none focus:ring-0 text-sm w-full outline-none"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
           {['all', 'pending_admin', 'ready', 'rejected'].map(s => (
             <button
               key={s}
@@ -111,146 +138,142 @@ export default function MediaQueue({ initialItems }: { initialItems: any[] }) {
           <div className="w-px h-6 bg-gray-200 mx-2 hidden md:block"></div>
           <button
             onClick={handleCleanup}
-            className="px-4 py-2 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 transition-all"
+            className="px-4 py-2 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-100 hover:text-gray-700 flex items-center gap-2 transition-all border border-transparent hover:border-gray-200"
+            title={`${cleanupCount} files (${formatBytes(cleanupSize)}) ready for cleanup`}
           >
-            <Trash2 className="w-4 h-4" />
+            <FileWarning className="w-4 h-4 text-orange-400" />
             Cleanup (&gt;7d)
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredItems.map(item => (
-          <div key={item.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
-            <div className="relative aspect-video bg-black group">
-              {item.media_type === 'video' ? (
-                <video 
-                  src={item.media_url} 
-                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                  muted
-                  playsInline
-                />
-              ) : (
-                <img 
-                  src={item.media_url} 
-                  alt="" 
-                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-                />
-              )}
-              <div className="absolute top-4 left-4">
-                <StatusBadge status={item.status} />
-              </div>
-              <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <a 
-                  href={item.media_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-2 bg-white/90 backdrop-blur rounded-lg shadow-lg hover:bg-white transition-colors block"
-                >
-                  <ExternalLink className="w-4 h-4 text-gray-700" />
-                </a>
-              </div>
-            </div>
-
-            <div className="p-5 flex-1 flex flex-col space-y-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-bold text-gray-900 leading-tight">{item.clients.company_name}</h3>
-                  <div className="flex items-center text-xs text-gray-500 mt-1">
-                    <Calendar className="w-3 h-3 mr-1" />
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-gray-50/50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              <th className="p-4 w-24">Media</th>
+              <th className="p-4">File Info</th>
+              <th className="p-4">Client & Editor</th>
+              <th className="p-4">AI Captioning</th>
+              <th className="p-4">Admin Status</th>
+              <th className="p-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {filteredItems.map(item => (
+              <tr key={item.id} className="hover:bg-gray-50/50 transition-colors group">
+                <td className="p-4">
+                  <a href={item.media_url} target="_blank" rel="noopener noreferrer" className="block relative w-16 h-16 rounded-lg overflow-hidden bg-black shadow-sm group-hover:ring-2 ring-[#1A56DB] transition-all">
+                    {item.media_type === 'video' ? (
+                      <video src={item.media_url} className="w-full h-full object-cover opacity-80" muted playsInline />
+                ) : (
+                  <Image 
+                    src={item.media_url} 
+                    alt="Media Thumbnail"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 128px"
+                    className="object-cover opacity-90" 
+                  />
+                )}
+                <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ExternalLink className="w-4 h-4 text-white" />
+                    </span>
+                  </a>
+                </td>
+                
+                <td className="p-4">
+                  <div className="flex items-center gap-2">
+                    {item.media_type === 'video' ? <Film className="w-4 h-4 text-gray-400" /> : <ImageIcon className="w-4 h-4 text-gray-400" />}
+                    <span className="font-semibold text-gray-900 text-sm truncate max-w-[150px]" title={item.file_name || 'unknown'}>
+                      {item.file_name || 'Uploaded File'}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                    {formatBytes(item.file_size)}
+                    <span className="w-1 h-1 rounded-full bg-gray-300"></span>
                     {new Date(item.created_at).toLocaleDateString()}
                   </div>
-                </div>
-                <div className="text-[#1A56DB]">
-                  {item.media_type === 'video' ? <Film className="w-5 h-5" /> : <ImageIcon className="w-5 h-5" />}
-                </div>
-              </div>
+                </td>
 
-              {item.topic_context && (
-                <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
-                  <p className="text-xs font-bold text-blue-700 uppercase tracking-wider mb-1">Context</p>
-                  <p className="text-sm text-blue-900 line-clamp-2">{item.topic_context}</p>
-                </div>
-              )}
+                <td className="p-4">
+                  <div className="font-medium text-gray-900 text-sm mb-1">{item.clients?.company_name}</div>
+                  <div className="flex items-center text-xs text-gray-500">
+                    <User className="w-3 h-3 mr-1" />
+                    {item.profiles?.full_name || 'Unknown Editor'}
+                  </div>
+                </td>
 
-              {item.status === 'ready' && item.generated_caption && (
-                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 group relative">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" />
-                    Generated Captions
-                  </p>
-                  <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans italic leading-relaxed">
-                    {item.generated_caption}
-                  </pre>
-                  <button 
-                    onClick={() => {
-                      navigator.clipboard.writeText(item.generated_caption || '')
-                      alert('Caption copied!')
-                    }}
-                    className="absolute top-3 right-3 p-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow transition-all opacity-0 group-hover:opacity-100"
-                  >
-                    <Copy className="w-4 h-4 text-gray-600" />
-                  </button>
-                </div>
-              )}
+                <td className="p-4">
+                  <AiStatusBadge status={item.ai_status || 'pending'} />
+                </td>
 
-              {item.status === 'rejected' && item.admin_feedback && (
-                <div className="bg-red-50 p-3 rounded-xl border border-red-100">
-                  <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1 flex items-center gap-1">
-                    <AlertCircle className="w-3 h-3" />
-                    Rejection Feedback
-                  </p>
-                  <p className="text-sm text-red-900 italic">"{item.admin_feedback}"</p>
-                </div>
-              )}
+                <td className="p-4">
+                  <AdminStatusBadge status={item.status} />
+                </td>
 
-              <div className="pt-2 mt-auto grid grid-cols-2 gap-3">
-                {item.status === 'pending_admin' ? (
-                  <>
-                    <button
-                      onClick={() => handleReject(item.id)}
-                      disabled={loadingId === item.id}
-                      className="h-11 rounded-xl font-bold text-red-600 border-2 border-red-100 hover:bg-red-50 transition-all flex items-center justify-center gap-2"
-                    >
-                      <XCircle className="w-4 h-4" />
-                      Reject
-                    </button>
-                    <button
-                      onClick={() => handleApprove(item.id)}
-                      disabled={loadingId === item.id}
-                      className="h-11 rounded-xl font-bold bg-[#1A56DB] text-white shadow-lg shadow-[#1A56DB]/20 hover:bg-[#1e4eb8] transition-all flex items-center justify-center gap-2"
-                    >
-                      {loadingId === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                      Approve
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    disabled
-                    className="col-span-2 h-11 rounded-xl font-bold bg-gray-50 text-gray-400 border border-gray-200 cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                    Finalized
-                  </button>
-                )}
-              </div>
-            </div>
+                <td className="p-4 text-right">
+                  {item.status === 'pending_admin' ? (
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => handleReject(item.id)}
+                        disabled={loadingId === item.id}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                        title="Reject"
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleApprove(item.id)}
+                        disabled={loadingId === item.id}
+                        className="p-2 text-white bg-[#1A56DB] hover:bg-[#1e4eb8] rounded-lg shadow-sm transition-colors"
+                        title="Approve & Run AI"
+                      >
+                        {loadingId === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-gray-400 italic">No actions</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        
+        {filteredItems.length === 0 && (
+          <div className="text-center py-20 bg-gray-50/30">
+            <Clock className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <h2 className="text-lg font-bold text-gray-900">No uploads yet</h2>
+            <p className="text-sm text-gray-500 mt-1 max-w-sm mx-auto">
+              Your media queue is empty. Invite your editors to start uploading files to review them here.
+            </p>
           </div>
-        ))}
+        )}
       </div>
 
-      {filteredItems.length === 0 && (
-        <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-gray-300">
-          <Clock className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-400">Your media queue is empty</h2>
-          <p className="text-gray-400 mt-1">Pending uploads from editors will appear here.</p>
-        </div>
-      )}
     </div>
   )
 }
 
-function StatusBadge({ status }: { status: string }) {
+function AiStatusBadge({ status }: { status: string }) {
+  const map: any = {
+    pending: { bg: 'bg-gray-100', text: 'text-gray-600', icon: Clock },
+    processing: { bg: 'bg-blue-100', text: 'text-[#1A56DB]', icon: Loader2 },
+    done: { bg: 'bg-purple-100', text: 'text-purple-700', icon: Sparkles },
+    failed: { bg: 'bg-red-100', text: 'text-red-700', icon: AlertCircle }
+  }
+  const config = map[status] || map.pending
+  const Icon = config.icon
+
+  return (
+    <div className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${config.bg} ${config.text}`}>
+      <Icon className={`w-3 h-3 mr-1 ${status === 'processing' ? 'animate-spin' : ''}`} />
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </div>
+  )
+}
+
+function AdminStatusBadge({ status }: { status: string }) {
   const styles: any = {
     pending_admin: 'bg-amber-100 text-amber-700 border-amber-200',
     ready: 'bg-green-100 text-green-700 border-green-200',
@@ -259,7 +282,7 @@ function StatusBadge({ status }: { status: string }) {
   }
 
   return (
-    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm ${styles[status]}`}>
+    <span className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-widest border ${styles[status]}`}>
       {status.replace('_', ' ')}
     </span>
   )

@@ -29,6 +29,8 @@ export async function uploadMedia(formData: FormData) {
   const media_url = formData.get('media_url') as string
   const media_type = formData.get('media_type') as string
   const topicContext = formData.get('topic_context') as string
+  const fileName = formData.get('file_name') as string || 'Unknown file'
+  const fileSize = formData.get('file_size') as string || '0'
 
   const { error: insertError } = await supabase
     .from('media_production')
@@ -38,10 +40,25 @@ export async function uploadMedia(formData: FormData) {
       media_url,
       media_type,
       topic_context: topicContext,
-      status: 'pending_admin'
+      status: 'pending_admin',
+      file_name: fileName,
+      file_size: parseInt(fileSize),
+      ai_status: 'pending'
     })
 
   if (insertError) return { error: insertError.message }
+
+  // Notify Admins
+  const { data: admins } = await supabase.from('profiles').select('id').eq('role', 'admin')
+  if (admins && admins.length > 0) {
+     const notifications = admins.map(admin => ({
+       user_id: admin.id,
+       title: 'New Media Upload',
+       message: `An editor uploaded a new ${media_type} for review.`,
+       type: 'media'
+     }))
+     await supabase.from('notifications').insert(notifications)
+  }
   revalidatePath('/team/media')
   revalidatePath('/admin/media')
   return { success: true }
@@ -63,6 +80,7 @@ export async function approveMedia(id: string) {
 
   // 2. Call Gemini to generate a caption
   let generatedCaption = ''
+  let finalAiStatus = 'pending'
   const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY
   
   if (apiKey) {
@@ -84,12 +102,15 @@ Keep it professional yet engaging for a premium agency.`
 
       const data = await response.json()
       generatedCaption = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Caption generation failed.'
+      finalAiStatus = generatedCaption.includes('failed') ? 'failed' : 'done'
     } catch (e) {
       console.error('Gemini Error:', e)
       generatedCaption = 'AI Generation Error. Please write manually.'
+      finalAiStatus = 'failed'
     }
   } else {
     generatedCaption = '[Mock Caption] Gemini API Key missing. Please approve to see flow.'
+    finalAiStatus = 'done'
   }
 
   // 3. Update status and caption
@@ -98,6 +119,7 @@ Keep it professional yet engaging for a premium agency.`
     .update({ 
       status: 'ready',
       generated_caption: generatedCaption,
+      ai_status: finalAiStatus,
       updated_at: new Date().toISOString()
     })
     .eq('id', id)
