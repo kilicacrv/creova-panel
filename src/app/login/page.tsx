@@ -10,7 +10,10 @@ export const dynamic = 'force-dynamic'
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const supabase = createClient()
+  const router = useRouter()
 
   async function handleGoogleLogin() {
     setLoading(true)
@@ -42,18 +45,71 @@ export default function LoginPage() {
           <p className="text-gray-500 mt-2">Welcome back! Sign in to manage your agency.</p>
         </div>
 
-        {/* Google Login Button */}
-        <div className="space-y-4">
+          <div className="space-y-4">
+          <form 
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setLoading(true);
+              setError('');
+              const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+              if (authError) {
+                setError(authError.message);
+                setLoading(false);
+              } else {
+                router.refresh();
+              }
+            }}
+            className="flex flex-col gap-4 mb-4"
+          >
+            <div>
+               <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 pl-1">Client Login</label>
+               <input
+                 type="email"
+                 required
+                 placeholder="Email address"
+                 value={email}
+                 onChange={(e) => setEmail(e.target.value)}
+                 className="w-full h-12 bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 font-medium focus:outline-none focus:border-[#1A56DB] focus:ring-1 focus:ring-[#1A56DB] transition-all"
+               />
+            </div>
+            <div>
+               <input
+                 type="password"
+                 required
+                 placeholder="Password"
+                 value={password}
+                 onChange={(e) => setPassword(e.target.value)}
+                 className="w-full h-12 bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 font-medium focus:outline-none focus:border-[#1A56DB] focus:ring-1 focus:ring-[#1A56DB] transition-all"
+               />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-12 bg-[#1A56DB] text-white rounded-xl text-sm font-bold hover:bg-[#1e4eb8] transition-all shadow-md shadow-[#1A56DB]/20 disabled:opacity-50 flex items-center justify-center"
+            >
+               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In Securely"}
+            </button>
+          </form>
+
+          <div className="relative py-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-100"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-white px-4 text-xs font-bold text-gray-400 uppercase tracking-widest">or Agency Login</span>
+            </div>
+          </div>
+
           <button
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full h-14 bg-white border-2 border-gray-100 text-gray-700 rounded-2xl text-base font-bold hover:border-gray-200 hover:bg-gray-50 transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow-md disabled:opacity-50"
+            className="w-full h-12 bg-white border-2 border-gray-100 text-gray-700 rounded-xl text-sm font-bold hover:border-gray-200 hover:bg-gray-50 transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow-md disabled:opacity-50"
           >
             {loading ? (
-              <Loader2 className="w-6 h-6 animate-spin text-[#1A56DB]" />
+              <Loader2 className="w-5 h-5 animate-spin text-[#1A56DB]" />
             ) : (
               <>
-                <Globe className="w-6 h-6 text-[#4285F4]" />
+                <Globe className="w-5 h-5 text-[#4285F4]" />
                 Continue with Google
               </>
             )}

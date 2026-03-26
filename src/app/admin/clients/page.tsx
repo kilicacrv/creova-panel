@@ -8,7 +8,7 @@ export default async function ClientsPage() {
   
   const { data: clients } = await supabase
     .from('clients')
-    .select('*')
+    .select('*, contracts(id, status)')
     .order('created_at', { ascending: false })
 
   return (

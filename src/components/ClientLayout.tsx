@@ -12,7 +12,9 @@ import {
   Menu, 
   X,
   LogOut,
-  Settings
+  Settings,
+  FileText,
+  Megaphone
 } from 'lucide-react'
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
@@ -24,6 +26,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     { name: 'My Projects', href: '/client/projects', icon: FolderOpen },
     { name: 'Invoices & Billing', href: '/client/invoices', icon: Receipt },
     { name: 'Content Approvals', href: '/client/approvals', icon: CalendarCheck },
+    { name: 'Legal Contracts', href: '/client/contracts', icon: FileText },
+    { name: 'Ad Campaigns', href: '/client/campaigns', icon: Megaphone },
   ]
 
   const isActive = (path: string) => {

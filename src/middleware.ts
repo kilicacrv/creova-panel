@@ -31,8 +31,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Giriş yapmışsa rolüne göre yönlendir
-  if (user && request.nextUrl.pathname === '/') {
+  // If user is already logged in and trying to access root or login page
+  if (user && (request.nextUrl.pathname === '/' || request.nextUrl.pathname.startsWith('/login'))) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
@@ -44,6 +44,36 @@ export async function middleware(request: NextRequest) {
     else if (profile?.role === 'team') url.pathname = '/team'
     else url.pathname = '/client'
     return NextResponse.redirect(url)
+  }
+
+  // Enforce Strict Role Boundaries across protected routes
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+      
+    const role = profile?.role || 'client'
+    const path = request.nextUrl.pathname
+
+    if (path.startsWith('/admin') && role !== 'admin') {
+      const url = request.nextUrl.clone()
+      url.pathname = role === 'team' ? '/team' : '/client'
+      return NextResponse.redirect(url)
+    }
+
+    if (path.startsWith('/team') && role !== 'admin' && role !== 'team') {
+       const url = request.nextUrl.clone()
+       url.pathname = role === 'admin' ? '/admin' : '/client'
+       return NextResponse.redirect(url)
+    }
+
+    if (path.startsWith('/client') && role === 'team') {
+       const url = request.nextUrl.clone()
+       url.pathname = '/team'
+       return NextResponse.redirect(url)
+    }
   }
 
   return supabaseResponse
