@@ -13,7 +13,8 @@ import {
   LogOut,
   Settings,
   Sparkles,
-  Film
+  Film,
+  MessageSquare
 } from 'lucide-react'
 import RemoteCheckInWidget from './RemoteCheckIn'
 
@@ -24,6 +25,7 @@ export default function TeamLayout({ children, profile }: { children: React.Reac
   const navigation = [
     { name: 'Dashboard', href: '/team', icon: LayoutDashboard },
     { name: 'Media Production', href: '/team/media', icon: Film },
+    { name: 'Messenger', href: '/team/messages', icon: MessageSquare },
     { name: 'My Tasks', href: '/team/tasks', icon: CheckSquare },
     { name: 'Log Time', href: '/team/time', icon: Timer },
     { name: 'AI Assistant', href: '/admin/ai', icon: Sparkles },

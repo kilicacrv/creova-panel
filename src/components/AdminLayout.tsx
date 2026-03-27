@@ -23,7 +23,8 @@ import {
   Settings,
   Eye,
   Bell,
-  Check
+  Check,
+  MessageSquare
 } from 'lucide-react'
 import { markNotificationAsRead } from '@/app/admin/notification-actions'
 
@@ -77,6 +78,7 @@ const navGroups = [
     items: [
       { name: 'Team', href: '/admin/team', icon: UsersRound },
       { name: 'Management', href: '/admin/management', icon: Settings },
+      { name: 'Messenger', href: '/admin/messages', icon: MessageSquare },
       { name: 'AI Assistant', href: '/admin/ai', icon: Bot },
       { name: 'Remote Watch', href: '/admin/watch', icon: Eye },
     ]
