@@ -306,14 +306,14 @@ export default function ClientMetaAnalytics({
                       <XAxis dataKey="age" tick={{fontSize: 12}} axisLine={false} tickLine={false} />
                       <YAxis tick={{fontSize: 12}} axisLine={false} tickLine={false} hide />
                       <Tooltip contentStyle={{borderRadius: '12px'}} />
-                      <Bar dataKey="male" fill="#3B82F6" stackId="a" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="female" fill="#EC4899" stackId="a" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="male" fill="#E31E24" stackId="a" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="female" fill="#000000" stackId="a" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
                 <div className="flex justify-center gap-6 mt-4">
-                   <div className="flex items-center text-xs font-bold text-gray-500"><div className="w-3 h-3 bg-[#3B82F6] rounded-full mr-2"></div> Male</div>
-                   <div className="flex items-center text-xs font-bold text-gray-500"><div className="w-3 h-3 bg-[#EC4899] rounded-full mr-2"></div> Female</div>
+                   <div className="flex items-center text-xs font-bold text-gray-500"><div className="w-3 h-3 bg-brand-red rounded-full mr-2"></div> Male</div>
+                   <div className="flex items-center text-xs font-bold text-gray-500"><div className="w-3 h-3 bg-brand-black rounded-full mr-2"></div> Female</div>
                 </div>
              </div>
 
@@ -327,10 +327,10 @@ export default function ClientMetaAnalytics({
                      <div key={i} className="space-y-1.5">
                         <div className="flex justify-between text-xs font-bold">
                            <span className="text-gray-700">{loc.name}</span>
-                           <span className="text-blue-600">${parseFloat(String(loc.spend)).toLocaleString()}</span>
+                           <span className="text-brand-red font-black">${parseFloat(String(loc.spend)).toLocaleString()}</span>
                         </div>
                         <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                           <div className="bg-blue-500 h-full rounded-full" style={{width: `${loc.percentage}%`}}></div>
+                           <div className="bg-brand-red h-full rounded-full" style={{width: `${loc.percentage}%`}}></div>
                         </div>
                      </div>
                    ))}
@@ -390,12 +390,12 @@ export default function ClientMetaAnalytics({
 function MetricCard({ title, value, icon, highlight, change }: any) {
   const isPositive = change >= 0
   return (
-    <div className={`p-6 rounded-2xl border transition-all hover:shadow-md ${highlight ? 'bg-gradient-to-br from-[#F8FAFF] to-[#F1F5FF] border-blue-100' : 'bg-white border-gray-100 shadow-sm'}`}>
+    <div className={`p-6 rounded-2xl border transition-all hover:shadow-md ${highlight ? 'bg-gradient-to-br from-red-50 to-white border-red-100' : 'bg-white border-gray-100 shadow-sm'}`}>
        <div className="flex justify-between items-start mb-4">
-         <p className={`font-bold text-[10px] uppercase tracking-widest ${highlight ? 'text-blue-600' : 'text-gray-400'}`}>{title}</p>
+         <p className={`font-bold text-[10px] uppercase tracking-widest ${highlight ? 'text-brand-red' : 'text-gray-400'}`}>{title}</p>
          {icon && <div className={`p-2 rounded-xl bg-white shadow-sm border border-gray-50`}>{icon}</div>}
        </div>
-       <h4 className={`text-3xl font-black tracking-tight mb-2 ${highlight ? 'text-[#1A56DB]' : 'text-gray-900'}`}>{value}</h4>
+       <h4 className={`text-3xl font-black tracking-tight mb-2 ${highlight ? 'text-brand-black' : 'text-gray-900'}`}>{value}</h4>
        {change !== undefined && (
           <div className={`flex items-center text-xs font-bold ${isPositive ? 'text-green-600' : 'text-red-500'}`}>
              {isPositive ? '↑' : '↓'} {Math.abs(change).toFixed(1)}%

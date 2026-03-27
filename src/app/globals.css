@@ -2,12 +2,18 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #111827; /* Tailwind gray-900 */
+  --foreground: #09090b; /* Zinc 950 for better black */
+  --brand-red: #E31E24;
+  --brand-black: #000000;
+  --brand-red-muted: #fef2f2; /* red-50 */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-red: var(--brand-red);
+  --color-brand-black: var(--brand-black);
+  --color-brand-red-muted: var(--brand-red-muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

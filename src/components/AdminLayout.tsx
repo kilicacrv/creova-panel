@@ -128,16 +128,13 @@ export default function AdminLayout({
       `}>
         {/* Logo area */}
         <div className="h-16 flex items-center px-6 border-b border-gray-200 shrink-0">
-          <div className="w-8 h-8 rounded bg-[#2563EB] flex items-center justify-center mr-3 shrink-0">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <polyline points="2,14 7,8 11,12 16,6 22,4"/>
-            </svg>
-          </div>
-          <span className="text-xl font-bold text-gray-900 tracking-tight">Creova</span>
+          <Link href="/admin" className="block">
+            <img src="/brand/logo.png" alt="Creova Media" className="h-9 w-auto object-contain" />
+          </Link>
         </div>
 
         {/* Navigation Grouped */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6 text-brand-black">
           {navGroups.map((group) => {
             if (!group.allowedRoles.includes(safeRole)) return null
 
@@ -158,12 +155,12 @@ export default function AdminLayout({
                       className={`
                         flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                         ${reallyActive 
-                          ? 'bg-[#2563EB]/10 text-[#2563EB]' 
+                          ? 'bg-brand-red-muted text-brand-red' 
                           : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
                       `}
                       onClick={() => setSidebarOpen(false)}
                     >
-                      <item.icon className={`w-5 h-5 mr-3 shrink-0 ${reallyActive ? 'text-[#2563EB]' : 'text-gray-400'}`} />
+                      <item.icon className={`w-5 h-5 mr-3 shrink-0 ${reallyActive ? 'text-brand-red' : 'text-gray-400'}`} />
                       {item.name}
                     </Link>
                   )
@@ -180,7 +177,7 @@ export default function AdminLayout({
               <div className="flex items-center gap-2 mb-0.5">
                 <span className="text-sm font-semibold text-gray-900 truncate">{userName}</span>
                 <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded ${
-                  safeRole === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-[#2563EB]'
+                  safeRole === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-red-100 text-brand-red'
                 }`}>
                   {safeRole}
                 </span>
@@ -212,12 +209,7 @@ export default function AdminLayout({
               <Menu className="w-6 h-6" />
             </button>
             <div className="font-bold text-gray-900 text-lg tracking-tight flex items-center">
-              <div className="w-6 h-6 rounded bg-[#2563EB] flex items-center justify-center mr-2">
-                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <polyline points="2,14 7,8 11,12 16,6 22,4"/>
-                </svg>
-              </div>
-              Creova
+              <img src="/brand/logo.png" alt="Creova" className="h-7 w-auto object-contain mr-2" />
             </div>
           </div>
           <div className="hidden lg:block">
@@ -233,7 +225,7 @@ export default function AdminLayout({
               >
                 <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
+                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-brand-red border-2 border-white rounded-full"></span>
                 )}
               </button>
 
@@ -242,7 +234,7 @@ export default function AdminLayout({
                 <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50">
                     <h3 className="font-semibold text-gray-900 text-sm">Notifications</h3>
-                    <span className="text-xs font-medium text-[#2563EB] bg-blue-50 px-2 py-0.5 rounded-full">{unreadCount} new</span>
+                    <span className="text-xs font-medium text-brand-red bg-red-50 px-2 py-0.5 rounded-full">{unreadCount} new</span>
                   </div>
                   <div className="max-h-80 overflow-y-auto">
                     {notifications.length === 0 ? (

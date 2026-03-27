@@ -142,7 +142,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
         </div>
         <button
           onClick={openCreate}
-          className="bg-[#1A56DB] hover:bg-[#1e4eb8] text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors shadow-sm"
+          className="bg-brand-red hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors shadow-sm"
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Client
@@ -173,7 +173,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                   <tr key={client.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-700 mr-3 shrink-0">
+                        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 mr-3 shrink-0">
                           <Building2 className="w-5 h-5" />
                         </div>
                         <div>
@@ -187,7 +187,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                         {client.contact_email && (
                           <div className="flex items-center text-gray-600">
                             <Mail className="w-3.5 h-3.5 mr-2" />
-                            <a href={`mailto:${client.contact_email}`} className="hover:text-blue-600 hover:underline">{client.contact_email}</a>
+                            <a href={`mailto:${client.contact_email}`} className="hover:text-brand-red hover:underline">{client.contact_email}</a>
                           </div>
                         )}
                         {client.contact_phone && (
@@ -229,7 +229,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                             setContractClient(client)
                             setIsContractModalOpen(true)
                           }}
-                          className="p-1.5 bg-blue-50 text-[#1A56DB] rounded-md hover:bg-blue-100 transition-colors"
+                          className="p-1.5 bg-red-50 text-brand-red rounded-md hover:bg-red-100 transition-colors"
                           title="Generate Contract"
                         >
                           <FileText className="w-3.5 h-3.5" />
@@ -243,7 +243,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                         </button>
                         <button 
                           onClick={() => handleLoginAsClient(client)}
-                          className="p-1.5 bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors"
+                          className="p-1.5 bg-gray-50 text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
                           title="Login as Client"
                         >
                           <LogIn className="w-3.5 h-3.5" />
@@ -253,7 +253,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                       <div className="flex justify-end gap-1">
                         <button 
                           onClick={() => openEdit(client)}
-                          className="p-2 border border-gray-200 rounded-lg text-gray-500 hover:text-[#1A56DB] hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                          className="p-2 border border-gray-200 rounded-lg text-gray-500 hover:text-brand-red hover:bg-red-50 hover:border-red-200 transition-colors"
                           title="Edit Client Settings"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -303,7 +303,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                   name="company_name" 
                   defaultValue={editingClient?.company_name || ''} 
                   required
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
                 />
               </div>
 
@@ -315,7 +315,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                     name="meta_ad_account_id" 
                     placeholder="act_XXXXXXXXX"
                     defaultValue={editingClient?.meta_ad_account_id || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
                   />
                 </div>
                 <div>
@@ -325,7 +325,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                     name="logo_url" 
                     placeholder="https://..."
                     defaultValue={editingClient?.logo_url || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
                   />
                 </div>
               </div>
@@ -337,7 +337,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                     type="email" 
                     name="contact_email" 
                     defaultValue={editingClient?.contact_email || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
                   />
                 </div>
                 <div>
@@ -346,7 +346,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                     type="tel" 
                     name="contact_phone" 
                     defaultValue={editingClient?.contact_phone || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
                   />
                 </div>
               </div>
@@ -357,7 +357,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                   type="text" 
                   name="address" 
                   defaultValue={editingClient?.address || ''} 
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
                 />
               </div>
 
@@ -367,7 +367,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                   name="notes" 
                   rows={3}
                   defaultValue={editingClient?.notes || ''} 
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] resize-none"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red resize-none"
                 ></textarea>
               </div>
 
@@ -376,7 +376,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                 <select 
                   name="status" 
                   defaultValue={editingClient?.status || 'active'}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] bg-white"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red bg-white"
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
@@ -395,7 +395,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="px-4 py-2 bg-[#1A56DB] hover:bg-[#1e4eb8] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                  className="px-4 py-2 bg-brand-red hover:bg-red-700 text-white rounded-lg text-sm font-medium disabled:opacity-50"
                 >
                   {isLoading ? 'Saving...' : 'Save Client'}
                 </button>
@@ -422,38 +422,38 @@ export default function ClientList({ initialClients }: { initialClients: Client[
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Contract Title *</label>
-                  <input name="title" required placeholder="Agency Master Service Agreement" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                  <input name="title" required placeholder="Agency Master Service Agreement" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Fee ($) *</label>
-                  <input name="monthly_fee" type="number" step="0.01" required placeholder="2500" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                  <input name="monthly_fee" type="number" step="0.01" required placeholder="2500" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
-                  <input name="start_date" type="date" required className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                  <input name="start_date" type="date" required className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">End Date *</label>
-                  <input name="end_date" type="date" required className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                  <input name="end_date" type="date" required className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Service Description</label>
-                <textarea name="description" rows={3} placeholder="Full-service social media management, including content creation and ad optimization..." className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                <textarea name="description" rows={3} placeholder="Full-service social media management, including content creation and ad optimization..." className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none resize-none"></textarea>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms</label>
-                <input name="payment_terms" placeholder="Net 30, Payment due on the 1st of each month" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                <input name="payment_terms" placeholder="Net 30, Payment due on the 1st of each month" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none" />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Custom Contract Clauses</label>
-                <textarea name="clauses" rows={3} placeholder="Add any special terms or termination policies here..." className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                <textarea name="clauses" rows={3} placeholder="Add any special terms or termination policies here..." className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none resize-none"></textarea>
               </div>
 
               <div className="pt-4 flex justify-end gap-3 border-t border-gray-200">
@@ -461,7 +461,7 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                 <button 
                   type="submit" 
                   disabled={isContractLoading}
-                  className="px-6 py-2 bg-[#1A56DB] text-white rounded-lg font-bold hover:bg-[#1e4eb8] transition-all disabled:opacity-50"
+                  className="px-6 py-2 bg-brand-red text-white rounded-lg font-bold hover:bg-red-700 transition-all disabled:opacity-50"
                 >
                   {isContractLoading ? 'Generating...' : 'Confirm & Send to Client'}
                 </button>

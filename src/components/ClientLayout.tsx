@@ -43,9 +43,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <div className="min-h-screen bg-[#F9FAFB] flex">
       {/* Mobile Menu Button - Fixed Top */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-4">
-        <div className="flex items-center text-[#1A56DB] font-bold text-xl">
-          <Building2 className="w-6 h-6 mr-2" />
-          Client Portal
+        <div className="flex items-center text-brand-black font-bold text-xl">
+          <img src="/brand/logo.png" alt="Creova" className="h-7 w-auto object-contain mr-2" />
         </div>
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -63,10 +62,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       `}>
         {/* Logo Area */}
         <div className="h-16 flex items-center px-6 border-b border-gray-200 shrink-0">
-          <div className="flex items-center text-[#1A56DB] font-bold text-xl">
-            <Building2 className="w-6 h-6 mr-2" />
-            Client Portal
-          </div>
+          <Link href="/client">
+            <img src="/brand/logo.png" alt="Creova" className="h-8 w-auto object-contain" />
+          </Link>
         </div>
 
         {/* Navigation Content */}
@@ -82,11 +80,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                   className={`
                     flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group
                     ${active 
-                      ? 'bg-blue-50 text-[#1A56DB]' 
+                      ? 'bg-brand-red-muted text-brand-red font-bold' 
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
                   `}
                 >
-                  <item.icon className={`w-5 h-5 mr-3 shrink-0 ${active ? 'text-[#1A56DB]' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                  <item.icon className={`w-5 h-5 mr-3 shrink-0 ${active ? 'text-brand-red' : 'text-gray-400 group-hover:text-gray-600'}`} />
                   {item.name}
                 </Link>
               )
