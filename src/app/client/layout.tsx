@@ -14,15 +14,16 @@ export default async function Layout({ children }: { children: React.ReactNode }
   // Authorize only clients
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
-    .eq('id', session.user.id)
+    .select('company_name, id, meta_ad_account_id, logo_url, role') // Added role back
+    .eq('id', session.user.id) // Reverted to original eq clause, as user is not defined
     .single()
 
   if (profile?.role !== 'client' && profile?.role !== 'admin' && profile?.role !== 'team') {
-    // Admins and team can technically view the client portal for testing, but they won't see data 
-    // unless they have a matching `user_id` in `clients` table.
+    // Admins and team can technically view the client portal for testing
     redirect('/login')
   }
+
+  const isSimulating = profile?.role === 'admin' || profile?.role === 'team'
 
   return <ClientLayout>{children}</ClientLayout>
 }

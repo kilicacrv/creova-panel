@@ -26,6 +26,8 @@ export async function createClient(formData: FormData) {
   const address = formData.get('address') as string
   const notes = formData.get('notes') as string
   const status = formData.get('status') as string
+  const metaAdAccountId = formData.get('meta_ad_account_id') as string
+  const logoUrl = formData.get('logo_url') as string
 
   // 2. Insert Data
   const { error } = await supabase.from('clients').insert({
@@ -34,7 +36,9 @@ export async function createClient(formData: FormData) {
     contact_phone: contactPhone,
     address,
     notes,
-    status
+    status,
+    meta_ad_account_id: metaAdAccountId,
+    logo_url: logoUrl
   })
 
   if (error) {
@@ -58,6 +62,8 @@ export async function updateClient(id: string, formData: FormData) {
   const address = formData.get('address') as string
   const notes = formData.get('notes') as string
   const status = formData.get('status') as string
+  const metaAdAccountId = formData.get('meta_ad_account_id') as string
+  const logoUrl = formData.get('logo_url') as string
 
   const { error } = await supabase.from('clients').update({
     company_name: companyName,
@@ -65,7 +71,9 @@ export async function updateClient(id: string, formData: FormData) {
     contact_phone: contactPhone,
     address,
     notes,
-    status
+    status,
+    meta_ad_account_id: metaAdAccountId,
+    logo_url: logoUrl
   }).eq('id', id)
 
   if (error) return { error: error.message }

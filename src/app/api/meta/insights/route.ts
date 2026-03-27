@@ -8,9 +8,28 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const clientId = searchParams.get('client_id');
   const datePreset = searchParams.get('date_preset') || 'last_30d';
+  const shareToken = searchParams.get('share_token');
 
   if (!clientId) {
     return NextResponse.json({ error: 'Missing client_id' }, { status: 400 });
+  }
+
+  // 1. Authorization Check (Bypass if valid share_token)
+  let isAuthorized = false;
+  if (shareToken) {
+    const { verifyShareToken } = await import('@/lib/share-utils');
+    isAuthorized = verifyShareToken(shareToken, clientId);
+  }
+
+  if (!isAuthorized) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    
+    // Check if user is admin or the client themselves
+    const { data: profile } = await supabase.from('profiles').select('role, client_id').eq('id', user.id).single();
+    if (profile?.role !== 'admin' && profile?.role !== 'team' && profile?.client_id !== clientId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
   }
 
   try {
@@ -76,8 +95,19 @@ export async function GET(request: Request) {
     // Check for Meta API errors
     if (summaryData.error) throw new Error(summaryData.error.message);
 
+    // 4. Fetch Previous Period for Comparisons
+    let previousSummary = {};
+    try {
+      const prevRes = await fetch(`${baseUrl}?access_token=${accessToken}&date_preset=${datePreset}&time_offset=1&fields=spend,impressions,reach,clicks,ctr,actions&level=account`);
+      const prevData = await prevRes.json();
+      previousSummary = prevData.data?.[0] || {};
+    } catch (e) {
+      console.warn('Failed to fetch previous period metrics');
+    }
+
     const compiledData = {
       summary: summaryData.data?.[0] || {},
+      previous_summary: previousSummary,
       daily: dailyData.data || [],
       campaigns: campaignsData.data || [],
       ads: adsData.data || [],
@@ -85,7 +115,7 @@ export async function GET(request: Request) {
       locations: locData.data || []
     };
 
-    // 4. Update Cache in Supabase
+    // 5. Update Cache in Supabase
     await supabase
       .from('meta_cache')
       .upsert({

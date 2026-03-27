@@ -13,8 +13,13 @@ type Client = {
   notes: string | null
   status: 'active' | 'inactive'
   created_at: string
+  meta_ad_account_id?: string | null
+  logo_url?: string | null
   contracts?: { id: string; status: string }[]
 }
+
+import { createContract } from '../proposals/contractActions'
+import { createClientAccount } from './clientAuthActions'
 
 export default function ClientList({ initialClients }: { initialClients: Client[] }) {
   const [clients, setClients] = useState(initialClients)
@@ -22,6 +27,11 @@ export default function ClientList({ initialClients }: { initialClients: Client[
   const [editingClient, setEditingClient] = useState<Client | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Contract Modal State
+  const [isContractModalOpen, setIsContractModalOpen] = useState(false)
+  const [contractClient, setContractClient] = useState<Client | null>(null)
+  const [isContractLoading, setIsContractLoading] = useState(false)
 
   function openCreate() {
     setError('')
@@ -48,6 +58,52 @@ export default function ClientList({ initialClients }: { initialClients: Client[
     } catch (err: any) {
       alert('An unexpected error occurred.')
     }
+  }
+
+  async function handleCreateContract(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (!contractClient) return
+    setIsContractLoading(true)
+    
+    const formData = new FormData(e.currentTarget)
+    formData.append('client_id', contractClient.id)
+
+    try {
+      const result = await createContract(formData)
+      if (result?.error) {
+        alert(result.error)
+      } else {
+        alert('Contract generated and sent successfully!')
+        setIsContractModalOpen(false)
+        window.location.reload()
+      }
+    } catch (err) {
+      alert('Failed to generate contract.')
+    } finally {
+      setIsContractLoading(false)
+    }
+  }
+
+  async function handleSendWelcome(client: Client) {
+    if (!client.contact_email) return alert('No email found for this client.')
+    setIsLoading(true)
+    try {
+      const result = await createClientAccount(client.contact_email, client.company_name, client.id)
+      if (result.error) {
+        alert(result.error)
+      } else {
+        alert(`Account created! Temp password: ${result.tempPassword}`)
+      }
+    } catch (err) {
+      alert('Failed to trigger account creation.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  function handleLoginAsClient(client: Client) {
+    // We redirect to a special preview route or just pass preview_id
+    window.location.href = `/client?preview_id=${client.id}`
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -169,18 +225,24 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                       {/* Quick Actions */}
                       <div className="flex justify-end gap-1 mb-2">
                         <button 
+                          onClick={() => {
+                            setContractClient(client)
+                            setIsContractModalOpen(true)
+                          }}
                           className="p-1.5 bg-blue-50 text-[#1A56DB] rounded-md hover:bg-blue-100 transition-colors"
                           title="Generate Contract"
                         >
                           <FileText className="w-3.5 h-3.5" />
                         </button>
                         <button 
+                          onClick={() => handleSendWelcome(client)}
                           className="p-1.5 bg-amber-50 text-amber-600 rounded-md hover:bg-amber-100 transition-colors"
                           title="Send Welcome Email"
                         >
                           <Mail className="w-3.5 h-3.5" />
                         </button>
                         <button 
+                          onClick={() => handleLoginAsClient(client)}
                           className="p-1.5 bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors"
                           title="Login as Client"
                         >
@@ -243,6 +305,29 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                   required
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Meta Ad Account ID</label>
+                  <input 
+                    type="text" 
+                    name="meta_ad_account_id" 
+                    placeholder="act_XXXXXXXXX"
+                    defaultValue={editingClient?.meta_ad_account_id || ''} 
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
+                  <input 
+                    type="url" 
+                    name="logo_url" 
+                    placeholder="https://..."
+                    defaultValue={editingClient?.logo_url || ''} 
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -313,6 +398,72 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                   className="px-4 py-2 bg-[#1A56DB] hover:bg-[#1e4eb8] text-white rounded-lg text-sm font-medium disabled:opacity-50"
                 >
                   {isLoading ? 'Saving...' : 'Save Client'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Generate Contract Modal */}
+      {isContractModalOpen && contractClient && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Generate Contract for {contractClient.company_name}
+              </h2>
+              <button onClick={() => setIsContractModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                &times;
+              </button>
+            </div>
+            
+            <form onSubmit={handleCreateContract} className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Contract Title *</label>
+                  <input name="title" required placeholder="Agency Master Service Agreement" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Fee ($) *</label>
+                  <input name="monthly_fee" type="number" step="0.01" required placeholder="2500" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+                  <input name="start_date" type="date" required className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">End Date *</label>
+                  <input name="end_date" type="date" required className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Service Description</label>
+                <textarea name="description" rows={3} placeholder="Full-service social media management, including content creation and ad optimization..." className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms</label>
+                <input name="payment_terms" placeholder="Net 30, Payment due on the 1st of each month" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Custom Contract Clauses</label>
+                <textarea name="clauses" rows={3} placeholder="Add any special terms or termination policies here..." className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+              </div>
+
+              <div className="pt-4 flex justify-end gap-3 border-t border-gray-200">
+                <button type="button" onClick={() => setIsContractModalOpen(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors">Cancel</button>
+                <button 
+                  type="submit" 
+                  disabled={isContractLoading}
+                  className="px-6 py-2 bg-[#1A56DB] text-white rounded-lg font-bold hover:bg-[#1e4eb8] transition-all disabled:opacity-50"
+                >
+                  {isContractLoading ? 'Generating...' : 'Confirm & Send to Client'}
                 </button>
               </div>
             </form>

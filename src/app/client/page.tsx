@@ -4,18 +4,40 @@ import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
-export default async function ClientDashboard() {
+export default async function ClientDashboard({ searchParams }: { searchParams: { preview_id?: string } }) {
   const supabase = await createServerSupabaseClient()
   
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
+  // Check if admin is shadowing
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'team'
+  const targetUserId = (isAdmin && searchParams.preview_id) ? null : user.id
+  const targetClientId = (isAdmin && searchParams.preview_id) ? searchParams.preview_id : null
+
   // Fetch Client Profile Data
-  const { data: clientData } = await supabase
-    .from('clients')
-    .select('company_name, id, meta_ad_account_id, logo_url')
-    .eq('user_id', user.id)
-    .single()
+  let clientQuery = supabase.from('clients').select('company_name, id, meta_ad_account_id, logo_url')
+  
+  if (targetClientId) {
+    clientQuery = clientQuery.eq('id', targetClientId)
+  } else {
+    clientQuery = clientQuery.eq('user_id', targetUserId)
+  }
+
+  const { data: clientData } = await clientQuery.single()
+  
+  if (!clientData) {
+    return (
+      <div className="p-12 text-center text-gray-500 bg-white rounded-2xl border border-gray-100 shadow-sm mx-auto max-w-2xl mt-12">
+        <Building2 className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Client Profile Missing</h2>
+        <p>This user account is not linked to any client record.</p>
+      </div>
+    )
+  }
+
+  const clientId = clientData.id
 
   // Contracts
   const { data: pendingContracts } = await supabase
@@ -63,17 +85,70 @@ export default async function ClientDashboard() {
     }
   }
 
-  // Activity Feed Assembly (Mocked merge of latest records)
-  const activities = []
-  if (activeContracts?.[0]) activities.push({ id: 'c', title: 'Contract Signed', time: activeContracts[0].start_date, icon: FileText, color: 'text-green-600', bg: 'bg-green-100' })
-  if (pendingContracts?.[0]) activities.push({ id: 'pc', title: 'New Proposal requiring signature', time: 'Just now', icon: PenTool, color: 'text-amber-600', bg: 'bg-amber-100' })
-  // Fallback defaults
-  if (activities.length === 0) {
-    activities.push({ id: '1', title: 'Welcome to your Client Portal', time: 'Recent', icon: Building2, color: 'text-blue-600', bg: 'bg-blue-100' })
+  // Notifications
+  const { count: unreadMessages } = await supabase
+    .from('chat_messages')
+    .select('*', { count: 'exact', head: true })
+    .eq('receiver_id', user.id)
+    .eq('is_read', false)
+
+  const { data: latestInvoices } = await supabase
+    .from('invoices')
+    .select('id, invoice_number, status, total, created_at')
+    .eq('client_id', clientId)
+    .order('created_at', { ascending: false })
+    .limit(3)
+
+  const { data: latestProjects } = await supabase
+    .from('projects')
+    .select('id, name, status, created_at')
+    .eq('client_id', clientId)
+    .order('created_at', { ascending: false })
+    .limit(3)
+
+  // Activity Feed Assembly
+  const activities: any[] = []
+  
+  if (activeContracts?.[0]) {
+    activities.push({ 
+      id: 'c1', 
+      title: `Contract Active: ${activeContracts[0].title}`, 
+      time: activeContracts[0].start_date, 
+      icon: FileText, 
+      color: 'text-green-600', 
+      bg: 'bg-green-100' 
+    })
   }
+
+  latestInvoices?.forEach(inv => {
+    activities.push({
+      id: inv.id,
+      title: `Invoice ${inv.invoice_number} ${inv.status}`,
+      time: inv.created_at,
+      icon: Receipt,
+      color: inv.status === 'paid' ? 'text-emerald-600' : 'text-amber-600',
+      bg: inv.status === 'paid' ? 'bg-emerald-50' : 'bg-amber-50'
+    })
+  })
+
+  latestProjects?.forEach(proj => {
+    activities.push({
+      id: proj.id,
+      title: `Project Started: ${proj.name}`,
+      time: proj.created_at,
+      icon: FolderOpen,
+      color: 'text-blue-600',
+      bg: 'bg-blue-50'
+    })
+  })
+
+  // Sort by time
+  activities.sort((a,b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+  const finalActivities = activities.slice(0, 5)
 
   const hasPendingContract = pendingContracts && pendingContracts.length > 0
   const activeContract = activeContracts?.[0]
+  const notificationCount = (unreadMessages || 0) + (hasPendingContract ? 1 : 0)
 
   return (
     <div className="p-6 lg:p-8 w-full max-w-7xl mx-auto space-y-8">
@@ -82,30 +157,34 @@ export default async function ClientDashboard() {
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between shadow-sm animate-in slide-in-from-top-4">
           <div className="flex items-center text-amber-800 mb-3 sm:mb-0">
              <div className="p-2 bg-amber-100 rounded-full mr-3 shrink-0">
-               <FileText className="w-5 h-5 text-amber-600" />
+                <FileText className="w-5 h-5 text-amber-600" />
              </div>
              <div>
-               <p className="font-bold">Action Required: Pending Contract Signature</p>
-               <p className="text-sm opacity-90">Please review and digitally sign the new agreement generated for your agency.</p>
+               <p className="font-bold">Contract Signature Required</p>
+               <p className="text-sm opacity-90">Please review and sign your latest service agreement to proceed.</p>
              </div>
           </div>
           <Link href="/client/contracts" className="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md transition-colors w-full sm:w-auto text-center shrink-0">
-            Review Document
+            Review & Sign
           </Link>
         </div>
       )}
 
       {/* Welcome Banner */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-gray-200 pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-gray-200 pb-6">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Welcome back, {clientData?.company_name || 'Client'}!</h1>
-          <p className="text-gray-500 mt-2">Here is the latest overview of your agency performance and billing.</p>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Howdy, {clientData?.company_name || 'Client'}!</h1>
+          <p className="text-gray-500 mt-1">Here is the latest snapshot of your agency growth.</p>
         </div>
         <div className="flex items-center space-x-3">
-           <button className="p-2.5 bg-white border border-gray-200 rounded-full text-gray-500 hover:bg-gray-50 relative group">
+           <Link href="/admin/messages" className="p-2.5 bg-white border border-gray-200 rounded-full text-gray-500 hover:bg-gray-50 relative">
              <Bell className="w-5 h-5" />
-             {hasPendingContract && <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>}
-           </button>
+             {notificationCount > 0 && (
+               <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">
+                 {notificationCount}
+               </span>
+             )}
+           </Link>
            {clientData?.logo_url && (
              <img src={clientData.logo_url} alt="Logo" className="w-12 h-12 rounded-full border border-gray-200 object-cover shadow-sm bg-white" />
            )}
@@ -221,7 +300,7 @@ export default async function ClientDashboard() {
                <Clock className="w-5 h-5 mr-2 text-gray-400" /> Recent Activity
              </h3>
              <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
-               {activities.map((item, idx) => {
+               {finalActivities.map((item, idx) => {
                  const Icon = item.icon as any
                  return (
                    <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">

@@ -3,13 +3,22 @@ import { Receipt, Download, AlertCircle, CheckCircle2, Clock, XCircle } from 'lu
 
 export const dynamic = 'force-dynamic'
 
-export default async function ClientInvoicesPage() {
+export default async function ClientInvoicesPage({ searchParams }: { searchParams: { preview_id?: string } }) {
   const supabase = await createServerSupabaseClient()
-  
-  const { data: invoices } = await supabase
-    .from('invoices')
-    .select('*, projects(title)')
-    .order('created_at', { ascending: false })
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  // Shadowing check
+  const { data: profile } = await supabase.from('profiles').select('role, client_id').eq('id', user.id).single()
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'team'
+  const activeClientId = (isAdmin && searchParams.preview_id) ? searchParams.preview_id : profile?.client_id
+
+  let query = supabase.from('invoices').select('*, projects(title)').order('created_at', { ascending: false })
+  if (activeClientId) {
+    query = query.eq('client_id', activeClientId)
+  }
+
+  const { data: invoices } = await query
 
   const statusColors: Record<string, string> = {
     paid: 'bg-green-50 text-green-700 border-green-100',

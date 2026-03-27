@@ -3,17 +3,22 @@ import ContractSigning from './ContractSigning'
 
 export const dynamic = 'force-dynamic'
 
-export default async function ClientContractsPage() {
+export default async function ClientContractsPage({ searchParams }: { searchParams: { preview_id?: string } }) {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
-  
   if (!user) return null
 
-  // Thanks to Supabase RLS, this naturally only fetches contracts belonging to this client.
-  const { data: contracts } = await supabase
-    .from('contracts')
-    .select('*')
-    .order('created_at', { ascending: false })
+  // Shadowing check
+  const { data: profile } = await supabase.from('profiles').select('role, client_id').eq('id', user.id).single()
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'team'
+  const activeClientId = (isAdmin && searchParams.preview_id) ? searchParams.preview_id : profile?.client_id
+
+  let query = supabase.from('contracts').select('*').order('created_at', { ascending: false })
+  if (activeClientId) {
+    query = query.eq('client_id', activeClientId)
+  }
+
+  const { data: contracts } = await query
 
   return (
     <div className="p-6 lg:p-8 w-full max-w-5xl mx-auto">
