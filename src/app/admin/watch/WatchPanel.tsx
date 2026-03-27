@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Activity, Clock, Monitor, User } from 'lucide-react'
+import { Activity, Clock, Monitor, User, MessageSquare } from 'lucide-react'
+import Link from 'next/link'
 
 type Profile = {
   id: string
@@ -89,11 +90,20 @@ export default function WatchPanel({ initialProfiles }: { initialProfiles: Profi
                   </span>
                 </div>
               </div>
-              {p.is_online ? (
-                <span className="w-3 h-3 bg-green-500 rounded-full ring-4 ring-green-100" title="Online" />
-              ) : (
-                <span className="w-3 h-3 bg-gray-300 rounded-full" title="Offline" />
-              )}
+              <div className="flex items-center gap-3">
+                <Link 
+                  href="/admin/messages" 
+                  className="p-1.5 text-[#1A56DB] bg-blue-50 border border-blue-100 hover:bg-blue-100 rounded-lg transition-colors"
+                  title="Send Direct Message"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                </Link>
+                {p.is_online ? (
+                  <span className="w-3 h-3 bg-green-500 rounded-full ring-4 ring-green-100" title="Online" />
+                ) : (
+                  <span className="w-3 h-3 bg-gray-300 rounded-full" title="Offline" />
+                )}
+              </div>
             </div>
 
             {p.is_online ? (
