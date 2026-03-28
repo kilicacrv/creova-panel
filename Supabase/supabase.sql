@@ -8,8 +8,10 @@
 -- ============================================
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT, -- Added for client identifying
   full_name TEXT,
   role TEXT NOT NULL DEFAULT 'client' CHECK (role IN ('admin', 'team', 'client')),
+  client_id UUID, -- Added for client-specific portal access
   avatar_url TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -23,7 +25,7 @@ CREATE TABLE IF NOT EXISTS public.clients (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   company_name TEXT NOT NULL,
-  contact_email TEXT,
+  contact_email TEXT, -- Ensure this is here
   contact_phone TEXT,
   address TEXT,
   notes TEXT,
@@ -65,7 +67,7 @@ CREATE TABLE IF NOT EXISTS public.tasks (
 );
 
 -- ============================================
--- 3. INVOICES & PROPOSALS
+-- 3. INVOICES, PROPOSALS & CONTRACTS
 -- ============================================
 CREATE TABLE IF NOT EXISTS public.invoices (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -90,6 +92,21 @@ CREATE TABLE IF NOT EXISTS public.proposals (
   title TEXT NOT NULL,
   file_url TEXT,
   status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'sent', 'signed', 'rejected')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.contracts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id UUID NOT NULL REFERENCES public.clients(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT,
+  monthly_fee NUMERIC(12, 2) DEFAULT 0,
+  start_date DATE,
+  end_date DATE,
+  payment_terms TEXT,
+  clauses TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'expired', 'cancelled')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -187,13 +204,14 @@ ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.invoices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.proposals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contracts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.content_calendar ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ad_campaigns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.time_tracking ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.media_production ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
--- 7. RLS POLICIES
+-- 8. RLS POLICIES
 -- ============================================
 
 -- PROFILES --
@@ -203,9 +221,14 @@ CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING
 CREATE POLICY "Team can view profiles" ON public.profiles FOR SELECT USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'team')));
 
 -- CLIENTS --
-CREATE POLICY "Admins can do everything on clients" ON public.clients FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "Admin can view all clients" ON public.clients FOR SELECT USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "Admins can manage clients" ON public.clients FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
 CREATE POLICY "Team can view clients" ON public.clients FOR SELECT USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'team'));
 CREATE POLICY "Clients can view own data" ON public.clients FOR SELECT USING (user_id = auth.uid());
+
+-- CONTRACTS --
+CREATE POLICY "Admins can manage contracts" ON public.contracts FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "Clients can view own contracts" ON public.contracts FOR SELECT USING (client_id IN (SELECT id FROM public.clients WHERE user_id = auth.uid()));
 
 -- PROJECTS --
 CREATE POLICY "Admins can do everything on projects" ON public.projects FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
@@ -245,13 +268,14 @@ CREATE POLICY "Team can manage media_production" ON public.media_production FOR 
 CREATE POLICY "Clients can view own media_production" ON public.media_production FOR SELECT USING (client_id IN (SELECT id FROM public.clients WHERE user_id = auth.uid()));
 
 -- ============================================
--- 8. TRIGGERS & INDEXES
+-- 9. TRIGGERS & INDEXES
 -- ============================================
 CREATE OR REPLACE FUNCTION public.handle_new_user() RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, role)
+  INSERT INTO public.profiles (id, email, full_name, role)
   VALUES (
     NEW.id,
+    NEW.email,
     COALESCE(NEW.raw_user_meta_data ->> 'full_name', NEW.email),
     COALESCE(NEW.raw_user_meta_data ->> 'role', 'client')
   );
@@ -283,3 +307,6 @@ BEGIN
     END LOOP;
 END;
 $$;
+
+-- Refresh PostgREST cache
+NOTIFY pgrst, 'reload schema';
