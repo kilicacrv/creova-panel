@@ -34,12 +34,16 @@ export async function GET(request: Request) {
 
   try {
     // 1. Check Cache
-    const { data: cacheData } = await supabase
+    const { data: cacheData, error: cacheError } = await supabase
       .from('meta_cache')
       .select('*')
       .eq('client_id', clientId)
       .eq('date_preset', datePreset)
       .single();
+      
+    if (cacheError && cacheError.code !== 'PGRST116') {
+      console.warn('Meta cache fetch error:', cacheError);
+    }
 
     if (cacheData) {
       // TTL is 1 hour
