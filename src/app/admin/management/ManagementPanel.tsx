@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Settings, Shield, User, Building2, Plus, FileText, CheckSquare, AlertCircle } from 'lucide-react'
+import { Settings, Shield, User, Building2, Plus, FileText, CheckSquare, AlertCircle, ArrowRight, Zap, Target, Lock } from 'lucide-react'
 import { updateUserRole } from './actions'
 import Link from 'next/link'
 
@@ -31,119 +31,150 @@ export default function ManagementPanel({ profiles }: { profiles: Profile[] }) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-center">
-          <AlertCircle className="w-5 h-5 mr-3 shrink-0" />
-          {error}
+        <div className="bg-red-50 text-brand-red p-6 rounded-[2rem] flex items-center border border-red-100 animate-in shake-200">
+          <AlertCircle className="w-6 h-6 mr-4 shrink-0" />
+          <div className="flex flex-col">
+             <span className="text-[10px] font-black uppercase tracking-widest">System Override Error</span>
+             <span className="text-sm font-medium">{error}</span>
+          </div>
         </div>
       )}
 
-      {/* Quick Actions */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <Settings className="w-5 h-5 mr-2 text-gray-400" />
-          Quick Actions
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link href="/admin/clients" className="flex items-center p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors group">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4 group-hover:scale-110 transition-transform">
-              <Building2 className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="font-semibold text-gray-900 text-sm">Manage Clients</div>
-              <div className="text-xs text-gray-500">Add or edit clients</div>
-            </div>
-          </Link>
-          <Link href="/admin/invoices" className="flex items-center p-4 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-colors group">
-            <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mr-4 group-hover:scale-110 transition-transform">
-              <FileText className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="font-semibold text-gray-900 text-sm">Send Invoice</div>
-              <div className="text-xs text-gray-500">Bill your clients</div>
-            </div>
-          </Link>
-          <Link href="/admin/tasks" className="flex items-center p-4 rounded-lg border border-gray-200 hover:border-green-300 hover:bg-green-50 transition-colors group">
-            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-4 group-hover:scale-110 transition-transform">
-              <CheckSquare className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="font-semibold text-gray-900 text-sm">Create Task</div>
-              <div className="text-xs text-gray-500">Assign work to team</div>
-            </div>
-          </Link>
+      {/* Quick Actions GRID */}
+      <div className="bg-white border border-gray-100 rounded-[2.5rem] p-10 lg:p-14 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-40"></div>
+        <div className="relative z-10">
+          <h2 className="text-3xl font-black text-gray-900 mb-10 tracking-tighter uppercase italic flex items-center">
+            <Settings className="w-8 h-8 mr-4 text-brand-red" />
+            Core Directives
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Link href="/admin/clients" className="flex items-center p-8 rounded-[2rem] border border-gray-50 bg-gray-50/30 hover:border-black hover:bg-white transition-all group shadow-sm hover:shadow-2xl hover:shadow-black/5 hover:-translate-y-1">
+              <div className="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 mr-6 group-hover:bg-black group-hover:text-white group-hover:rotate-6 transition-all shadow-sm">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="font-black text-gray-900 text-xs uppercase tracking-tight mb-1">Hub Management</div>
+                <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Registry / Modify Clients</div>
+              </div>
+              <ArrowRight className="w-4 h-4 ml-auto text-gray-200 group-hover:text-brand-red transition-colors" />
+            </Link>
+            
+            <Link href="/admin/invoices" className="flex items-center p-8 rounded-[2rem] border border-gray-50 bg-gray-50/30 hover:border-black hover:bg-white transition-all group shadow-sm hover:shadow-2xl hover:shadow-black/5 hover:-translate-y-1">
+              <div className="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 mr-6 group-hover:bg-black group-hover:text-white group-hover:rotate-6 transition-all shadow-sm">
+                <FileText className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="font-black text-gray-900 text-xs uppercase tracking-tight mb-1">Financial Uplink</div>
+                <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Initialize Billing Cycle</div>
+              </div>
+              <ArrowRight className="w-4 h-4 ml-auto text-gray-200 group-hover:text-brand-red transition-colors" />
+            </Link>
+
+            <Link href="/admin/tasks" className="flex items-center p-8 rounded-[2rem] border border-gray-50 bg-gray-50/30 hover:border-black hover:bg-white transition-all group shadow-sm hover:shadow-2xl hover:shadow-black/5 hover:-translate-y-1">
+              <div className="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 mr-6 group-hover:bg-black group-hover:text-white group-hover:rotate-6 transition-all shadow-sm">
+                <CheckSquare className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="font-black text-gray-900 text-xs uppercase tracking-tight mb-1">Mission Control</div>
+                <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Deploy Operator Tasks</div>
+              </div>
+              <ArrowRight className="w-4 h-4 ml-auto text-gray-200 group-hover:text-brand-red transition-colors" />
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* Role Management */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-            <Shield className="w-5 h-5 mr-2 text-gray-400" />
-            User Roles & Permissions
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">Easily assign system access levels to signed-up users.</p>
+      {/* Role Management TABLE */}
+      <div className="bg-white border border-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
+        <div className="p-10 lg:p-14 border-b border-gray-50 bg-gray-50/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h2 className="text-2xl font-black text-gray-900 flex items-center uppercase tracking-tighter italic">
+              <Shield className="w-7 h-7 mr-4 text-brand-red" />
+              Access Protocol Matrix
+            </h2>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1 ml-11">Personnel Clearance & Identity Registry</p>
+          </div>
+          <div className="flex items-center gap-3 px-6 py-3 bg-white rounded-xl border border-gray-100 shadow-sm">
+             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+             <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic">Biometric Auth Active</span>
+          </div>
         </div>
+        
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-medium">
-              <tr>
-                <th className="px-6 py-4">User</th>
-                <th className="px-6 py-4">Current Role</th>
-                <th className="px-6 py-4">Joined</th>
-                <th className="px-6 py-4 text-right">Assign New Role</th>
+            <thead>
+              <tr className="bg-white border-b border-gray-50">
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">ID Profile / Node</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Current Clearance</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Genesis Joined</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Modify Clearance</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-50">
               {profiles.map((profile) => (
-                <tr key={profile.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
+                <tr key={profile.id} className="hover:bg-red-50/20 transition-all group">
+                  <td className="px-10 py-8">
                     <div className="flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 mr-3">
-                        <User className="w-4 h-4" />
+                      <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300 mr-5 group-hover:bg-black group-hover:text-white group-hover:rotate-3 transition-all border border-gray-100 group-hover:border-transparent">
+                        <User className="w-5 h-5" />
                       </div>
-                      <div className="font-medium text-gray-900">
-                        {profile.full_name || 'Anonymous User'}
+                      <div>
+                        <div className="font-black text-gray-900 text-sm uppercase tracking-tight group-hover:text-brand-red transition-colors">
+                          {profile.full_name || 'ANONYMOUS_RECRUIT'}
+                        </div>
+                        <div className="text-[8px] font-black text-gray-300 uppercase tracking-widest mt-1">NODE_UID: {profile.id.substring(0, 8)}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${
-                      profile.role === 'admin' ? 'bg-purple-100 text-purple-700' : 
-                      profile.role === 'team' ? 'bg-blue-100 text-blue-700' : 
-                      profile.role === 'client' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'
+                  <td className="px-10 py-8">
+                    <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${
+                      profile.role === 'admin' ? 'bg-black text-white border-black shadow-lg shadow-black/10' : 
+                      profile.role === 'team' ? 'bg-red-50 text-brand-red border-red-100' : 
+                      profile.role === 'client' ? 'bg-gray-50 text-gray-900 border-gray-200' : 'bg-gray-50 text-gray-300 border-gray-100 italic'
                     }`}>
-                      {profile.role || 'none'}
+                      {profile.role || 'no_clearance'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-500">
-                    {new Date(profile.created_at).toLocaleDateString()}
+                  <td className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    {new Date(profile.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <select
-                      disabled={loadingId === profile.id}
-                      value={profile.role || 'none'}
-                      onChange={(e) => handleRoleChange(profile.id, e.target.value)}
-                      className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-[#1A56DB] focus:outline-none bg-white cursor-pointer disabled:opacity-50"
-                    >
-                      <option value="none">None</option>
-                      <option value="client">Client</option>
-                      <option value="team">Team (Editor)</option>
-                      <option value="admin">Admin</option>
-                    </select>
+                  <td className="px-10 py-8 text-right">
+                    <div className="relative inline-block group/select">
+                      <select
+                        disabled={loadingId === profile.id}
+                        value={profile.role || 'none'}
+                        onChange={(e) => handleRoleChange(profile.id, e.target.value)}
+                        className="text-[9px] font-black uppercase tracking-widest border border-gray-100 rounded-xl px-5 py-3 focus:outline-none focus:ring-8 focus:ring-red-50 focus:border-red-100 bg-white cursor-pointer disabled:opacity-30 transition-all appearance-none pr-10 hover:border-black"
+                      >
+                        <option value="none">NULL / NONE</option>
+                        <option value="client">CLIENT HUB</option>
+                        <option value="team">OPERATOR (TEAM)</option>
+                        <option value="admin">COMMAND (ADMIN)</option>
+                      </select>
+                      <Lock className="w-3 h-3 absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none group-hover/select:text-black transition-colors" />
+                    </div>
                   </td>
                 </tr>
               ))}
               {profiles.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                    No users found.
+                  <td colSpan={4} className="px-10 py-24 text-center">
+                    <div className="flex flex-col items-center opacity-20">
+                       <Target className="w-16 h-16 text-gray-300 mb-6" />
+                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.25em] italic">Zero personnel nodes detected in registry.</p>
+                    </div>
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+        </div>
+        
+        <div className="p-8 bg-gray-50/50 border-t border-gray-50 text-center">
+           <p className="text-[8px] font-black text-gray-300 uppercase tracking-[0.4em]">End of registry matrix - access logged at system time</p>
         </div>
       </div>
     </div>

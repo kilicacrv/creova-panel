@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit2, ShieldAlert, UserPlus, UsersRound, AlertCircle, ShieldCheck, User } from 'lucide-react'
+import { Edit2, ShieldAlert, UserPlus, UsersRound, AlertCircle, ShieldCheck, User, ArrowRight } from 'lucide-react'
 import { updateProfile } from './actions'
 
 type Profile = {
@@ -49,76 +49,79 @@ export default function TeamList({ initialTeam }: { initialTeam: Profile[] }) {
   }
 
   const roleColors = {
-    admin: 'bg-purple-100 text-purple-700 border-purple-200',
-    team: 'bg-blue-100 text-blue-700 border-blue-200',
+    admin: 'bg-black text-white border-black',
+    team: 'bg-red-50 text-brand-red border-red-100',
     client: 'bg-gray-100 text-gray-700 border-gray-200'
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Team Management</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage agency staff, administrators, and their roles.</p>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
+        <div className="relative z-10">
+          <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">Team Roster</h1>
+          <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mt-2">Staff Access & Privilege Matrix</p>
         </div>
         <button
           onClick={() => setIsInviteModalOpen(true)}
-          className="bg-[#1A56DB] hover:bg-[#1e4eb8] text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors shadow-sm"
+          className="bg-black hover:bg-brand-red text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-gray-200 hover:shadow-red-100 active:scale-95 flex items-center relative z-10"
         >
           <UserPlus className="w-4 h-4 mr-2" />
-          Add Member
+          Provision Access
         </button>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-medium">
-              <tr>
-                <th className="px-6 py-4">Team Member</th>
-                <th className="px-6 py-4">Role / Access Level</th>
-                <th className="px-6 py-4">Joined At</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50/50 border-b border-gray-100">
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Personnel</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Credential Tier</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Enrolled</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-50">
               {team.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                    No team members found.
+                  <td colSpan={4} className="px-8 py-20 text-center">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-gray-300">No personnel nodes found in current registry.</div>
                   </td>
                 </tr>
               ) : (
                 team.map((member) => (
-                  <tr key={member.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
+                  <tr key={member.id} className="hover:bg-red-50/30 transition-all group">
+                    <td className="px-8 py-6">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 mr-3 shrink-0">
-                          <UsersRound className="w-5 h-5" />
+                        <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 mr-4 group-hover:bg-brand-red group-hover:text-white transition-all shadow-sm group-hover:shadow-red-100">
+                          <UsersRound className="w-6 h-6" />
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">{member.full_name || 'Unknown User'}</p>
-                          <p className="text-xs text-gray-500 mt-0.5 font-mono">{member.id.substring(0, 8)}...</p>
+                          <p className="font-black text-gray-900 uppercase tracking-tight group-hover:text-brand-red transition-colors">{member.full_name || 'Anonymous Entity'}</p>
+                          <p className="text-[10px] text-gray-400 font-mono mt-1 opacity-60">ID: {member.id.substring(0, 12)}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-8 py-6">
                       <div className="flex items-center">
-                        {member.role === 'admin' && <ShieldCheck className="w-4 h-4 mr-2 text-purple-600" />}
-                        {member.role === 'team' && <User className="w-4 h-4 mr-2 text-blue-600" />}
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wider border ${roleColors[member.role]}`}>
+                        {member.role === 'admin' && <ShieldCheck className="w-4 h-4 mr-2.5 text-black" />}
+                        {member.role === 'team' && <User className="w-4 h-4 mr-2.5 text-brand-red" />}
+                        <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${roleColors[member.role]}`}>
                           {member.role}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-500">
-                      {new Date(member.created_at).toLocaleDateString()}
+                    <td className="px-8 py-6">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                        {new Date(member.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-8 py-6 text-right">
                       <button 
                         onClick={() => openEdit(member)}
-                        className="p-2 border border-gray-200 rounded-lg text-gray-600 hover:text-[#1A56DB] hover:bg-blue-50 hover:border-blue-200 transition-colors"
-                        title="Edit Roles"
+                        className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-brand-red hover:border-red-100 hover:shadow-lg hover:shadow-red-50 transition-all opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0"
+                        title="Edit Permissions"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -131,70 +134,77 @@ export default function TeamList({ initialTeam }: { initialTeam: Profile[] }) {
         </div>
       </div>
 
-      {/* Edit Role Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Edit Team Member
-              </h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-in fade-in transition-all">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col scale-in-center">
+            <div className="p-10 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+              <div>
+                <h2 className="text-2xl font-black text-gray-900 uppercase italic">Privilege Shift</h2>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">Personnel Credential Management</p>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(false)} 
+                className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-black hover:shadow-md transition-all font-bold"
+              >
                 &times;
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-10 space-y-8">
               {error && (
-                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-center">
-                  <AlertCircle className="w-4 h-4 mr-2" />
+                <div className="bg-red-50 text-brand-red p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center border border-red-100 animate-in shake-200">
+                  <AlertCircle className="w-4 h-4 mr-3" />
                   {error}
                 </div>
               )}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <div className="space-y-2">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Identity Vector</label>
                 <input 
                   type="text" 
                   name="full_name" 
                   defaultValue={editingMember?.full_name || ''} 
                   required
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                  className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-bold text-sm"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Account Role</label>
+              <div className="space-y-4">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Credential Tier</label>
                 <select 
                   name="role" 
                   defaultValue={editingMember?.role || 'team'}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] bg-white"
+                  className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-black text-sm uppercase tracking-widest cursor-pointer"
                 >
-                  <option value="admin">Administrator (Full Access)</option>
-                  <option value="team">Team Member (Limited CRM)</option>
-                  <option value="client">Client (Portal Only)</option>
+                  <option value="admin">Executive (Absolute Control)</option>
+                  <option value="team">Team (Standard CRM Matrix)</option>
+                  <option value="client">Client (Portal Isolation)</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-2 flex items-start">
-                  <ShieldAlert className="w-3.5 h-3.5 mr-1 shrink-0 text-amber-500" />
-                  Warning: Changing a role to 'client' will immediately revoke their access to this admin panel.
-                </p>
+                <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex items-start">
+                  <ShieldAlert className="w-4 h-4 mr-3 shrink-0 text-amber-600 mt-0.5" />
+                  <p className="text-[10px] text-amber-800 font-bold uppercase tracking-widest leading-relaxed">
+                    Critical: Switching to 'Client' tier immediately severs all administrative access links.
+                  </p>
+                </div>
               </div>
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-gray-200">
+              <div className="pt-6 flex justify-end gap-4 border-t border-gray-50">
                 <button 
                   type="button" 
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50"
+                  className="px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
                   disabled={isLoading}
                 >
-                  Cancel
+                  Terminate
                 </button>
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="px-4 py-2 bg-[#1A56DB] hover:bg-[#1e4eb8] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                  className="bg-brand-red hover:bg-black text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-red-100 flex items-center active:scale-95 disabled:opacity-50"
                 >
-                  {isLoading ? 'Saving...' : 'Update Member'}
+                  {isLoading ? 'Processing...' : (
+                    <>Update Identity <ArrowRight className="w-4 h-4 ml-3" /></>
+                  )}
                 </button>
               </div>
             </form>
@@ -202,24 +212,24 @@ export default function TeamList({ initialTeam }: { initialTeam: Profile[] }) {
         </div>
       )}
 
-      {/* Invite Info Modal */}
       {isInviteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden text-center p-6">
-            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <UserPlus className="w-6 h-6" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/70 backdrop-blur-md animate-in fade-in transition-all">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden text-center p-10 relative">
+            <div className="absolute top-0 left-0 w-full h-2 bg-brand-red"></div>
+            <div className="w-20 h-20 bg-red-50 text-brand-red rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner ring-1 ring-red-100">
+              <UserPlus className="w-10 h-10" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">How to Add Members</h2>
-            <p className="text-sm text-gray-600 mb-6">
-              Because public public sign-ups are disabled for security, you must invite new users directly from the <b>Supabase Dashboard</b>. 
+            <h2 className="text-2xl font-black text-gray-900 mb-4 tracking-tighter uppercase italic">Provisioning Protocol</h2>
+            <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-10 leading-relaxed">
+              Public enrollment is offline for security. Invitations must be dispatched from the Super-Admin node (Supabase Dashboard).
               <br/><br/>
-              Go to <i>Authentication &rarr; Users &rarr; Invite User</i> and enter their email. Once they log in for the first time, their profile will appear here where you can assign them "Admin" or "Team" roles.
+              Auth &rarr; Invite &rarr; Email
             </p>
             <button 
               onClick={() => setIsInviteModalOpen(false)}
-              className="w-full bg-[#1A56DB] hover:bg-[#1e4eb8] text-white py-2 rounded-lg font-medium transition-colors"
+              className="w-full bg-black hover:bg-brand-red text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-xl shadow-gray-200 active:scale-95"
             >
-              I Understand
+              System Acknowledged
             </button>
           </div>
         </div>

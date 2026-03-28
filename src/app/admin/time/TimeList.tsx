@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit2, Trash2, Plus, Timer, AlertCircle, Building2, CheckSquare, CalendarDays, TrendingUp } from 'lucide-react'
+import { Edit2, Trash2, Plus, Timer, AlertCircle, Building2, CheckSquare, CalendarDays, TrendingUp, ArrowRight } from 'lucide-react'
 import { createTimeEntry, updateTimeEntry, deleteTimeEntry } from './actions'
 
 type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } | { company_name: string }[] }
@@ -76,7 +76,6 @@ export default function TimeList({
     
     const formData = new FormData(e.currentTarget)
     
-    // Explicitly handle unchecking the checkbox
     if (!formData.get('billable')) formData.append('billable', 'false')
     
     try {
@@ -101,127 +100,124 @@ export default function TimeList({
 
   const filteredTasks = tasks.filter(t => t.project_id === selectedProject)
   
-  // Calculate totals
   const totalHours = entries.reduce((sum, e) => sum + Number(e.hours), 0)
   const billableHours = entries.filter(e => e.billable).reduce((sum, e) => sum + Number(e.hours), 0)
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Time Tracking</h1>
-          <p className="text-sm text-gray-500 mt-1">Log worked hours against projects and specific tasks.</p>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">Time Ledger</h1>
+          <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mt-2">Executive Resource Tracking Engine</p>
         </div>
         <button
           onClick={openCreate}
-          className="bg-[#1A56DB] hover:bg-[#1e4eb8] text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors shadow-sm"
+          className="bg-brand-red hover:bg-black text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-red-100 flex items-center active:scale-95"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Log Time
+          Initialize Log
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-center">
-          <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mr-4">
-            <Timer className="w-6 h-6" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm flex items-center group hover:shadow-md transition-all">
+          <div className="w-16 h-16 bg-red-50 text-brand-red rounded-2xl flex items-center justify-center mr-6 ring-1 ring-red-100 shadow-inner group-hover:scale-110 transition-transform">
+            <Timer className="w-8 h-8" />
           </div>
           <div>
-            <div className="text-sm text-gray-500 font-medium">Total Hours Tracked</div>
-            <div className="text-2xl font-bold text-gray-900">{totalHours.toFixed(1)}h</div>
+            <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">Aggregate Investment</div>
+            <div className="text-4xl font-black text-gray-900 tracking-tighter">{totalHours.toFixed(1)}<span className="text-lg ml-0.5 text-gray-300 italic">h</span></div>
           </div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-center">
-          <div className="w-12 h-12 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mr-4">
-            <TrendingUp className="w-6 h-6" />
+        <div className="bg-black border border-gray-900 rounded-[2rem] p-8 shadow-xl flex items-center group hover:bg-[#0a0a0a] transition-all">
+          <div className="w-16 h-16 bg-brand-red text-white rounded-2xl flex items-center justify-center mr-6 shadow-xl shadow-red-900/20 group-hover:rotate-6 transition-transform">
+            <TrendingUp className="w-8 h-8" />
           </div>
           <div>
-            <div className="text-sm text-gray-500 font-medium">Billable Hours</div>
-            <div className="text-2xl font-bold text-gray-900">{billableHours.toFixed(1)}h</div>
+            <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">Billable Yield</div>
+            <div className="text-4xl font-black text-white tracking-tighter">{billableHours.toFixed(1)}<span className="text-lg ml-0.5 text-brand-red italic text-opacity-50">h</span></div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-medium">
-              <tr>
-                <th className="px-6 py-4">Team Member</th>
-                <th className="px-6 py-4">Project / Task</th>
-                <th className="px-6 py-4">Time Logged</th>
-                <th className="px-6 py-4">Notes</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+      <div className="bg-white border border-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-30"></div>
+        <div className="overflow-x-auto relative z-10">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50/50 border-b border-gray-100">
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Resource</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Assignment</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Yield</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Notes</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-50">
               {entries.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                    No time entries found. Click "Log Time" to add one.
+                  <td colSpan={5} className="px-8 py-20 text-center">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-gray-300">Zero nodes active in current ledger.</div>
                   </td>
                 </tr>
               ) : (
                 entries.map((entry) => (
-                  <tr key={entry.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="font-semibold text-gray-900">{entry.profiles?.full_name || 'Unknown User'}</div>
-                      <div className="text-xs text-gray-500 mt-1 flex items-center">
-                        <CalendarDays className="w-3.5 h-3.5 mr-1" />
-                        {new Date(entry.date).toLocaleDateString()}
+                  <tr key={entry.id} className="hover:bg-red-50/30 transition-all group">
+                    <td className="px-8 py-6">
+                      <div className="font-black text-gray-900 uppercase tracking-tight group-hover:text-brand-red transition-colors">{entry.profiles?.full_name || 'Unknown Identity'}</div>
+                      <div className="text-[10px] text-gray-400 font-black mt-1 flex items-center uppercase tracking-widest">
+                        <CalendarDays className="w-3.5 h-3.5 mr-1.5 opacity-50" />
+                        {new Date(entry.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-8 py-6">
                       {entry.projects ? (
                         <>
-                          <div className="font-medium text-gray-900 mb-1 flex items-center">
-                            <Building2 className="w-3.5 h-3.5 mr-1 text-gray-400" />
+                          <div className="font-bold text-gray-900 mb-1 flex items-center italic">
                             {entry.projects.title} 
-                            <span className="text-gray-400 font-normal ml-1">({(entry.projects.clients as any)?.company_name || (entry.projects.clients as any)?.[0]?.company_name || 'Unknown Client'})</span>
                           </div>
-                          {entry.tasks && (
-                            <div className="text-xs text-gray-500 flex items-center">
-                              <CheckSquare className="w-3.5 h-3.5 mr-1" />
-                              {entry.tasks.title}
-                            </div>
-                          )}
+                          <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest flex items-center">
+                             {(entry.projects.clients as any)?.company_name || (entry.projects.clients as any)?.[0]?.company_name || 'Generic Client'}
+                             {entry.tasks && <span className="mx-2 opacity-30">•</span>}
+                             {entry.tasks?.title}
+                          </div>
                         </>
                       ) : (
-                        <span className="text-gray-400 italic">No specific project</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">Global Admin Task</span>
                       )}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#1A56DB] text-lg bg-blue-50 px-2 py-0.5 rounded">
-                          {entry.hours}h
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-3">
+                        <span className="font-black text-gray-900 text-xl bg-gray-50 px-3 py-1 rounded-xl border border-gray-100 group-hover:bg-white transition-colors">
+                          {entry.hours}<span className="text-xs text-gray-400 ml-0.5">h</span>
                         </span>
                         {entry.billable ? (
-                          <span className="text-[10px] uppercase font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded border border-green-200">Billable</span>
+                          <div className="w-2 h-2 rounded-full bg-brand-red animate-pulse" title="Billable Asset"></div>
                         ) : (
-                          <span className="text-[10px] uppercase font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">Non-billable</span>
+                          <div className="w-2 h-2 rounded-full bg-gray-200" title="Non-billable Asset"></div>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <p className="text-xs text-gray-600 line-clamp-2 max-w-[250px]" title={entry.notes || ''}>
-                        {entry.notes || <span className="text-gray-400 italic">No notes</span>}
+                    <td className="px-8 py-6">
+                      <p className="text-xs text-gray-500 line-clamp-2 max-w-[300px] font-medium leading-relaxed">
+                        {entry.notes || 'No meta documentation provided.'}
                       </p>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <button 
-                        onClick={() => openEdit(entry)}
-                        className="p-2 border border-gray-200 rounded-lg text-gray-600 hover:text-[#1A56DB] hover:bg-blue-50 hover:border-blue-200 transition-colors mr-1"
-                        title="Edit Log"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(entry.id)}
-                        className="p-2 border border-gray-200 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors"
-                        title="Delete Log"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    <td className="px-8 py-6 text-right">
+                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                        <button 
+                          onClick={() => openEdit(entry)}
+                          className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-brand-red hover:border-red-100 hover:shadow-lg hover:shadow-red-50 transition-all"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(entry.id)}
+                          className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-black hover:border-gray-200 hover:shadow-lg transition-all"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -231,51 +227,56 @@ export default function TimeList({
         </div>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {editingEntry ? 'Edit Time Log' : 'Log Time'}
-              </h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-in fade-in transition-all">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col scale-in-center">
+            <div className="flex justify-between items-center p-10 border-b border-gray-50 bg-gray-50/50">
+              <div>
+                <h2 className="text-2xl font-black text-gray-900 uppercase italic">
+                  {editingEntry ? 'Calibrate Log' : 'Initialize Yield'}
+                </h2>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">Resource Allocation Matrix</p>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(false)} 
+                className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-black hover:shadow-md transition-all font-bold"
+              >
                 &times;
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-10 space-y-8 overflow-y-auto">
               {error && (
-                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-center">
-                  <AlertCircle className="w-4 h-4 mr-2" />
+                <div className="bg-red-50 text-brand-red p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center border border-red-100">
+                  <AlertCircle className="w-4 h-4 mr-3" />
                   {error}
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Project</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Asset Allocation</label>
                   <select 
                     name="project_id" 
                     value={selectedProject}
                     onChange={(e) => setSelectedProject(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] bg-white"
+                    className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-bold text-sm"
                   >
-                    <option value="">-- General / No Project --</option>
+                    <option value="">-- General Operations --</option>
                     {projects.map(p => (
-                      <option key={p.id} value={p.id}>{p.title} ({(p.clients as any)?.company_name || (p.clients as any)?.[0]?.company_name || 'Unknown Client'})</option>
+                      <option key={p.id} value={p.id}>{p.title} ({(p.clients as any)?.company_name || (p.clients as any)?.[0]?.company_name || 'Generic Client'})</option>
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Task</label>
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Directive Node</label>
                   <select 
                     name="task_id" 
                     defaultValue={editingEntry?.task_id || ''}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] bg-white disabled:opacity-50"
+                    className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-bold text-sm disabled:opacity-30"
                     disabled={!selectedProject}
                   >
-                    <option value="">-- General Project Time --</option>
+                    <option value="">-- Aggregate Project Time --</option>
                     {filteredTasks.map(t => (
                       <option key={t.id} value={t.id}>{t.title}</option>
                     ))}
@@ -283,19 +284,19 @@ export default function TimeList({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date Worked *</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Temporal Stamp</label>
                   <input 
                     type="date" 
                     name="date" 
                     defaultValue={editingEntry?.date || new Date().toISOString().split('T')[0]} 
                     required
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-bold text-sm"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Hours Logged *</label>
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Quantum (Hours)</label>
                   <input 
                     type="number" 
                     name="hours" 
@@ -304,50 +305,53 @@ export default function TimeList({
                     max="24"
                     defaultValue={editingEntry?.hours || ''} 
                     required
-                    placeholder="e.g. 2.5"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    placeholder="e.g. 2.50"
+                    className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-black text-lg"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+              <div className="flex items-center gap-6 p-6 bg-red-50/30 rounded-[2rem] border border-red-50">
+                <label className="relative inline-flex items-center cursor-pointer group">
                   <input 
                     type="checkbox" 
                     name="billable" 
                     defaultChecked={editingEntry ? editingEntry.billable : true}
-                    className="w-4 h-4 text-[#1A56DB] rounded border-gray-300 focus:ring-[#1A56DB]"
+                    className="sr-only peer"
                   />
-                  <span className="ml-2 text-sm font-medium text-gray-900">This time is billable to the client</span>
+                  <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-brand-red"></div>
+                  <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-gray-900">Billable Yield Asset</span>
                 </label>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">What did you work on?</label>
+              <div className="space-y-2">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Meta Documentation</label>
                 <textarea 
                   name="notes" 
-                  rows={3}
+                  rows={4}
                   defaultValue={editingEntry?.notes || ''} 
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] resize-none"
-                  placeholder="Designed the landing page hero section..."
+                  className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-[2rem] focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-medium text-sm resize-none placeholder:text-gray-300"
+                  placeholder="Summarize the core impact of this temporal allocation..."
                 ></textarea>
               </div>
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-gray-200">
+              <div className="pt-6 flex justify-end gap-4 border-t border-gray-50">
                 <button 
                   type="button" 
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50"
+                  className="px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
                   disabled={isLoading}
                 >
-                  Cancel
+                  Abort
                 </button>
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="px-4 py-2 bg-[#1A56DB] hover:bg-[#1e4eb8] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                  className="bg-brand-red hover:bg-black text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-red-100 active:scale-95 disabled:opacity-50 flex items-center"
                 >
-                  {isLoading ? 'Saving...' : 'Save Time Entry'}
+                  {isLoading ? 'Processing...' : (
+                    <>Commit Log <ArrowRight className="w-4 h-4 ml-3" /></>
+                  )}
                 </button>
               </div>
             </form>
@@ -357,5 +361,3 @@ export default function TimeList({
     </div>
   )
 }
-
-// End of file

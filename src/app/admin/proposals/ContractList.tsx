@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Trash2, Plus, FileText, AlertCircle, Building2, Download, Send } from 'lucide-react'
+import { Trash2, Plus, FileText, AlertCircle, Building2, Download, Send, ArrowRight, ShieldCheck } from 'lucide-react'
 import { createContract, deleteContract } from './contractActions'
 
 type Client = { id: string; company_name: string }
@@ -75,104 +75,115 @@ export default function ContractList({
   }
 
   const statusColors = {
-    pending: 'bg-amber-100 text-amber-700',
-    active: 'bg-green-100 text-green-700',
-    expired: 'bg-gray-100 text-gray-700',
-    cancelled: 'bg-red-100 text-red-700'
+    pending: 'bg-amber-50 text-amber-600 border-amber-100',
+    active: 'bg-red-50 text-brand-red border-red-100',
+    expired: 'bg-gray-100 text-gray-500 border-gray-200',
+    cancelled: 'bg-black text-white border-black'
   }
 
   return (
-    <div className="mb-12">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3">
-          <div className="bg-emerald-100 p-2 rounded-xl text-emerald-700">
+    <div className="mb-16 space-y-6">
+      <div className="flex justify-between items-center bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-red-50 rounded-full blur-3xl opacity-50"></div>
+        <div className="flex items-center gap-4 relative z-10">
+          <div className="bg-red-50 p-3 rounded-2xl text-brand-red shadow-inner ring-1 ring-red-100">
              <FileText className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Digital Contracts</h2>
-            <p className="text-sm text-gray-500 mt-1">Generate binding agreements and track client signatures.</p>
+            <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Legal Frameworks</h2>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1">Unified Digital Service Agreements</p>
           </div>
         </div>
         <button
           onClick={openCreate}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center shadow-lg shadow-emerald-200 transition-all"
+          className="bg-black hover:bg-brand-red text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-gray-200 hover:shadow-red-100 active:scale-95 flex items-center relative z-10"
         >
           <Plus className="w-5 h-5 mr-1.5" />
-          Create Contract
+          Draft Instrument
         </button>
       </div>
 
-      <div className="bg-white border text-sm border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold px-4">
-              <tr>
-                <th className="px-6 py-4">Contract Title</th>
-                <th className="px-6 py-4">Client</th>
-                <th className="px-6 py-4">Monthly Fee</th>
-                <th className="px-6 py-4">Duration</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+      <div className="bg-white border border-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
+        <div className="overflow-x-auto relative z-10">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50/50 border-b border-gray-100">
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Agreement Title</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Counterparty</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Monthly Yield</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Timeline</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Validation</th>
+                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Control</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-50 text-sm">
               {contracts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={6} className="px-8 py-24 text-center">
                     <div className="flex flex-col items-center">
-                      <FileText className="w-10 h-10 text-gray-300 mb-3" />
-                      <p>No contracts generated yet.</p>
-                      <button onClick={openCreate} className="text-emerald-600 font-bold mt-2 hover:underline">Create your first contract</button>
+                      <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                         <FileText className="w-8 h-8 text-gray-200" />
+                      </div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-300">No legal instruments identified in registry.</p>
+                      <button onClick={openCreate} className="text-brand-red text-[10px] font-black uppercase tracking-widest mt-6 hover:tracking-[0.3em] transition-all">Initialize First Contract</button>
                     </div>
                   </td>
                 </tr>
               ) : (
                 contracts.map((contract) => (
-                  <tr key={contract.id} className="hover:bg-gray-50 transition-colors group">
-                    <td className="px-6 py-4">
-                      <p className="font-bold text-gray-900">{contract.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5 truncate max-w-[200px]">{contract.description}</p>
+                  <tr key={contract.id} className="hover:bg-red-50/30 transition-all group">
+                    <td className="px-8 py-6">
+                      <p className="font-black text-gray-900 group-hover:text-brand-red transition-colors uppercase tracking-tight">{contract.title}</p>
+                      <p className="text-[10px] text-gray-400 mt-1 font-medium">{contract.description}</p>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900 flex items-center">
-                        <Building2 className="w-4 h-4 mr-2 text-gray-400" />
-                        {contract.clients?.company_name || 'Unknown Client'}
+                    <td className="px-8 py-6">
+                      <div className="font-bold text-gray-900 flex items-center italic">
+                        <Building2 className="w-4 h-4 mr-2.5 text-gray-300" />
+                        {contract.clients?.company_name || 'Generic Client'}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <p className="font-bold text-gray-900">${contract.monthly_fee}</p>
-                      <p className="text-xs text-gray-400">/mo</p>
+                    <td className="px-8 py-6">
+                      <p className="font-black text-gray-900 text-lg">${contract.monthly_fee}</p>
+                      <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest mt-0.5">Recurring Yield</p>
                     </td>
-                    <td className="px-6 py-4">
-                      <p className="text-gray-900 font-medium">{new Date(contract.start_date).toLocaleDateString()} → {new Date(contract.end_date).toLocaleDateString()}</p>
+                    <td className="px-8 py-6">
+                      <div className="text-[10px] font-black text-gray-900 uppercase tracking-tight">
+                        {new Date(contract.start_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} 
+                        <span className="mx-2 text-gray-200">→</span>
+                        {new Date(contract.end_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${statusColors[contract.status] || 'bg-gray-100'}`}>
-                        {contract.status === 'pending' ? 'Pending Signature' : contract.status}
+                    <td className="px-8 py-6">
+                      <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${statusColors[contract.status] || 'bg-gray-100'}`}>
+                        {contract.status === 'pending' ? 'Auth Required' : contract.status}
                       </span>
                       {contract.signed_at && (
-                         <p className="text-[10px] text-gray-400 mt-1">Signed by {contract.signature_name}</p>
+                         <div className="flex items-center text-[9px] text-gray-400 mt-2 font-black uppercase tracking-widest">
+                            <ShieldCheck className="w-3 h-3 mr-1 text-brand-red" />
+                            Verified by {contract.signature_name}
+                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-right">
-                       {/* Client Notification feature simulated visually */}
-                       {contract.status === 'pending' && (
-                         <button className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors mr-2" title="Send reminder">
-                           <Send className="w-4 h-4" />
+                    <td className="px-8 py-6 text-right">
+                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all">
+                         {contract.status === 'pending' && (
+                           <button className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-brand-red hover:border-red-100 hover:shadow-lg hover:shadow-red-50 transition-all" title="Dispatch Reminder">
+                             <Send className="w-4 h-4" />
+                           </button>
+                         )}
+                         {contract.signed_pdf_url && (
+                           <a href={contract.signed_pdf_url} target="_blank" rel="noopener noreferrer" className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-black hover:border-gray-200 hover:shadow-lg transition-all" title="Retrieve Document">
+                             <Download className="w-4 h-4" />
+                           </a>
+                         )}
+                         <button 
+                           onClick={() => handleDelete(contract.id)}
+                           className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-black hover:border-gray-200 hover:shadow-lg transition-all"
+                           title="Purge Instrument"
+                         >
+                           <Trash2 className="w-4 h-4" />
                          </button>
-                       )}
-                       {contract.signed_pdf_url && (
-                         <a href={contract.signed_pdf_url} target="_blank" rel="noopener noreferrer" className="inline-block p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition-colors mr-2" title="Download Signed PDF">
-                           <Download className="w-4 h-4" />
-                         </a>
-                       )}
-                       <button 
-                         onClick={() => handleDelete(contract.id)}
-                         className="p-2 border border-gray-200 rounded-lg text-gray-400 opacity-0 group-hover:opacity-100 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-all"
-                         title="Delete Contract"
-                       >
-                         <Trash2 className="w-4 h-4" />
-                       </button>
+                       </div>
                     </td>
                   </tr>
                 ))
@@ -183,124 +194,112 @@ export default function ContractList({
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center p-6 border-b border-gray-100 shrink-0">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                 <FileText className="w-5 h-5 mr-2 text-emerald-600" />
-                 Draft New Contract
-              </h2>
-              <button disabled={isLoading} onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-in fade-in transition-all">
+          <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col scale-in-center">
+            <div className="flex justify-between items-center p-10 border-b border-gray-50 bg-gray-50/50">
+              <div>
+                <h2 className="text-2xl font-black text-gray-900 uppercase italic flex items-center">
+                   <FileText className="w-6 h-6 mr-3 text-brand-red" />
+                   Draft Legal Instrument
+                </h2>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">Agreement Genesis Matrix</p>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(false)} 
+                className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-black hover:shadow-md transition-all font-bold"
+              >
                 &times;
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-5">
+            <form onSubmit={handleSubmit} className="p-10 overflow-y-auto space-y-8">
               {error && (
-                <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm flex items-center border border-red-100">
-                  <AlertCircle className="w-5 h-5 mr-2 shrink-0" />
+                <div className="bg-red-50 text-brand-red p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center border border-red-100">
+                  <AlertCircle className="w-4 h-4 mr-3" />
                   {error}
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5 pl-1">Target Client *</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Target Counterparty *</label>
                   <select 
                     name="client_id" 
                     required
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-gray-50"
+                    className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-black text-sm uppercase tracking-widest"
                   >
-                    <option value="" disabled selected>-- Select client --</option>
+                    <option value="" disabled selected>-- Select Hub --</option>
                     {clients.map(c => (
                       <option key={c.id} value={c.id}>{c.company_name}</option>
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5 pl-1">Monthly Retainer Fee ($) *</label>
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Monthly Yield ($) *</label>
                   <input 
                     type="number" 
                     min="0"
                     step="0.01"
                     name="monthly_fee" 
                     required
-                    placeholder="e.g. 2500"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-gray-50"
+                    placeholder="e.g. 2950"
+                    className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-black text-lg"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5 pl-1">Contract Title *</label>
+              <div className="space-y-2">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Instrument Identification *</label>
                 <input 
                   type="text" 
                   name="title" 
                   required
-                  placeholder="e.g., General Media Services Agreement 2024"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-gray-50"
+                  placeholder="e.g., MASTER SERVICES AGREEMENT - CREOVA 2026"
+                  className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-bold text-sm"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5 pl-1">Scope of Work (Description) *</label>
+              <div className="space-y-2">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Functional Scope (Meta Documentation) *</label>
                 <textarea 
                   name="description" 
                   required
                   rows={2}
-                  placeholder="Briefly describe the services being provided..."
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-gray-50 resize-y"
+                  placeholder="Summarize the core impact and deliverables of this legal framework..."
+                  className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-[2rem] focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-medium text-sm resize-none"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5 pl-1">Start Date *</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Commencement *</label>
                   <input 
                     type="date" 
                     name="start_date" 
                     required
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-gray-50"
+                    className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-bold text-sm"
                   />
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5 pl-1">End Date *</label>
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Termination *</label>
                   <input 
                     type="date" 
                     name="end_date" 
                     required
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-gray-50"
+                    className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-red-50 focus:bg-white transition-all font-bold text-sm"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5 pl-1">Payment Terms</label>
-                <input 
-                  type="text" 
-                  name="payment_terms" 
-                  placeholder="e.g. Net 30, due 5th of every month"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-gray-50"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1.5 pl-1">Custom Legal Clauses</label>
-                <textarea 
-                  name="clauses" 
-                  rows={3}
-                  placeholder="Any additional terms, non-competes, or termination clauses..."
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-gray-50 resize-y"
-                />
-              </div>
-
-              <div className="pt-4 flex flex-col mt-4">
+              <div className="pt-8 border-t border-gray-50">
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold disabled:opacity-50 transition-all shadow-lg shadow-emerald-200"
+                  className="w-full py-5 bg-black hover:bg-brand-red text-white rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl shadow-gray-200 active:scale-95 flex items-center justify-center"
                 >
-                  {isLoading ? 'Generating Contract...' : 'Generate & Send to Client'}
+                  {isLoading ? 'Encrypting instrument...' : (
+                    <>Authorize & Dispatch to Counterparty <ArrowRight className="w-4 h-4 ml-4" /></>
+                  )}
                 </button>
               </div>
             </form>

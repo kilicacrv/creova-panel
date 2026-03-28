@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server'
-import { FolderOpen, Calendar, Clock, CheckCircle2, PauseCircle, XCircle } from 'lucide-react'
+import { FolderOpen, Calendar, Clock, CheckCircle2, AlertCircle, Briefcase, Zap, Target, ArrowRight, ShieldCheck } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,77 +12,85 @@ export default async function ClientProjectsPage() {
     .order('created_at', { ascending: false })
 
   const statusIcons: Record<string, any> = {
-    active: <Clock className="w-5 h-5 text-blue-500" />,
-    completed: <CheckCircle2 className="w-5 h-5 text-green-500" />,
-    paused: <PauseCircle className="w-5 h-5 text-amber-500" />,
-    cancelled: <XCircle className="w-5 h-5 text-red-500" />,
+    active: <Zap className="w-4 h-4 mr-2" />,
+    completed: <ShieldCheck className="w-4 h-4 mr-2" />,
+    on_hold: <AlertCircle className="w-4 h-4 mr-2" />,
   }
 
   const statusColors: Record<string, string> = {
-    active: 'bg-blue-50 text-blue-700 border-blue-100',
-    completed: 'bg-green-50 text-green-700 border-green-100',
-    paused: 'bg-amber-50 text-amber-700 border-amber-100',
-    cancelled: 'bg-red-50 text-red-700 border-red-100',
+    active: 'bg-black text-white border-black shadow-lg shadow-black/10',
+    completed: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+    on_hold: 'bg-amber-50 text-amber-600 border-amber-100',
   }
 
   return (
-    <div className="p-6 lg:p-8 w-full max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">My Projects</h1>
-        <p className="text-gray-500 mt-1">Track the progress and status of your agency projects.</p>
+    <div className="space-y-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-40"></div>
+        <div className="relative z-10">
+          <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">Project Matrix</h1>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Operational Nodes & Strategic Deliverable Tracking</p>
+        </div>
+        <div className="flex items-center gap-4 relative z-10">
+           <div className="p-3 bg-red-50 rounded-2xl border border-red-100">
+              <Target className="w-5 h-5 text-brand-red" />
+           </div>
+           <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest italic">Hub_Synchronization_Live</span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {projects && projects.length > 0 ? (
-          projects.map((project) => (
-            <div key={project.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-blue-50 text-[#1A56DB] rounded-lg flex items-center justify-center mr-3">
-                    <FolderOpen className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h2 className="font-bold text-gray-900 text-lg">{project.title}</h2>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border mt-1 ${statusColors[project.status]}`}>
-                      {statusIcons[project.status]}
-                      <span className="ml-1.5 capitalize">{project.status}</span>
-                    </span>
-                  </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-20">
+        {!projects || projects.length === 0 ? (
+          <div className="col-span-full py-32 text-center bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex flex-col items-center">
+            <FolderOpen className="w-20 h-20 text-gray-100 mb-8" />
+            <h3 className="text-gray-900 font-black text-2xl uppercase tracking-tighter italic">No Active Nodes</h3>
+            <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mt-2 max-w-sm">No operational project nodes identified in your current portfolio registry.</p>
+          </div>
+        ) : (
+          projects.map((project: any) => (
+            <div key={project.id} className="bg-white border border-gray-100 rounded-[2.5rem] p-10 shadow-sm hover:shadow-2xl hover:border-gray-200 transition-all duration-500 flex flex-col group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-full blur-3xl opacity-0 group-hover:opacity-40 transition-opacity -mr-12 -mt-12"></div>
+              
+              <div className="flex justify-between items-start mb-8 relative z-10">
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mr-5 transition-transform group-hover:rotate-6 ${project.status === 'active' ? 'bg-black text-white shadow-xl shadow-black/10' : 'bg-gray-50 border border-gray-100 text-gray-400'}`}>
+                  <Briefcase className="w-6 h-6" />
                 </div>
+                <span className={`inline-flex items-center px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${statusColors[project.status] || 'bg-gray-100 text-gray-700'}`}>
+                  {statusIcons[project.status]}
+                  {project.status}
+                </span>
               </div>
               
-              <p className="text-gray-600 text-sm mb-6 line-clamp-2 min-h-[40px]">
-                {project.description || 'No description provided for this project.'}
-              </p>
+              <div className="space-y-4 mb-10 relative z-10 flex-grow">
+                 <h2 className="font-black text-gray-900 text-xl uppercase tracking-tighter italic leading-none group-hover:text-brand-red transition-colors">{project.title}</h2>
+                 <div className="h-0.5 w-10 bg-brand-red group-hover:w-full transition-all duration-500"></div>
+                 <p className="text-gray-400 text-[11px] font-black uppercase tracking-tight leading-relaxed line-clamp-3">
+                   {project.description || 'System_Audit: No descriptive payload identified for this node.'}
+                 </p>
+              </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
-                <div className="flex items-center text-gray-500">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <div>
-                    <p className="text-[10px] uppercase font-bold tracking-wider">Start Date</p>
-                    <p className="text-sm font-medium text-gray-900">
-                      {project.start_date ? new Date(project.start_date).toLocaleDateString() : 'Not set'}
-                    </p>
+              <div className="grid grid-cols-2 gap-6 pt-8 border-t border-gray-50 mt-auto relative z-10">
+                <div className="space-y-2">
+                  <p className="text-[8px] uppercase font-black tracking-[0.2em] text-gray-300">Initialized</p>
+                  <div className="flex items-center text-[10px] font-black text-gray-900 uppercase tracking-widest italic font-mono">
+                    <Clock className="w-3.5 h-3.5 mr-2.5 text-brand-red opacity-30" />
+                    {project.start_date ? new Date(project.start_date).toLocaleDateString([], { month: 'short', day: 'numeric' }) : 'N/A'}
                   </div>
                 </div>
-                <div className="flex items-center text-gray-500">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <div>
-                    <p className="text-[10px] uppercase font-bold tracking-wider">Estimated End</p>
-                    <p className="text-sm font-medium text-gray-900">
-                      {project.end_date ? new Date(project.end_date).toLocaleDateString() : 'Not set'}
-                    </p>
+                <div className="space-y-2">
+                  <p className="text-[8px] uppercase font-black tracking-[0.2em] text-gray-300">Projected Uplink</p>
+                  <div className="flex items-center text-[10px] font-black text-gray-900 uppercase tracking-widest italic font-mono">
+                    <Calendar className="w-3.5 h-3.5 mr-2.5 text-black opacity-30" />
+                    {project.end_date ? new Date(project.end_date).toLocaleDateString([], { month: 'short', day: 'numeric' }) : 'N/A'}
                   </div>
                 </div>
               </div>
+
+              <button className="mt-8 w-full py-4 bg-gray-50 hover:bg-black hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 flex items-center justify-center">
+                 Access Portal <ArrowRight className="w-4 h-4 ml-3" />
+              </button>
             </div>
           ))
-        ) : (
-          <div className="col-span-full py-12 text-center bg-white rounded-xl border border-dashed border-gray-300">
-            <FolderOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 font-medium">No projects found.</p>
-            <p className="text-sm text-gray-400 mt-1">If you believe this is an error, please contact your account manager.</p>
-          </div>
         )}
       </div>
     </div>

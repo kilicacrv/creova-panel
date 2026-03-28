@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase'
-import { Send, Search, UserCircle, CheckCircle2, MessageSquare, Users as UsersIcon, Plus, X, Hash } from 'lucide-react'
+import { Send, Search, UserCircle, CheckCircle2, MessageSquare, Users as UsersIcon, Plus, X, Hash, Zap, ShieldCheck } from 'lucide-react'
 
 // Types
 type Profile = {
@@ -276,58 +276,62 @@ export default function MessengerClient({
   }
 
   return (
-    <div className="flex w-full h-full bg-white lg:rounded-xl overflow-hidden shadow-sm border-r lg:border border-gray-200">
+    <div className="flex w-full h-full bg-white lg:rounded-[2.5rem] overflow-hidden shadow-2xl relative border border-gray-100">
       
       {/* ---------------- SIDEBAR ---------------- */}
-      <div className={`${activeChat ? 'hidden md:flex' : 'flex'} flex-col w-full md:w-[320px] lg:w-[320px] border-r border-gray-200 bg-gray-50/50 shrink-0`}>
+      <div className={`${activeChat ? 'hidden md:flex' : 'flex'} flex-col w-full md:w-[360px] lg:w-[360px] border-r border-gray-50 bg-gray-50/50 shrink-0 relative z-20`}>
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 bg-white">
-           <div className="flex items-center justify-between mb-4">
-             <h2 className="text-xl font-bold text-gray-900 flex items-center tracking-tight">
-               <MessageSquare className="w-5 h-5 mr-2 text-[#1A56DB]" /> Messenger
-             </h2>
+        <div className="p-8 border-b border-gray-100 bg-white">
+           <div className="flex items-center justify-between mb-6">
+             <div>
+                <h2 className="text-2xl font-black text-gray-900 flex items-center tracking-tighter uppercase italic">
+                  Messenger
+                </h2>
+                <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest mt-1">Encrypted Secure Line</p>
+             </div>
              <button 
                onClick={() => setIsGroupModalOpen(true)}
-               title="Create New Group"
-               className="p-1.5 bg-blue-50 text-[#1A56DB] hover:bg-blue-100 rounded-lg transition-colors"
+               title="Initialize New Channel"
+               className="p-3 bg-red-50 text-brand-red hover:bg-black hover:text-white rounded-2xl transition-all shadow-sm active:scale-95"
              >
-               <Plus className="w-4 h-4" />
+               <Plus className="w-5 h-5" />
              </button>
            </div>
            
-           <div className="relative">
-             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+           <div className="relative group">
+             <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-red transition-colors" />
              <input 
                type="text" 
-               placeholder="Search..." 
+               placeholder="SEARCH FREQUENCIES..." 
                value={searchQuery}
                onChange={e => setSearchQuery(e.target.value)}
-               className="w-full pl-9 pr-4 py-2 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#1A56DB]/50 transition-shadow outline-none"
+               className="w-full pl-11 pr-5 py-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest focus:ring-4 focus:ring-red-50 focus:bg-white focus:border-red-100 transition-all outline-none placeholder:text-gray-300"
              />
            </div>
         </div>
 
         {/* Channels & Directs Lists */}
-        <div className="flex-1 overflow-y-auto w-full pb-4">
+        <div className="flex-1 overflow-y-auto w-full pb-8">
           
           {/* Channels (Groups) */}
           {(filteredGroups.length > 0 || searchQuery !== '') && (
-            <div className="mt-4">
-               <h3 className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Channels</h3>
+            <div className="mt-8 px-4 space-y-1">
+               <h3 className="px-4 text-[9px] font-black text-gray-300 uppercase tracking-[0.25em] mb-4 italic">Active Channels</h3>
                {filteredGroups.map(group => (
                   <button 
                     key={group.id}
                     onClick={() => setActiveChat({ type: 'group', group })}
-                    className={`w-full px-4 py-2.5 flex items-center gap-3 transition-colors
-                      hover:bg-blue-50/50 text-left
-                      ${(activeChat?.type === 'group' && activeChat.group.id === group.id) ? 'bg-blue-50 border-l-4 border-[#1A56DB]' : 'border-l-4 border-transparent'}
+                    className={`w-full px-4 py-4 flex items-center gap-4 transition-all rounded-[1.5rem]
+                      hover:bg-white hover:shadow-xl hover:shadow-gray-100 text-left group/item
+                      ${(activeChat?.type === 'group' && activeChat.group.id === group.id) ? 'bg-white shadow-xl shadow-red-50 ring-1 ring-red-100' : ''}
                     `}
                   >
-                     <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
-                       <Hash className="w-4 h-4" />
+                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 transition-all ${(activeChat?.type === 'group' && activeChat.group.id === group.id) ? 'bg-brand-red text-white shadow-lg shadow-red-200' : 'bg-gray-100 text-gray-400 group-hover/item:bg-red-50 group-hover/item:text-brand-red'}`}>
+                       <Hash className="w-5 h-5" />
                      </div>
                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-gray-900 text-sm truncate">{group.name}</div>
+                        <div className="font-black text-gray-900 text-[11px] uppercase tracking-tight truncate">{group.name}</div>
+                        <div className="text-[9px] text-gray-400 uppercase font-black tracking-widest mt-0.5 opacity-60">Multiplex Link</div>
                      </div>
                   </button>
                ))}
@@ -335,31 +339,31 @@ export default function MessengerClient({
           )}
 
           {/* Direct Messages */}
-          <div className="mt-4">
-             <h3 className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Direct Messages</h3>
+          <div className="mt-8 px-4 space-y-1">
+             <h3 className="px-4 text-[9px] font-black text-gray-300 uppercase tracking-[0.25em] mb-4 italic">Personal Uplinks</h3>
              {filteredContacts.map(contact => (
                 <button 
                   key={contact.id}
                   onClick={() => setActiveChat({ type: 'direct', contact })}
-                  className={`w-full px-4 py-2.5 flex items-center gap-3 transition-colors
-                    hover:bg-blue-50/50 text-left
-                    ${(activeChat?.type === 'direct' && activeChat.contact.id === contact.id) ? 'bg-blue-50 border-l-4 border-[#1A56DB]' : 'border-l-4 border-transparent'}
+                  className={`w-full px-4 py-4 flex items-center gap-4 transition-all rounded-[1.5rem]
+                    hover:bg-white hover:shadow-xl hover:shadow-gray-100 text-left group/item
+                    ${(activeChat?.type === 'direct' && activeChat.contact.id === contact.id) ? 'bg-white shadow-xl shadow-red-50 ring-1 ring-red-100' : ''}
                   `}
                 >
                    <div className="relative">
                      {contact.avatar_url ? (
-                       <img src={contact.avatar_url} alt={contact.full_name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                       <img src={contact.avatar_url} alt={contact.full_name} className="w-10 h-10 rounded-2xl object-cover shrink-0 shadow-sm" />
                      ) : (
-                       <div className="w-8 h-8 rounded-full text-blue-700 bg-blue-100 flex items-center justify-center shrink-0 text-sm font-bold uppercase">
+                       <div className="w-10 h-10 rounded-2xl text-white bg-black flex items-center justify-center shrink-0 text-xs font-black uppercase group-hover/item:bg-brand-red transition-colors">
                          {contact.full_name.charAt(0)}
                        </div>
                      )}
-                     <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
+                     <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-brand-red border-2 border-white rounded-full shadow-sm animate-pulse"></div>
                    </div>
                    
                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900 text-sm truncate">{contact.full_name}</div>
-                      <div className="text-[10px] text-gray-400 uppercase tracking-widest truncate">{contact.role}</div>
+                      <div className="font-black text-gray-900 text-[11px] uppercase tracking-tight truncate">{contact.full_name}</div>
+                      <div className="text-[9px] text-gray-400 uppercase font-black tracking-widest mt-0.5 truncate opacity-60">{contact.role}</div>
                    </div>
                 </button>
              ))}
@@ -370,170 +374,221 @@ export default function MessengerClient({
 
       {/* ---------------- MAIN CHAT AREA ---------------- */}
       {activeChat ? (
-        <div className="flex-1 flex flex-col w-full h-full bg-white relative">
+        <div className="flex-1 flex flex-col w-full h-full bg-white relative z-10 transition-all animate-in fade-in slide-in-from-right-4 duration-500">
           
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200 bg-white/80 backdrop-blur-md sticky top-0 z-10 flex items-center shadow-sm">
-             <button 
-               onClick={() => setActiveChat(null)}
-               className="mr-3 md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-lg"
-             >
-               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/></svg>
-             </button>
-             
-             {activeChat.type === 'direct' ? (
-                <div className="flex items-center gap-3">
-                  {activeChat.contact.avatar_url ? (
-                     <img src={activeChat.contact.avatar_url} alt={activeChat.contact.full_name} className="w-10 h-10 rounded-full object-cover shrink-0" />
-                   ) : (
-                     <div className="w-10 h-10 rounded-full text-blue-700 bg-blue-100 flex items-center justify-center shrink-0 text-sm font-bold uppercase">
-                       {activeChat.contact.full_name.charAt(0)}
-                     </div>
-                   )}
-                   <div>
-                      <h2 className="font-bold text-gray-900 tracking-tight">{activeChat.contact.full_name}</h2>
-                      <p className="text-xs text-green-600 font-medium">Online</p>
-                   </div>
+          <div className="px-10 py-6 border-b border-gray-50 bg-white/90 backdrop-blur-xl sticky top-0 z-30 flex items-center justify-between">
+             <div className="flex items-center">
+                <button 
+                  onClick={() => setActiveChat(null)}
+                  className="mr-5 md:hidden p-3 -ml-3 text-gray-400 hover:bg-gray-100 rounded-2xl transition-all"
+                >
+                  <svg className="w-6 h-6 font-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                
+                {activeChat.type === 'direct' ? (
+                    <div className="flex items-center gap-5">
+                      {activeChat.contact.avatar_url ? (
+                        <img src={activeChat.contact.avatar_url} alt={activeChat.contact.full_name} className="w-12 h-12 rounded-2xl object-cover shrink-0 shadow-lg shadow-gray-200" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-2xl text-white bg-black flex items-center justify-center shrink-0 text-sm font-black uppercase border-2 border-gray-50">
+                          {activeChat.contact.full_name.charAt(0)}
+                        </div>
+                      )}
+                      <div>
+                          <h2 className="font-black text-gray-900 uppercase tracking-tighter text-lg">{activeChat.contact.full_name}</h2>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                             <div className="w-2 h-2 rounded-full bg-brand-red animate-ping" />
+                             <p className="text-[9px] text-brand-red font-black uppercase tracking-[0.2em]">Live Presence Active</p>
+                          </div>
+                      </div>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-5">
+                      <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shrink-0 shadow-lg shadow-gray-200 rotate-3 group-hover:rotate-0 transition-transform">
+                        <Hash className="w-6 h-6" />
+                      </div>
+                      <div>
+                          <h2 className="font-black text-gray-900 uppercase tracking-tighter text-lg">{activeChat.group.name}</h2>
+                          <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-0.5">Multiplex Broadcast Channel</p>
+                      </div>
+                    </div>
+                )}
+             </div>
+
+             <div className="hidden lg:flex items-center gap-3">
+                <div className="px-4 py-2 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-2">
+                   <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                   <span className="text-[9px] font-black uppercase tracking-widest text-gray-400 italic">E2EE Protocol Active</span>
                 </div>
-             ) : (
-                <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 shadow-inner">
-                     <Hash className="w-5 h-5" />
-                   </div>
-                   <div>
-                      <h2 className="font-bold text-gray-900 tracking-tight">{activeChat.group.name}</h2>
-                      <p className="text-xs text-gray-500 font-medium">Group Channel</p>
-                   </div>
-                </div>
-             )}
+             </div>
           </div>
 
           {/* Messages List Area */}
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-[#F9FAFB] min-h-0">
+          <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 bg-gray-50/30 min-h-0 relative">
+             <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:32px_32px] opacity-30 pointer-events-none"></div>
+             
              {isLoadingMessages ? (
-               <div className="flex items-center justify-center h-full text-gray-400">
-                  <div className="animate-spin w-8 h-8 border-4 border-[#1A56DB] border-t-transparent rounded-full mr-3"></div>
+               <div className="flex flex-col items-center justify-center h-full text-gray-400 relative z-10">
+                  <div className="animate-spin w-12 h-12 border-4 border-brand-red border-t-transparent rounded-full mb-4 shadow-xl shadow-red-100"></div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">Syncing Neural Link...</p>
                </div>
              ) : messages.length === 0 ? (
-               <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                  <MessageSquare className="w-16 h-16 text-gray-200 mb-4" />
-                  <p className="font-medium text-gray-500">No messages yet.</p>
-                  <p className="text-xs mt-1">Start the conversation below.</p>
+               <div className="flex flex-col items-center justify-center h-full text-gray-400 relative z-10">
+                  <div className="w-24 h-24 bg-white rounded-[2rem] shadow-2xl flex items-center justify-center mb-8 border border-gray-50">
+                    <MessageSquare className="w-10 h-10 text-brand-red opacity-20" />
+                  </div>
+                  <p className="font-black text-gray-900 uppercase tracking-widest text-sm italic">Transmission Silent</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] mt-3">Ready for ingestion.</p>
                </div>
              ) : (
-               messages.map((msg, idx) => {
-                 const isMe = msg.sender_id === currentUser.id
-                 const showHeader = activeChat.type === 'group' && !isMe && (idx === 0 || messages[idx - 1].sender_id !== msg.sender_id)
-                 
-                 return (
-                   <div key={msg.id || idx} className={`flex w-full ${isMe ? 'justify-end' : 'justify-start'}`}>
-                      {!isMe && activeChat.type === 'group' && showHeader ? (
-                         <div className="mr-2 shrink-0 mt-3.5">
-                            {getProfileAvatar(msg.sender_id) ? (
-                              <img src={getProfileAvatar(msg.sender_id)!} alt="" className="w-6 h-6 rounded-full" />
-                            ) : (
-                              <div className="w-6 h-6 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-[10px] font-bold">
-                                {getProfileName(msg.sender_id).charAt(0)}
-                              </div>
-                            )}
-                         </div>
-                      ) : (
-                         !isMe && activeChat.type === 'group' && <div className="w-6 mr-2 shrink-0"></div>
-                      )}
+               <div className="relative z-10 space-y-8">
+                {messages.map((msg, idx) => {
+                  const isMe = msg.sender_id === currentUser.id
+                  const showHeader = activeChat.type === 'group' && !isMe && (idx === 0 || messages[idx - 1].sender_id !== msg.sender_id)
+                  
+                  return (
+                    <div key={msg.id || idx} className={`flex w-full ${isMe ? 'justify-end' : 'justify-start'}`}>
+                       {!isMe && activeChat.type === 'group' && showHeader ? (
+                          <div className="mr-4 shrink-0 mt-6">
+                             {getProfileAvatar(msg.sender_id) ? (
+                               <img src={getProfileAvatar(msg.sender_id)!} alt="" className="w-8 h-8 rounded-xl object-cover shadow-md" />
+                             ) : (
+                               <div className="w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center text-[10px] font-black uppercase border border-gray-800">
+                                 {getProfileName(msg.sender_id).charAt(0)}
+                               </div>
+                             )}
+                          </div>
+                       ) : (
+                          !isMe && activeChat.type === 'group' && <div className="w-8 mr-4 shrink-0"></div>
+                       )}
 
-                      <div className={`max-w-[80%] lg:max-w-[65%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                       <div className={`max-w-[85%] lg:max-w-[70%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                         {showHeader && (
-                           <span className="text-[10px] font-bold text-gray-500 ml-1 mb-0.5">{getProfileName(msg.sender_id)}</span>
+                           <span className="text-[9px] font-black text-gray-400 ml-2 mb-2 uppercase tracking-widest">{getProfileName(msg.sender_id)}</span>
                         )}
                         <div 
                           className={`
-                            px-4 py-2.5 text-sm rounded-2xl shadow-sm leading-relaxed
+                            px-6 py-4 text-sm font-medium rounded-[1.8rem] leading-relaxed relative group/msg
                             ${isMe 
-                              ? 'bg-[#1A56DB] text-white rounded-br-none' 
-                              : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none'}
+                              ? 'bg-black text-white rounded-br-none shadow-2xl shadow-gray-200 selection:bg-brand-red' 
+                              : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none shadow-xl shadow-gray-50'}
                           `}
                         >
                           {msg.content}
+                          <div className={`absolute top-0 ${isMe ? 'right-0' : 'left-0'} w-2 h-2 bg-brand-red opacity-0 group-hover/msg:opacity-100 transition-opacity rounded-full -m-1`}></div>
                         </div>
-                        <div className="flex items-center gap-1 mt-1 px-1">
-                          <span className="text-[10px] text-gray-400 font-medium">{formatTime(msg.created_at)}</span>
-                          {isMe && msg.is_read && activeChat.type === 'direct' && <CheckCircle2 className="w-3 h-3 text-[#1A56DB]" />}
+                        <div className="flex items-center gap-2 mt-3 px-2">
+                          <span className="text-[9px] text-gray-400 font-black uppercase tracking-tighter opacity-60">{formatTime(msg.created_at)}</span>
+                          {isMe && msg.is_read && activeChat.type === 'direct' && <Zap className="w-3 h-3 text-brand-red fill-current opacity-80" />}
                         </div>
-                      </div>
-                   </div>
-                 )
-               })
+                       </div>
+                    </div>
+                  )
+                })}
+               </div>
              )}
              <div ref={messagesEndRef} className="h-1 pb-2" />
           </div>
 
           {/* Message Input Bottom Bar */}
-          <div className="p-4 bg-white border-t border-gray-200 pb-safe">
-             <form onSubmit={handleSendMessage} className="flex items-center gap-2 max-w-4xl mx-auto relative">
+          <div className="p-8 bg-white border-t border-gray-50 pb-safe">
+             <form onSubmit={handleSendMessage} className="flex items-center gap-4 max-w-5xl mx-auto relative group">
+               <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-brand-red transition-colors pointer-events-none z-10">
+                  <Zap className="w-5 h-5" />
+               </div>
                <input 
                  type="text"
-                 placeholder={activeChat.type === 'group' ? `Message #${activeChat.group.name}...` : "Write a direct message..."}
+                 placeholder={activeChat.type === 'group' ? `INJECT COMMAND TO #${activeChat.group.name.toUpperCase()}...` : "TRANSMIT DIRECT PAYLOAD..."}
                  value={newMessage}
                  onChange={e => setNewMessage(e.target.value)}
-                 className="flex-1 px-5 py-3.5 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#1A56DB] focus:bg-white transition-all outline-none pr-14"
+                 className="flex-1 pl-16 pr-20 py-5 bg-gray-50/50 border border-gray-100 rounded-[2rem] text-xs font-black uppercase tracking-widest focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 transition-all outline-none"
                />
                <button 
                  type="submit"
                  disabled={!newMessage.trim()}
-                 className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-[#1A56DB] hover:bg-[#1e4eb8] text-white rounded-lg disabled:opacity-50 disabled:bg-gray-300 disabled:text-gray-500 transition-colors shadow-sm"
+                 className="absolute right-3 top-1/2 -translate-y-1/2 p-4 bg-black hover:bg-brand-red text-white rounded-2xl disabled:opacity-10 disabled:grayscale transition-all shadow-xl hover:shadow-red-200 active:scale-90"
                >
-                 <Send className="w-4 h-4 ml-0.5" />
+                 <Send className="w-5 h-5" />
                </button>
              </form>
+             <div className="text-center mt-4">
+                <p className="text-[8px] font-black text-gray-200 uppercase tracking-[0.5em]">Command line Interface v4.0.2 - Terminal Secured</p>
+             </div>
           </div>
           
         </div>
       ) : (
         /* Empty State */
-        <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-[#F9FAFB] text-center p-8">
-           <div className="w-24 h-24 bg-white shadow-sm border border-gray-100 rounded-full flex items-center justify-center mb-6">
-              <MessageSquare className="w-10 h-10 text-[#1A56DB]" />
+        <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-white text-center p-10 relative overflow-hidden">
+           <div className="absolute inset-0 bg-[radial-gradient(#f1f1f1_1px,transparent_1px)] [background-size:24px_24px] opacity-40"></div>
+           <div className="relative z-10 scale-in-center">
+              <div className="w-40 h-40 bg-white shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] border border-gray-50 rounded-[3rem] flex items-center justify-center mb-10 mx-auto relative group">
+                 <div className="absolute inset-0 bg-red-50 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-40 transition-opacity"></div>
+                 <MessageSquare className="w-16 h-16 text-brand-red relative z-10" />
+                 <div className="absolute -top-4 -right-4 w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white font-black italic shadow-xl rotate-12">HQ</div>
+              </div>
+              <h3 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter uppercase italic">Strategic Comms</h3>
+              <p className="text-gray-400 max-w-md font-black uppercase tracking-[0.2em] text-[10px] leading-relaxed mx-auto">
+                 Initialize an uplink by selecting a designated frequency from the deployment matrix on the left.
+              </p>
+              
+              <div className="mt-12 flex justify-center gap-8 opacity-20 filter grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+                  <div className="flex flex-col items-center gap-2">
+                     <div className="w-12 h-1 bg-gray-200 rounded-full" />
+                     <span className="text-[8px] font-black uppercase tracking-widest">Latency: 12ms</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-2">
+                     <div className="w-12 h-1 bg-brand-red rounded-full" />
+                     <span className="text-[8px] font-black uppercase tracking-widest">Buffer: Clean</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-2">
+                     <div className="w-12 h-1 bg-gray-200 rounded-full" />
+                     <span className="text-[8px] font-black uppercase tracking-widest">Packets: 100%</span>
+                  </div>
+              </div>
            </div>
-           <h3 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">Team Communications</h3>
-           <p className="text-gray-500 max-w-md font-medium leading-relaxed">Select a Channel or a Direct Message from the sidebar to instantly start a secure, real-time conversation.</p>
         </div>
       )}
 
       {/* ---------------- CREATE GROUP MODAL ---------------- */}
       {isGroupModalOpen && (
-         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
+           <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden animate-in zoom-in-95 duration-500">
              
-             <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-gray-50/50">
-               <h3 className="font-bold text-gray-900 flex items-center">
-                 <UsersIcon className="w-5 h-5 mr-2 text-[#1A56DB]" /> Create New Channel
-               </h3>
-               <button onClick={() => setIsGroupModalOpen(false)} className="text-gray-400 hover:bg-gray-200 p-1 rounded-md">
-                 <X className="w-5 h-5" />
+             <div className="flex justify-between items-center px-10 py-8 border-b border-gray-50 bg-gray-50/50">
+               <div>
+                  <h3 className="text-2xl font-black text-gray-900 flex items-center uppercase tracking-tighter italic">
+                    <UsersIcon className="w-6 h-6 mr-3 text-brand-red" /> Channel Deployment
+                  </h3>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1 ml-9">Unified Broadcast Network</p>
+               </div>
+               <button onClick={() => setIsGroupModalOpen(false)} className="text-gray-400 hover:bg-red-50 hover:text-brand-red p-3 rounded-2xl transition-all">
+                 <X className="w-6 h-6" />
                </button>
              </div>
              
-             <form onSubmit={handleCreateGroup} className="p-6">
-               <div className="mb-5">
-                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">Channel Name</label>
+             <form onSubmit={handleCreateGroup} className="p-10 lg:p-14 space-y-10">
+               <div className="space-y-3">
+                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Channel Designation</label>
                  <input 
                    type="text" 
                    required
                    value={newGroupName}
                    onChange={e => setNewGroupName(e.target.value)}
-                   placeholder="e.g., Marketing Team"
-                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A56DB]/50 text-sm font-semibold"
+                   placeholder="E.G. STRATEGIC OPERATIONS"
+                   className="w-full px-6 py-5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all placeholder:text-gray-200"
                  />
                </div>
 
-               <div className="mb-6">
-                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5 flex justify-between">
-                   <span>Add Members</span>
-                   <span>{selectedGroupMembers.length} selected</span>
+               <div className="space-y-3">
+                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 flex justify-between">
+                   <span>Recruit Personnel</span>
+                   <span className="text-brand-red">{selectedGroupMembers.length} Selected</span>
                  </label>
-                 <div className="max-h-52 overflow-y-auto border border-gray-200 rounded-xl divide-y divide-gray-100 custom-scrollbar">
+                 <div className="max-h-64 overflow-y-auto border border-gray-100 rounded-[2rem] divide-y divide-gray-50 custom-scrollbar bg-gray-50/50">
                    {contacts.map(c => (
-                     <label key={c.id} className="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
+                     <label key={c.id} className="flex items-center px-6 py-4 hover:bg-white cursor-pointer transition-all group/member">
                        <input 
                          type="checkbox"
                          checked={selectedGroupMembers.includes(c.id)}
@@ -541,16 +596,16 @@ export default function MessengerClient({
                            if (e.target.checked) setSelectedGroupMembers(prev => [...prev, c.id])
                            else setSelectedGroupMembers(prev => prev.filter(id => id !== c.id))
                          }}
-                         className="w-4 h-4 text-[#1A56DB] rounded border-gray-300 focus:ring-[#1A56DB] mr-3"
+                         className="w-5 h-5 text-black rounded-lg border-gray-200 focus:ring-black mr-5 transition-all"
                        />
                        <div className="flex-1 min-w-0">
-                         <div className="font-semibold text-sm text-gray-900 truncate">{c.full_name}</div>
-                         <div className="text-[10px] text-gray-400 uppercase tracking-widest">{c.role}</div>
+                         <div className="font-black text-[11px] uppercase tracking-tight text-gray-900 truncate group-hover/member:text-brand-red transition-colors">{c.full_name}</div>
+                         <div className="text-[9px] text-gray-400 uppercase font-black tracking-widest mt-0.5">{c.role}</div>
                        </div>
                      </label>
                    ))}
                    {contacts.length === 0 && (
-                     <div className="p-4 text-center text-xs text-gray-500">No other team members available.</div>
+                     <div className="p-10 text-center text-[10px] font-black uppercase tracking-widest text-gray-300 italic">No compatible personnel detected.</div>
                    )}
                  </div>
                </div>
@@ -558,11 +613,11 @@ export default function MessengerClient({
                <button 
                  type="submit"
                  disabled={isCreatingGroup || !newGroupName.trim() || selectedGroupMembers.length === 0}
-                 className="w-full py-3.5 bg-[#1A56DB] hover:bg-[#1e4eb8] text-white rounded-xl font-bold flex items-center justify-center disabled:opacity-50 disabled:bg-gray-300 disabled:text-gray-500 transition-colors shadow-sm"
+                 className="w-full py-6 bg-black hover:bg-brand-red text-white rounded-[2rem] font-black uppercase tracking-[0.3em] text-[11px] flex items-center justify-center disabled:opacity-20 disabled:grayscale transition-all shadow-2xl hover:shadow-red-200 active:scale-95"
                >
                  {isCreatingGroup ? (
-                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                 ) : 'Create Channel'}
+                   <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                 ) : 'Finalize Broadcast Infrastructure'}
                </button>
              </form>
            </div>

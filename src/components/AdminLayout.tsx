@@ -24,7 +24,10 @@ import {
   Eye,
   Bell,
   Check,
-  MessageSquare
+  MessageSquare,
+  Zap,
+  ShieldCheck,
+  Target
 } from 'lucide-react'
 import { markNotificationAsRead } from '@/app/admin/notification-actions'
 
@@ -52,34 +55,34 @@ const navGroups = [
     allowedRoles: ['admin', 'team'],
     items: [
       { name: 'Clients', href: '/admin/clients', icon: Users },
-      { name: 'Media Production', href: '/admin/media', icon: Film },
-      { name: 'Content Calendar', href: '/admin/content', icon: CalendarDays },
+      { name: 'Media Queue', href: '/admin/media', icon: Film },
+      { name: 'Content Grid', href: '/admin/content', icon: CalendarDays },
     ]
   },
   {
     label: 'Finance',
     allowedRoles: ['admin'],
     items: [
-      { name: 'Invoices', href: '/admin/invoices', icon: FileText },
+      { name: 'Billing Ledger', href: '/admin/invoices', icon: FileText },
       { name: 'Proposals', href: '/admin/proposals', icon: FileSignature },
     ]
   },
   {
-    label: 'Marketing',
+    label: 'Intelligence',
     allowedRoles: ['admin'],
     items: [
-      { name: 'Ad Campaigns', href: '/admin/campaigns', icon: Megaphone },
-      { name: 'Social Listening', href: '/admin/listening', icon: Ear },
+      { name: 'Ad Logistics', href: '/admin/campaigns', icon: Megaphone },
+      { name: 'Social Frequency', href: '/admin/listening', icon: Ear },
     ]
   },
   {
-    label: 'Team & Settings',
-    allowedRoles: ['admin'], // we kept team management hidden from regular editors
+    label: 'Command Hub',
+    allowedRoles: ['admin'], 
     items: [
-      { name: 'Team', href: '/admin/team', icon: UsersRound },
-      { name: 'Management', href: '/admin/management', icon: Settings },
-      { name: 'Messenger', href: '/admin/messages', icon: MessageSquare },
-      { name: 'AI Assistant', href: '/admin/ai', icon: Bot },
+      { name: 'Personnel', href: '/admin/team', icon: UsersRound },
+      { name: 'Access Matrix', href: '/admin/management', icon: Settings },
+      { name: 'Neural Link', href: '/admin/ai', icon: Bot },
+      { name: 'Terminal Chat', href: '/admin/messages', icon: MessageSquare },
       { name: 'Remote Watch', href: '/admin/watch', icon: Eye },
     ]
   }
@@ -112,83 +115,83 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-[#FDFDFD] flex font-sans antialiased text-gray-900">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-all duration-500"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0
+        fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 flex flex-col transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) lg:static lg:translate-x-0
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         {/* Logo area */}
-        <div className="h-16 flex items-center px-6 border-b border-gray-200 shrink-0">
-          <Link href="/admin" className="block">
-            <img src="/brand/logo.png" alt="Creova Media" className="h-9 w-auto object-contain" />
+        <div className="h-24 flex items-center px-8 shrink-0 relative">
+          <Link href="/admin" className="block group">
+            <img src="/brand/logo.png" alt="Creova Media" className="h-10 w-auto object-contain group-hover:scale-105 transition-transform duration-300" />
+            <div className="absolute top-1/2 -right-4 w-12 h-12 bg-red-50 rounded-full blur-2xl opacity-40 group-hover:opacity-100 transition-opacity"></div>
           </Link>
         </div>
 
         {/* Navigation Grouped */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6 text-brand-black">
+        <nav className="flex-1 overflow-y-auto pt-4 pb-12 px-6 space-y-10 custom-scrollbar">
           {navGroups.map((group) => {
             if (!group.allowedRoles.includes(safeRole)) return null
 
             return (
-              <div key={group.label} className="space-y-1">
-                <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              <div key={group.label} className="space-y-4">
+                <h3 className="px-4 text-[9px] font-black text-gray-300 uppercase tracking-[0.4em] mb-2 italic">
                   {group.label}
                 </h3>
-                {group.items.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-                  const isExactAdmin = item.href === '/admin' && pathname !== '/admin'
-                  const reallyActive = isExactAdmin ? false : isActive
+                <div className="space-y-1.5">
+                  {group.items.map((item) => {
+                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                    const isExactAdmin = item.href === '/admin' && pathname !== '/admin'
+                    const reallyActive = isExactAdmin ? false : isActive
 
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={`
-                        flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                        ${reallyActive 
-                          ? 'bg-brand-red-muted text-brand-red' 
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
-                      `}
-                      onClick={() => setSidebarOpen(false)}
-                    >
-                      <item.icon className={`w-5 h-5 mr-3 shrink-0 ${reallyActive ? 'text-brand-red' : 'text-gray-400'}`} />
-                      {item.name}
-                    </Link>
-                  )
-                })}
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={`
+                          flex items-center px-5 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all group/nav
+                          ${reallyActive 
+                            ? 'bg-black text-white shadow-2xl shadow-black/10 translate-x-1' 
+                            : 'text-gray-500 hover:text-black hover:bg-gray-50'}
+                        `}
+                        onClick={() => setSidebarOpen(false)}
+                      >
+                        <item.icon className={`w-4 h-4 mr-4 shrink-0 transition-transform group-hover/nav:scale-110 ${reallyActive ? 'text-brand-red' : 'text-gray-300 group-hover/nav:text-black'}`} />
+                        {item.name}
+                        {reallyActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-red animate-pulse"></div>}
+                      </Link>
+                    )
+                  })}
+                </div>
               </div>
             )
           })}
         </nav>
 
         {/* User profile & Logout */}
-        <div className="p-4 border-t border-gray-200 shrink-0 bg-gray-50/50">
-          <div className="flex items-center justify-between">
+        <div className="p-6 border-t border-gray-50 shrink-0 bg-gray-50/30">
+          <div className="flex items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-sm font-semibold text-gray-900 truncate">{userName}</span>
-                <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded ${
-                  safeRole === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-red-100 text-brand-red'
-                }`}>
-                  {safeRole}
-                </span>
+                <span className="text-[10px] font-black text-gray-900 truncate uppercase tracking-tight">{userName}</span>
+                <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></div>
               </div>
-              <span className="text-xs text-gray-500 truncate">{userEmail}</span>
+              <span className="text-[8px] font-black text-gray-400 truncate uppercase tracking-widest opacity-60">ADMIN_NODE_01</span>
             </div>
             <form action="/auth/logout" method="POST">
               <button 
                 type="submit"
-                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                title="Log out"
+                className="p-2.5 text-gray-300 hover:text-brand-red hover:bg-red-50 rounded-xl transition-all active:scale-90"
+                title="Terminate Session"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -200,66 +203,81 @@ export default function AdminLayout({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         {/* Global Topbar Header */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 shrink-0 z-30">
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-6 lg:px-12 shrink-0 z-30 sticky top-0">
           <div className="flex items-center lg:hidden">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 -ml-2 mr-3 text-gray-600 hover:bg-gray-100 rounded-lg"
+              className="p-3 -ml-2 mr-4 text-gray-500 hover:text-black hover:bg-gray-50 rounded-2xl transition-all"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <div className="font-bold text-gray-900 text-lg tracking-tight flex items-center">
-              <img src="/brand/logo.png" alt="Creova" className="h-7 w-auto object-contain mr-2" />
+            <div className="flex items-center">
+              <img src="/brand/logo.png" alt="Creova" className="h-8 w-auto object-contain" />
             </div>
           </div>
-          <div className="hidden lg:block">
-             <div className="text-sm text-gray-500">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+          
+          <div className="hidden lg:flex items-center gap-6">
+             <div className="px-4 py-2 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3">
+                <ShieldCheck className="w-4 h-4 text-brand-red" />
+                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest italic">Core Access Verified</span>
+             </div>
+             <div className="text-[10px] font-black uppercase tracking-widest text-gray-300 flex items-center gap-3">
+               <CalendarDays className="w-4 h-4 opacity-50" />
+               {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+             </div>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             {/* Notification Bell */}
             <div className="relative">
               <button 
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors relative"
+                className={`p-3 rounded-2xl transition-all relative group ${notificationsOpen ? 'bg-black text-white' : 'text-gray-400 hover:text-black hover:bg-gray-50'}`}
               >
-                <Bell className="w-5 h-5" />
+                <Bell className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-brand-red border-2 border-white rounded-full"></span>
+                  <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-brand-red ring-4 ring-white rounded-full animate-pulse group-hover:animate-none"></span>
                 )}
               </button>
 
               {/* Notification Dropdown */}
               {notificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50">
-                    <h3 className="font-semibold text-gray-900 text-sm">Notifications</h3>
-                    <span className="text-xs font-medium text-brand-red bg-red-50 px-2 py-0.5 rounded-full">{unreadCount} new</span>
+                <div className="absolute right-0 mt-5 w-96 bg-white border border-gray-100 rounded-[2.5rem] shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                  <div className="flex items-center justify-between p-8 border-b border-gray-50 bg-gray-50/50">
+                    <h3 className="font-black text-gray-900 text-[11px] uppercase tracking-widest italic flex items-center">
+                      <Zap className="w-4 h-4 mr-3 text-brand-red" />
+                      Tactical Alerts
+                    </h3>
+                    <span className="text-[9px] font-black text-white bg-black px-3 py-1.5 rounded-xl uppercase tracking-widest">{unreadCount} Pending</span>
                   </div>
-                  <div className="max-h-80 overflow-y-auto">
+                  <div className="max-h-[500px] overflow-y-auto custom-scrollbar">
                     {notifications.length === 0 ? (
-                      <div className="p-6 text-center text-sm text-gray-500">
-                        You're all caught up!
+                      <div className="p-20 text-center flex flex-col items-center opacity-20">
+                        <Target className="w-12 h-12 mb-4" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em]">Zero Intel Logs</span>
                       </div>
                     ) : (
-                      <div className="divide-y divide-gray-100">
+                      <div className="divide-y divide-gray-50">
                         {notifications.map((n) => (
-                           <div key={n.id} className={`p-4 transition-colors ${!n.is_read ? 'bg-blue-50/30' : ''}`}>
-                              <div className="flex gap-3">
-                                 <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${!n.is_read ? 'bg-blue-500' : 'bg-transparent'}`} />
+                           <div key={n.id} className={`p-8 transition-all hover:bg-red-50/20 group/note ${!n.is_read ? 'bg-red-50/5' : ''}`}>
+                              <div className="flex gap-6">
+                                 <div className={`mt-2 w-1.5 h-1.5 rounded-full shrink-0 transition-transform group-hover/note:scale-150 ${!n.is_read ? 'bg-brand-red shadow-lg shadow-red-500' : 'bg-gray-200'}`} />
                                  <div className="flex-1 min-w-0">
-                                    <p className={`text-sm ${!n.is_read ? 'font-semibold text-gray-900' : 'font-medium text-gray-700'}`}>
+                                    <p className={`text-[11px] tracking-tight uppercase leading-snug ${!n.is_read ? 'font-black text-gray-900' : 'font-bold text-gray-500 line-through opacity-40'}`}>
                                       {n.title}
                                     </p>
-                                    <p className="text-sm text-gray-500 mt-0.5">{n.message}</p>
-                                    <div className="flex items-center mt-2 justify-between">
-                                      <span className="text-xs text-gray-400">{new Date(n.created_at).toLocaleString()}</span>
+                                    <p className="text-[11px] text-gray-400 mt-2 font-medium leading-relaxed">{n.message}</p>
+                                    <div className="flex items-center mt-6 justify-between">
+                                      <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest flex items-center">
+                                        <Clock className="w-3 h-3 mr-2 opacity-50" />
+                                        {new Date(n.created_at).toLocaleString([], { hour: '2-digit', minute: '2-digit' })}
+                                      </span>
                                       {!n.is_read && (
                                         <button 
                                           onClick={() => handleMarkAsRead(n.id)}
-                                          className="text-xs font-medium text-[#2563EB] hover:text-blue-700 flex items-center"
+                                          className="text-[9px] font-black text-brand-red hover:text-black uppercase tracking-widest transition-all flex items-center bg-white px-4 py-2 rounded-xl border border-red-50 shadow-sm hover:shadow-md"
                                         >
-                                          <Check className="w-3 h-3 mr-1" /> Mark read
+                                          <Check className="w-3.5 h-3.5 mr-2" /> Mark Done
                                         </button>
                                       )}
                                     </div>
@@ -270,14 +288,21 @@ export default function AdminLayout({
                       </div>
                     )}
                   </div>
+                  <div className="p-6 bg-gray-50/80 text-center">
+                     <button className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em] hover:text-black transition-colors italic">Clear Grid Archive</button>
+                  </div>
                 </div>
               )}
             </div>
             
-            <div className="hidden lg:block w-px h-6 bg-gray-200"></div>
+            <div className="hidden lg:block w-px h-8 bg-gray-100 mx-2"></div>
             
-            <div className="hidden lg:flex items-center gap-3">
-               <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold flex flex-col items-center justify-center text-sm">
+            <div className="hidden lg:flex items-center gap-4 group cursor-pointer">
+               <div className="text-right">
+                  <div className="text-[10px] font-black text-gray-900 uppercase tracking-tight group-hover:text-brand-red transition-colors">{userName}</div>
+                  <div className="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-0.5">{safeRole} HUB</div>
+               </div>
+               <div className="w-11 h-11 rounded-2xl bg-black text-white font-black flex items-center justify-center text-sm shadow-2xl shadow-black/10 transition-transform group-hover:rotate-6 group-hover:bg-brand-red">
                  {userName.charAt(0).toUpperCase()}
                </div>
             </div>
@@ -285,7 +310,7 @@ export default function AdminLayout({
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-white/50">
+        <main className="flex-1 overflow-y-auto px-6 lg:px-12 py-10 lg:py-14 custom-scrollbar">
           {children}
         </main>
       </div>

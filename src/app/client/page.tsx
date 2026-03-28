@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server'
-import { Building2, FolderOpen, Receipt, CalendarCheck, ArrowRight, FileText, Megaphone, Bell, Clock, CheckCircle } from 'lucide-react'
+import { Building2, FolderOpen, Receipt, CalendarCheck, ArrowRight, FileText, Megaphone, Bell, Clock, CheckCircle, Zap, TrendingUp, Target, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -29,10 +29,11 @@ export default async function ClientDashboard({ searchParams }: { searchParams: 
   
   if (!clientData) {
     return (
-      <div className="p-12 text-center text-gray-500 bg-white rounded-2xl border border-gray-100 shadow-sm mx-auto max-w-2xl mt-12">
-        <Building2 className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Client Profile Missing</h2>
-        <p>This user account is not linked to any client record.</p>
+      <div className="p-20 text-center bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl mx-auto max-w-2xl mt-20 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full blur-3xl opacity-50 -mr-16 -mt-16"></div>
+        <Building2 className="w-16 h-16 mx-auto mb-6 text-gray-200" />
+        <h2 className="text-2xl font-black text-gray-900 mb-3 uppercase italic tracking-tighter">Profile Not Found</h2>
+        <p className="text-gray-400 text-sm font-black uppercase tracking-widest px-10">This authentication node is not currently linked to a verified client registry.</p>
       </div>
     )
   }
@@ -112,33 +113,33 @@ export default async function ClientDashboard({ searchParams }: { searchParams: 
   if (activeContracts?.[0]) {
     activities.push({ 
       id: 'c1', 
-      title: `Contract Active: ${activeContracts[0].title}`, 
+      title: `Protocol Active: ${activeContracts[0].title}`, 
       time: activeContracts[0].start_date, 
-      icon: FileText, 
-      color: 'text-green-600', 
-      bg: 'bg-green-100' 
+      icon: ShieldCheck, 
+      color: 'text-emerald-500', 
+      bg: 'bg-emerald-50' 
     })
   }
 
   latestInvoices?.forEach(inv => {
     activities.push({
       id: inv.id,
-      title: `Invoice ${inv.invoice_number} ${inv.status}`,
+      title: `Ledger Entry: ${inv.invoice_number} ${inv.status.toUpperCase()}`,
       time: inv.created_at,
       icon: Receipt,
-      color: inv.status === 'paid' ? 'text-emerald-600' : 'text-amber-600',
-      bg: inv.status === 'paid' ? 'bg-emerald-50' : 'bg-amber-50'
+      color: inv.status === 'paid' ? 'text-emerald-500' : 'text-brand-red',
+      bg: inv.status === 'paid' ? 'bg-emerald-50' : 'bg-red-50'
     })
   })
 
   latestProjects?.forEach(proj => {
     activities.push({
       id: proj.id,
-      title: `Project Started: ${proj.name}`,
+      title: `Node Initialized: ${proj.name}`,
       time: proj.created_at,
       icon: FolderOpen,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50'
+      color: 'text-black',
+      bg: 'bg-gray-100'
     })
   })
 
@@ -151,107 +152,103 @@ export default async function ClientDashboard({ searchParams }: { searchParams: 
   const notificationCount = (unreadMessages || 0) + (hasPendingContract ? 1 : 0)
 
   return (
-    <div className="p-6 lg:p-8 w-full max-w-7xl mx-auto space-y-8">
+    <div className="space-y-10">
       {/* Pending Contract Banner */}
       {hasPendingContract && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between shadow-sm animate-in slide-in-from-top-4">
-          <div className="flex items-center text-amber-800 mb-3 sm:mb-0">
-             <div className="p-2 bg-amber-100 rounded-full mr-3 shrink-0">
-                <FileText className="w-5 h-5 text-amber-600" />
+        <div className="bg-black border border-gray-800 rounded-[2rem] p-6 flex flex-col sm:flex-row items-center justify-between shadow-2xl animate-in slide-in-from-top-4 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red rounded-full blur-3xl opacity-20 -mr-16 -mt-16 group-hover:scale-110 transition-transform"></div>
+          <div className="flex items-center text-white mb-4 sm:mb-0 relative z-10">
+             <div className="p-3 bg-brand-red rounded-2xl mr-5 shrink-0 shadow-lg shadow-red-500/20">
+                <FileText className="w-6 h-6 text-white" />
              </div>
              <div>
-               <p className="font-bold">Contract Signature Required</p>
-               <p className="text-sm opacity-90">Please review and sign your latest service agreement to proceed.</p>
+               <p className="font-black text-lg uppercase tracking-tight italic">Registry Protocol Required</p>
+               <p className="text-[10px] uppercase font-black tracking-widest text-gray-400 mt-1">Pending Master Agreement awaiting signature.</p>
              </div>
           </div>
-          <Link href="/client/contracts" className="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md transition-colors w-full sm:w-auto text-center shrink-0">
-            Review & Sign
+          <Link href="/client/contracts" className="bg-white hover:bg-brand-red hover:text-white text-black px-8 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl transition-all w-full sm:w-auto text-center shrink-0 relative z-10 active:scale-95">
+            Execute Protocol
           </Link>
         </div>
       )}
 
-      {/* Welcome Banner */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-gray-200 pb-6">
-        <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Howdy, {clientData?.company_name || 'Client'}!</h1>
-          <p className="text-gray-500 mt-1">Here is the latest snapshot of your agency growth.</p>
-        </div>
-        <div className="flex items-center space-x-3">
-           <Link href="/admin/messages" className="p-2.5 bg-white border border-gray-200 rounded-full text-gray-500 hover:bg-gray-50 relative">
-             <Bell className="w-5 h-5" />
-             {notificationCount > 0 && (
-               <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">
-                 {notificationCount}
-               </span>
-             )}
-           </Link>
-           {clientData?.logo_url && (
-             <img src={clientData.logo_url} alt="Logo" className="w-12 h-12 rounded-full border border-gray-200 object-cover shadow-sm bg-white" />
-           )}
-        </div>
+      {/* Hero Welcome */}
+      <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden flex flex-col md:flex-row justify-between items-center gap-8">
+         <div className="absolute top-0 left-0 w-64 h-64 bg-red-50 rounded-full blur-[100px] -ml-32 -mt-32 opacity-40"></div>
+         <div className="relative z-10">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-300 italic mb-2">Systems Online</h2>
+            <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase italic">{clientData?.company_name || 'Counterparty'} Hub</h1>
+            <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mt-2 max-w-md leading-relaxed">Global performance telemetry and asset synchronization across all active agency marketing nodes.</p>
+         </div>
+         <div className="flex items-center gap-6 relative z-10">
+            <div className="text-right hidden sm:block">
+               <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic mb-1">Status</div>
+               <div className="flex items-center gap-2 justify-end">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-black text-gray-900 uppercase tracking-tighter italic">Secured_Link</span>
+               </div>
+            </div>
+            {clientData?.logo_url ? (
+              <img src={clientData.logo_url} alt="Logo" className="w-20 h-20 rounded-[2rem] border-4 border-white shadow-2xl object-cover bg-white" />
+            ) : (
+               <div className="w-20 h-20 rounded-[2rem] bg-black text-white flex items-center justify-center font-black text-2xl shadow-2xl">
+                  {clientData?.company_name?.charAt(0) || 'C'}
+               </div>
+            )}
+         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         
         {/* Left Column: Stats & Meta Ads */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-10">
           
           {/* Quick Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Total Ad Spend</p>
-              <h3 className="text-3xl font-black text-gray-900">${adSpend.toLocaleString()}</h3>
-              <p className="text-xs text-green-600 font-bold mt-2">Active over 30 days</p>
-            </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Platform CTR</p>
-              <h3 className="text-3xl font-black text-gray-900">{adCtr}%</h3>
-              <p className="text-xs text-blue-600 font-bold mt-2">Across {adCount} campaigns</p>
-            </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Pending Invoices</p>
-              <h3 className="text-3xl font-black text-gray-900">{pendingInvoicesCount || 0}</h3>
-              <Link href="/client/invoices" className="text-xs text-gray-500 font-bold hover:text-blue-600 mt-2 flex items-center group">
-                 Pay now <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
+            <MetricCard title="Capital Deployed" value={`$${adSpend.toLocaleString()}`} icon={<TrendingUp className="text-brand-red w-4 h-4"/>} subtitle="Last 30 Cycle" />
+            <MetricCard title="Node Efficiency" value={`${adCtr}%`} icon={<Target className="text-black w-4 h-4"/>} subtitle={`Across ${adCount} Nodes`} />
+            <MetricCard title="Open Ledgers" value={pendingInvoicesCount || 0} icon={<Receipt className="text-brand-red w-4 h-4"/>} subtitle="Pending Action" link="/client/invoices" />
           </div>
 
           {/* Active Campaigns Feature Map */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm overflow-hidden relative">
-            <div className="absolute top-0 right-0 p-8 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-50 -z-10 pointer-events-none translate-x-1/3 -translate-y-1/3" />
-            <div className="flex justify-between items-center mb-6">
+          <div className="bg-black border border-gray-800 rounded-[2.5rem] p-10 shadow-2xl overflow-hidden relative group">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-brand-red rounded-full blur-[120px] opacity-10 -mr-48 -mt-48 group-hover:scale-125 transition-transform duration-1000"></div>
+            <div className="flex justify-between items-center mb-10 relative z-10">
               <div>
-                <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                  <Megaphone className="w-5 h-5 mr-2 text-brand-red" /> Meta Ad Campaigns
+                <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter flex items-center">
+                  <Megaphone className="w-6 h-6 mr-4 text-brand-red" /> Meta Performance Hub
                 </h2>
-                <p className="text-sm text-gray-500 mt-1">Live analytics integrated securely via Meta platform.</p>
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-2">Authenticated API Stream • Data Integrity Verified</p>
               </div>
-              <Link href="/client/campaigns" className="bg-red-50 hover:bg-red-100 text-brand-red px-4 py-2 rounded-xl text-sm font-bold transition-colors">
-                View Full Report
+              <Link href="/client/campaigns" className="bg-white hover:bg-brand-red hover:text-white text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95">
+                Full Telemetry
               </Link>
             </div>
             
             {!clientData?.meta_ad_account_id ? (
-              <div className="bg-gray-50 rounded-xl p-8 text-center border border-dashed border-gray-200">
-                <Megaphone className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-                <h4 className="font-bold text-gray-700">Analytics Not Connected</h4>
-                <p className="text-sm text-gray-500 max-w-sm mx-auto mt-1 mb-4">You have not securely connected your Meta Ad account to unlock real-time dashboard tracking.</p>
-                <Link href="/client/campaigns" className="inline-flex bg-white border border-gray-200 shadow-sm px-4 py-2 rounded-xl font-bold text-sm text-gray-700 hover:border-brand-red hover:text-brand-red transition-colors">Connect Meta Business</Link>
+              <div className="bg-white/5 rounded-[2rem] p-12 text-center border border-dashed border-white/10 relative z-10">
+                <ShieldCheck className="w-12 h-12 text-gray-700 mx-auto mb-6" />
+                <h4 className="font-black text-white uppercase tracking-widest text-lg mb-2">Portfolio Unlinked</h4>
+                <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest max-w-sm mx-auto mb-8">Secure your Meta Business assets to enable real-time dashboard visualization.</p>
+                <Link href="/client/campaigns" className="inline-flex bg-brand-red text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-red-600/20 hover:bg-white hover:text-black transition-all">Link Marketing Repository</Link>
               </div>
             ) : adSpend > 0 ? (
-              <div className="h-40 bg-gradient-to-r from-brand-red to-red-600 rounded-xl p-6 text-white flex flex-col justify-end relative overflow-hidden shadow-inner">
-                 <div className="absolute top-0 right-0 w-full h-full opacity-10">
-                    <svg viewBox="0 0 200 100" className="w-full h-full object-cover"><path fill="none" stroke="currentColor" strokeWidth="2" d="M0,80 Q25,80 50,50 T100,50 T150,20 T200,60" /></svg>
+              <div className="h-48 bg-gradient-to-br from-gray-900 to-black rounded-[2rem] p-8 text-white flex flex-col justify-end relative overflow-hidden border border-white/5 shadow-inner z-10">
+                 <div className="absolute top-0 right-0 w-full h-full opacity-20 group-hover:opacity-30 transition-opacity">
+                    <svg viewBox="0 0 400 200" className="w-full h-full"><path fill="none" stroke="#E31E24" strokeWidth="4" d="M0,150 Q50,150 100,100 T200,80 T300,40 T400,90" className="animate-[dash_3s_linear_infinite]" /></svg>
                  </div>
-                 <div className="relative z-10">
-                   <p className="text-red-100 text-sm font-medium mb-1">Total ROI Trend</p>
-                   <p className="text-3xl font-black">Performance Active</p>
+                 <div className="relative z-20">
+                   <div className="flex items-center gap-3 mb-2">
+                      <Zap className="w-4 h-4 text-brand-red animate-pulse" />
+                      <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">Active Intelligence Feed</p>
+                   </div>
+                   <p className="text-4xl font-black uppercase tracking-tighter italic">Node Performance Optimized</p>
                  </div>
               </div>
             ) : (
-              <div className="bg-gray-50 rounded-xl p-6 text-center border border-gray-100">
-                <p className="text-gray-500 font-medium">Data is synchronizing with Meta...</p>
+              <div className="bg-white/5 rounded-[2rem] p-10 text-center border border-white/5 z-10 relative">
+                <div className="w-3 h-3 bg-brand-red rounded-full animate-ping mx-auto mb-4"></div>
+                <p className="text-gray-400 font-black uppercase tracking-widest text-[10px]">Synchronizing Matrix with Meta Platform...</p>
               </div>
             )}
           </div>
@@ -259,57 +256,70 @@ export default async function ClientDashboard({ searchParams }: { searchParams: 
         </div>
 
         {/* Right Column: Contracts & Activity */}
-        <div className="lg:col-span-4 space-y-8">
+        <div className="lg:col-span-4 space-y-10">
           
-          {/* Contract Status Card */}
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
+          {/* Active Contract Card */}
+          <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-sm relative overflow-hidden group">
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-red-50 rounded-full blur-3xl opacity-50 -mr-16 -mb-16"></div>
             
-            <h3 className="font-bold text-gray-100 mb-6 flex items-center">
-              <FileText className="w-5 h-5 mr-2 text-blue-400" /> Active Master Agreement
+            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-8 flex items-center">
+              <ShieldCheck className="w-4 h-4 mr-3 text-brand-red" /> Primary Agreement
             </h3>
 
             {activeContract ? (
-              <div className="space-y-4">
+              <div className="space-y-6 relative z-10">
                 <div>
-                  <p className="text-xs text-gray-500 uppercase font-bold tracking-widest mb-1">Contract Duration</p>
-                  <p className="font-medium text-blue-50">{new Date(activeContract.start_date).toLocaleDateString()} — {new Date(activeContract.end_date).toLocaleDateString()}</p>
+                   <h4 className="text-lg font-black text-gray-900 uppercase tracking-tighter italic leading-none">{activeContract.title}</h4>
+                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-2 italic">Ref: MSA_SECURE_{activeContract.id.slice(0,5)}</p>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500 uppercase font-bold tracking-widest mb-1">Monthly Billing</p>
-                  <p className="text-2xl font-black">${activeContract.monthly_fee}</p>
+                
+                <div className="grid grid-cols-2 gap-4">
+                   <div className="bg-gray-50 border border-gray-100 p-4 rounded-2xl">
+                      <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Cycle Fee</p>
+                      <p className="text-xl font-black text-gray-900 tracking-tight">${activeContract.monthly_fee}</p>
+                   </div>
+                   <div className="bg-gray-50 border border-gray-100 p-4 rounded-2xl flex flex-col justify-center">
+                      <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Maturity</p>
+                      <p className="font-black text-gray-900 text-xs uppercase tracking-tight">{new Date(activeContract.end_date).toLocaleDateString()}</p>
+                   </div>
                 </div>
-                <div className="pt-4 border-t border-gray-800 flex justify-between items-center">
-                  <span className="bg-green-500/20 text-green-400 text-xs font-bold px-2.5 py-1 rounded-md border border-green-500/30 flex items-center">
-                    <CheckCircle className="w-3 h-3 mr-1" /> Active
+
+                <div className="pt-6 border-t border-gray-50 flex justify-between items-center">
+                  <span className="flex items-center gap-2 text-[9px] font-black text-emerald-500 uppercase tracking-[0.2em] italic">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div> Verified_Active
                   </span>
-                  <Link href="/client/contracts" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">View details</Link>
+                  <Link href="/client/contracts" className="text-[9px] font-black text-gray-400 hover:text-black uppercase tracking-widest transition-colors flex items-center group">
+                    Hub <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Link>
                 </div>
               </div>
             ) : (
-              <div className="text-center py-4">
-                <p className="text-gray-400 text-sm mb-4">No active contracts signed.</p>
-                <Link href="/client/contracts" className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-bold transition-all">Review Hub</Link>
+              <div className="text-center py-6 relative z-10">
+                <p className="text-gray-300 font-black uppercase tracking-widest text-[10px] mb-6 italic">No Active Protocols Found</p>
+                <Link href="/client/contracts" className="bg-black text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-red transition-all shadow-xl">Review Matrix</Link>
               </div>
             )}
           </div>
 
           {/* Recent Activity Feed */}
-          <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-             <h3 className="font-bold text-gray-900 mb-6 flex items-center">
-               <Clock className="w-5 h-5 mr-2 text-gray-400" /> Recent Activity
+          <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-sm">
+             <h3 className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] mb-10 flex items-center italic">
+               Temporal Activity
              </h3>
-             <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
+             <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-100 before:to-transparent">
                {finalActivities.map((item, idx) => {
                  const Icon = item.icon as any
                  return (
-                   <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                     <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-white ${item.bg} ${item.color} shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm relative z-10`}>
+                   <div key={idx} className="relative flex items-start gap-6 group">
+                     <div className={`flex items-center justify-center w-10 min-w-[40px] h-10 rounded-2xl border-2 border-white ${item.bg} ${item.color} shadow-lg shadow-black/5 relative z-10 transition-transform group-hover:scale-110`}>
                        <Icon className="w-4 h-4" />
                      </div>
-                     <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                       <time className="text-xs font-medium text-gray-400 uppercase tracking-widest">{new Date(item.time).toLocaleDateString() === 'Invalid Date' ? item.time : new Date(item.time).toLocaleDateString()}</time>
-                       <p className="font-bold text-gray-900 text-sm mt-1">{item.title}</p>
+                     <div className="flex-1 pt-1">
+                        <div className="flex justify-between items-center gap-4">
+                           <p className="font-black text-gray-900 text-[11px] uppercase tracking-tight group-hover:text-brand-red transition-colors">{item.title}</p>
+                           <time className="text-[8px] font-black text-gray-300 uppercase tracking-widest shrink-0 italic">{new Date(item.time).toLocaleDateString() === 'Invalid Date' ? item.time : new Date(item.time).toLocaleDateString([], { month: 'short', day: 'numeric' })}</time>
+                        </div>
+                        <div className="w-full h-px bg-gray-50 mt-4 group-last:hidden"></div>
                      </div>
                    </div>
                  )
@@ -323,6 +333,23 @@ export default async function ClientDashboard({ searchParams }: { searchParams: 
   )
 }
 
-function PenTool(props: any) {
-  return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+function MetricCard({ title, value, icon, subtitle, link }: any) {
+   const Content = (
+      <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:border-gray-200 transition-all group relative overflow-hidden">
+         <div className="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-full blur-3xl opacity-0 group-hover:opacity-40 transition-opacity -mr-12 -mt-12"></div>
+         <div className="flex justify-between items-start mb-4 relative z-10">
+            <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">{title}</p>
+            <div className="p-2.5 bg-gray-50 rounded-xl group-hover:bg-red-50 transition-colors border border-gray-50 group-hover:border-red-100">
+               {icon}
+            </div>
+         </div>
+         <h3 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic relative z-10">{value}</h3>
+         <div className="flex items-center justify-between mt-3 relative z-10">
+            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{subtitle}</p>
+            {link && <ArrowRight className="w-3 h-3 text-brand-red opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />}
+         </div>
+      </div>
+   )
+   
+   return link ? <Link href={link} className="block">{Content}</Link> : Content
 }

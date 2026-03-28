@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit2, Trash2, Plus, Mail, Phone, MapPin, Building2, AlertCircle, FileText, ExternalLink, LogIn } from 'lucide-react'
+import { Edit2, Trash2, Plus, Mail, Phone, MapPin, Building2, AlertCircle, FileText, ExternalLink, LogIn, ArrowRight, Target, Zap, Globe, Sparkles, X, ShieldCheck } from 'lucide-react'
 import { createClient, updateClient, deleteClient } from './actions'
+import { createContract } from '../proposals/contractActions'
+import { createClientAccount } from './clientAuthActions'
 
 type Client = {
   id: string
@@ -17,9 +19,6 @@ type Client = {
   logo_url?: string | null
   contracts?: { id: string; status: string }[]
 }
-
-import { createContract } from '../proposals/contractActions'
-import { createClientAccount } from './clientAuthActions'
 
 export default function ClientList({ initialClients }: { initialClients: Client[] }) {
   const [clients, setClients] = useState(initialClients)
@@ -102,7 +101,6 @@ export default function ClientList({ initialClients }: { initialClients: Client[
   }
 
   function handleLoginAsClient(client: Client) {
-    // We redirect to a special preview route or just pass preview_id
     window.location.href = `/client?preview_id=${client.id}`
   }
 
@@ -134,136 +132,142 @@ export default function ClientList({ initialClients }: { initialClients: Client[
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage your agency clients and their details.</p>
+    <div className="space-y-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-40"></div>
+        <div className="relative z-10">
+          <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">Registry Hub</h1>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Client Infrastructure & Radius Management</p>
         </div>
         <button
           onClick={openCreate}
-          className="bg-brand-red hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors shadow-sm"
+          className="relative z-10 bg-black hover:bg-brand-red text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center transition-all shadow-xl hover:shadow-red-200 active:scale-95 group"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Client
+          <Plus className="w-4 h-4 mr-3 group-hover:rotate-90 transition-transform" />
+          Add Client Node
         </button>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-medium">
-              <tr>
-                <th className="px-6 py-4">Company</th>
-                <th className="px-6 py-4">Contact</th>
-                <th className="px-6 py-4">Contract</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+            <thead>
+              <tr className="bg-gray-50/50 border-b border-gray-100">
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Company Identity</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Comm Channels</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Protocol status</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Clearance</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Directives</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-50">
               {clients.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                    No clients found. Click "Add Client" to create one.
+                  <td colSpan={5} className="px-10 py-24 text-center">
+                    <div className="flex flex-col items-center">
+                       <Target className="w-16 h-16 text-gray-100 mb-6" />
+                       <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.25em] italic">Zero external nodes detected in grid.</p>
+                    </div>
                   </td>
                 </tr>
               ) : (
                 clients.map((client) => (
-                  <tr key={client.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
+                  <tr key={client.id} className="hover:bg-red-50/10 transition-all group">
+                    <td className="px-10 py-8">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 mr-3 shrink-0">
-                          <Building2 className="w-5 h-5" />
+                        <div className="w-16 h-16 rounded-[1.5rem] bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-300 mr-5 shrink-0 group-hover:bg-black group-hover:text-white group-hover:rotate-3 transition-all relative overflow-hidden shadow-sm">
+                           {client.logo_url ? (
+                             <img src={client.logo_url} alt="" className="w-full h-full object-cover" />
+                           ) : (
+                             <Building2 className="w-7 h-7" />
+                           )}
+                           <div className="absolute inset-0 bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">{client.company_name}</p>
-                          {client.address && <p className="text-xs text-gray-500 mt-0.5 max-w-[200px] truncate" title={client.address}>{client.address}</p>}
+                          <p className="font-black text-gray-900 uppercase tracking-tight text-base group-hover:text-brand-red transition-colors">{client.company_name}</p>
+                          {client.address && <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1.5 max-w-[200px] truncate italic" title={client.address}>{client.address}</p>}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="space-y-1">
+                    <td className="px-10 py-8">
+                      <div className="space-y-2">
                         {client.contact_email && (
-                          <div className="flex items-center text-gray-600">
-                            <Mail className="w-3.5 h-3.5 mr-2" />
-                            <a href={`mailto:${client.contact_email}`} className="hover:text-brand-red hover:underline">{client.contact_email}</a>
+                          <div className="flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-brand-red transition-colors">
+                            <Mail className="w-4 h-4 mr-3 opacity-30 text-black group-hover:text-brand-red transition-colors" />
+                            <a href={`mailto:${client.contact_email}`} className="border-b border-transparent hover:border-brand-red">{client.contact_email}</a>
                           </div>
                         )}
                         {client.contact_phone && (
-                          <div className="flex items-center text-gray-600">
-                            <Phone className="w-3.5 h-3.5 mr-2" />
+                          <div className="flex items-center text-[10px] font-black uppercase tracking-widest text-gray-500">
+                            <Phone className="w-4 h-4 mr-3 opacity-30 text-black" />
                             <span>{client.contact_phone}</span>
                           </div>
                         )}
                         {!client.contact_email && !client.contact_phone && (
-                          <span className="text-gray-400 italic">No contact info</span>
+                          <span className="text-[8px] font-black uppercase tracking-widest text-gray-300 italic">No frequency logged</span>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-10 py-8">
                       {(() => {
                         const hasActive = client.contracts?.some(c => c.status === 'active')
                         const hasPending = client.contracts?.some(c => c.status === 'pending')
                         if (hasActive) {
-                          return <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-emerald-200 flex inline-flex items-center"><FileText className="w-3 h-3 mr-1"/> Active</span>
+                          return <span className="bg-black text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border border-black flex inline-flex items-center shadow-lg shadow-black/10 transition-all group-hover:-translate-y-0.5"><ShieldCheck className="w-3.5 h-3.5 mr-2 text-brand-red"/> ACTIVE_AGREEMENT</span>
                         }
                         if (hasPending) {
-                          return <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border border-amber-200 flex inline-flex items-center"><FileText className="w-3 h-3 mr-1"/> Pending</span>
+                          return <span className="bg-amber-50 text-amber-600 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border border-amber-100 flex inline-flex items-center"><Clock className="w-3.5 h-3.5 mr-2"/> AWAITING_INGESTION</span>
                         }
-                        return <span className="text-gray-400 text-xs italic">No Contract</span>
+                        return <span className="text-[9px] font-black uppercase tracking-widest text-gray-300 italic">No Contract Node</span>
                       })()}
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        client.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                    <td className="px-10 py-8">
+                      <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${
+                        client.status === 'active' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-gray-50 text-gray-400 border-gray-100'
                       }`}>
                         {client.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      {/* Quick Actions */}
-                      <div className="flex justify-end gap-1 mb-2">
-                        <button 
+                    <td className="px-10 py-8 text-right">
+                      <div className="flex items-center justify-end gap-3 mb-4 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
+                         <button 
                           onClick={() => {
                             setContractClient(client)
                             setIsContractModalOpen(true)
                           }}
-                          className="p-1.5 bg-red-50 text-brand-red rounded-md hover:bg-red-100 transition-colors"
-                          title="Generate Contract"
+                          className="p-3 bg-white border border-gray-100 rounded-xl text-brand-red hover:bg-brand-red hover:text-white hover:border-brand-red hover:shadow-lg transition-all active:scale-90"
+                          title="Generate Protocol Contract"
                         >
-                          <FileText className="w-3.5 h-3.5" />
+                          <FileText className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => handleSendWelcome(client)}
-                          className="p-1.5 bg-amber-50 text-amber-600 rounded-md hover:bg-amber-100 transition-colors"
-                          title="Send Welcome Email"
+                          className="p-3 bg-white border border-gray-100 rounded-xl text-amber-500 hover:bg-amber-500 hover:text-white hover:border-amber-500 hover:shadow-lg transition-all active:scale-90"
+                          title="Transmit Authentication"
                         >
-                          <Mail className="w-3.5 h-3.5" />
+                          <Mail className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => handleLoginAsClient(client)}
-                          className="p-1.5 bg-gray-50 text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
-                          title="Login as Client"
+                          className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-black hover:bg-black hover:text-white hover:border-black hover:shadow-lg transition-all active:scale-90"
+                          title="Proxy Access (Preview)"
                         >
-                          <LogIn className="w-3.5 h-3.5" />
+                          <LogIn className="w-4 h-4" />
                         </button>
                       </div>
 
-                      <div className="flex justify-end gap-1">
+                      <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all delay-75 translate-x-4 group-hover:translate-x-0">
                         <button 
                           onClick={() => openEdit(client)}
-                          className="p-2 border border-gray-200 rounded-lg text-gray-500 hover:text-brand-red hover:bg-red-50 hover:border-red-200 transition-colors"
-                          title="Edit Client Settings"
+                          className="px-4 py-2 bg-gray-50 text-gray-400 hover:text-black hover:bg-white border border-gray-100 hover:border-black rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
                         >
-                          <Edit2 className="w-4 h-4" />
+                          CALIBRATE
                         </button>
                         <button 
                           onClick={() => handleDelete(client.id)}
-                          className="p-2 border border-gray-200 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors"
-                          title="Delete Client entirely"
+                          className="px-4 py-2 bg-gray-50 text-gray-400 hover:text-brand-red hover:bg-white border border-gray-100 hover:border-brand-red rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          TERMINATE
                         </button>
                       </div>
                     </td>
@@ -277,127 +281,135 @@ export default function ClientList({ initialClients }: { initialClients: Client[
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {editingClient ? 'Edit Client' : 'Add New Client'}
-              </h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                &times;
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-500">
+            <div className="flex justify-between items-center px-10 py-8 border-b border-gray-50 bg-gray-50/50">
+              <div>
+                 <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic">
+                   {editingClient ? 'Calibrate Node' : 'Initialize Hub'}
+                 </h2>
+                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Registry Client Entry</p>
+              </div>
+              <button onClick={() => setIsModalOpen(false)} className="p-3 text-gray-300 hover:text-brand-red hover:bg-red-50 rounded-2xl transition-all">
+                <X className="w-6 h-6" />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-10 space-y-8">
               {error && (
-                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-center">
-                  <AlertCircle className="w-4 h-4 mr-2" />
-                  {error}
+                <div className="bg-red-50 text-brand-red p-6 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center border border-red-100 animate-in shake-200">
+                  <AlertCircle className="w-5 h-5 mr-4 shrink-0" />
+                  Kernel Override: {error}
                 </div>
               )}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Company Name *</label>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Company Codename <span className="text-brand-red font-black">*</span></label>
                 <input 
                   type="text" 
                   name="company_name" 
                   defaultValue={editingClient?.company_name || ''} 
                   required
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
+                  placeholder="EX: APEX_LOGISTICS_GRP"
+                  className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Meta Ad Account ID</label>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Meta Ad account UID</label>
                   <input 
                     type="text" 
                     name="meta_ad_account_id" 
                     placeholder="act_XXXXXXXXX"
                     defaultValue={editingClient?.meta_ad_account_id || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Identity Asset (Logo URL)</label>
                   <input 
                     type="url" 
                     name="logo_url" 
-                    placeholder="https://..."
+                    placeholder="https://cloud.registry/..."
                     defaultValue={editingClient?.logo_url || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Contact frequency (Email)</label>
                   <input 
                     type="email" 
                     name="contact_email" 
                     defaultValue={editingClient?.contact_email || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Direct Line (Phone)</label>
                   <input 
                     type="tel" 
                     name="contact_phone" 
                     defaultValue={editingClient?.contact_phone || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Physical coordinate (Address)</label>
                 <input 
                   type="text" 
                   name="address" 
                   defaultValue={editingClient?.address || ''} 
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red"
+                  className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-xs uppercase tracking-widest transition-all"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Registry metadata (Notes)</label>
                 <textarea 
                   name="notes" 
                   rows={3}
                   defaultValue={editingClient?.notes || ''} 
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red resize-none"
+                  className="w-full p-6 bg-gray-50 border border-gray-100 rounded-[2rem] focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-[11px] uppercase tracking-widest transition-all placeholder:text-gray-200 resize-none"
                 ></textarea>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Operational status</label>
                 <select 
                   name="status" 
                   defaultValue={editingClient?.status || 'active'}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red bg-white"
+                  className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all cursor-pointer"
                 >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
+                  <option value="active">OPERATIONAL (ACTIVE)</option>
+                  <option value="inactive">STASIS (INACTIVE)</option>
                 </select>
               </div>
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-gray-200">
+              <div className="pt-10 flex justify-end gap-5 border-t border-gray-50">
                 <button 
                   type="button" 
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50"
+                  className="px-8 py-4 bg-gray-50 text-gray-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95"
                   disabled={isLoading}
                 >
-                  Cancel
+                  Abort Protocol
                 </button>
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="px-4 py-2 bg-brand-red hover:bg-red-700 text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                  className="px-10 py-4 bg-black hover:bg-brand-red text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl hover:shadow-red-200 active:scale-95 flex items-center"
                 >
-                  {isLoading ? 'Saving...' : 'Save Client'}
+                  {isLoading ? (
+                    'COMMITTING...'
+                  ) : (
+                    <>SAVE NODE <ArrowRight className="ml-3 w-4 h-4" /></>
+                  )}
                 </button>
               </div>
             </form>
@@ -407,63 +419,69 @@ export default function ClientList({ initialClients }: { initialClients: Client[
 
       {/* Generate Contract Modal */}
       {isContractModalOpen && contractClient && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Generate Contract for {contractClient.company_name}
-              </h2>
-              <button onClick={() => setIsContractModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                &times;
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-500">
+            <div className="flex justify-between items-center px-10 py-8 border-b border-gray-50 bg-gray-50/50">
+               <div>
+                  <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic flex items-center">
+                    <Sparkles className="w-6 h-6 mr-4 text-brand-red" />
+                    Protocol Generation
+                  </h2>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1 ml-10">Target Node: {contractClient.company_name}</p>
+               </div>
+               <button onClick={() => setIsContractModalOpen(false)} className="p-3 text-gray-300 hover:text-brand-red hover:bg-red-50 rounded-2xl transition-all">
+                <X className="w-6 h-6" />
               </button>
             </div>
             
-            <form onSubmit={handleCreateContract} className="p-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Contract Title *</label>
-                  <input name="title" required placeholder="Agency Master Service Agreement" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none" />
+            <form onSubmit={handleCreateContract} className="p-10 space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Agreement identity *</label>
+                  <input name="title" required placeholder="EX: STRATEGIC GROWTH MSA" className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all" />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Fee ($) *</label>
-                  <input name="monthly_fee" type="number" step="0.01" required placeholder="2500" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
-                  <input name="start_date" type="date" required className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Date *</label>
-                  <input name="end_date" type="date" required className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none" />
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Monthly frequency ($) *</label>
+                  <input name="monthly_fee" type="number" step="0.01" required placeholder="0.00" className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all" />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Service Description</label>
-                <textarea name="description" rows={3} placeholder="Full-service social media management, including content creation and ad optimization..." className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none resize-none"></textarea>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Genesis Date *</label>
+                  <input name="start_date" type="date" required className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-[11px] uppercase tracking-widest transition-all" />
+                </div>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Termination Date *</label>
+                  <input name="end_date" type="date" required className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-[11px] uppercase tracking-widest transition-all" />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms</label>
-                <input name="payment_terms" placeholder="Net 30, Payment due on the 1st of each month" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none" />
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Resource Manifest (Description)</label>
+                <textarea name="description" rows={3} placeholder="MANIFEST DIRECTIVES..." className="w-full p-6 bg-gray-50 border border-gray-100 rounded-[2rem] focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-[11px] uppercase tracking-widest transition-all placeholder:text-gray-200 resize-none"></textarea>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Custom Contract Clauses</label>
-                <textarea name="clauses" rows={3} placeholder="Add any special terms or termination policies here..." className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red outline-none resize-none"></textarea>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Liquid Capital Terms</label>
+                <input name="payment_terms" placeholder="EX: NET-30 AT EPOCH START" className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all" />
               </div>
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-gray-200">
-                <button type="button" onClick={() => setIsContractModalOpen(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium transition-colors">Cancel</button>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Kernel Clauses (Custom)</label>
+                <textarea name="clauses" rows={3} placeholder="SPECIAL DIRECTIVES..." className="w-full p-6 bg-gray-50 border border-gray-100 rounded-[2rem] focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-[11px] uppercase tracking-widest transition-all placeholder:text-gray-200 resize-none"></textarea>
+              </div>
+
+              <div className="pt-10 flex justify-end gap-5 border-t border-gray-50">
+                <button type="button" onClick={() => setIsContractModalOpen(false)} className="px-8 py-4 bg-gray-50 text-gray-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95">ABORT</button>
                 <button 
                   type="submit" 
                   disabled={isContractLoading}
-                  className="px-6 py-2 bg-brand-red text-white rounded-lg font-bold hover:bg-red-700 transition-all disabled:opacity-50"
+                  className="px-10 py-4 bg-black hover:bg-brand-red text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl hover:shadow-red-200 active:scale-95 flex items-center"
                 >
-                  {isContractLoading ? 'Generating...' : 'Confirm & Send to Client'}
+                  {isContractLoading ? 'GENERATING...' : (
+                    <>CONFIRM & TRANSMIT <ArrowRight className="w-4 h-4 ml-3" /></>
+                  )}
                 </button>
               </div>
             </form>

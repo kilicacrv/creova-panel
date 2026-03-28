@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit2, Trash2, Plus, Megaphone, AlertCircle, Building2, TrendingUp, PlayCircle, PauseCircle } from 'lucide-react'
+import { Edit2, Trash2, Plus, Megaphone, AlertCircle, Building2, TrendingUp, PlayCircle, PauseCircle, ArrowRight, Zap, Target, DollarSign, X } from 'lucide-react'
 import { createCampaign, updateCampaign, deleteCampaign, updateCampaignStatus } from './actions'
 
 type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } | { company_name: string }[] }
@@ -102,138 +102,148 @@ export default function CampaignList({
   }
 
   const statusColors = {
-    draft: 'bg-gray-100 text-gray-700',
-    active: 'bg-green-100 text-green-700 border-green-200',
-    paused: 'bg-amber-100 text-amber-700 border-amber-200',
-    completed: 'bg-blue-100 text-blue-700 border-blue-200'
+    draft: 'bg-gray-100 text-gray-400 border-gray-200',
+    active: 'bg-red-50 text-brand-red border-red-100 shadow-lg shadow-red-200/20',
+    paused: 'bg-gray-900 text-gray-400 border-gray-800',
+    completed: 'bg-black text-white border-black shadow-xl shadow-black/10'
   }
 
   const platformColors: Record<string, string> = {
-    meta: 'text-blue-600 bg-blue-50 border-blue-100',
-    google: 'text-red-600 bg-red-50 border-red-100',
-    tiktok: 'text-black bg-gray-100 border-gray-200',
-    linkedin: 'text-sky-700 bg-sky-50 border-sky-100'
+    meta: 'text-brand-red bg-red-50 border-red-100',
+    google: 'text-gray-900 bg-gray-50 border-gray-200',
+    tiktok: 'text-black bg-white border-black',
+    linkedin: 'text-white bg-black border-black/20'
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Ad Campaigns</h1>
-          <p className="text-sm text-gray-500 mt-1">Monitor digital advertising budgets, spend, and ROAS across platforms.</p>
+    <div className="space-y-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-40"></div>
+        <div className="relative z-10">
+          <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">Ad Logistics</h1>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Cross-Channel ROAS Orchestration</p>
         </div>
         <button
           onClick={openCreate}
-          className="bg-[#1A56DB] hover:bg-[#1e4eb8] text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors shadow-sm"
+          className="relative z-10 bg-black hover:bg-brand-red text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center transition-all shadow-xl hover:shadow-red-200 active:scale-95 group"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Campaign
+          <Plus className="w-4 h-4 mr-3 group-hover:rotate-90 transition-transform" />
+          Initialize Campaign
         </button>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-medium">
-              <tr>
-                <th className="px-6 py-4">Campaign Name</th>
-                <th className="px-6 py-4">Platform & Client</th>
-                <th className="px-6 py-4 text-right">Spend / Budget</th>
-                <th className="px-6 py-4 text-center">ROAS</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+            <thead>
+              <tr className="bg-gray-50/50 border-b border-gray-100">
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Campaign Identity</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Platform / Origin</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Burn / Resource Hub</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Efficiency (ROAS)</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Lifecycle</th>
+                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-50">
               {campaigns.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                    No active campaigns. Click "Add Campaign" to start tracking.
+                  <td colSpan={6} className="px-10 py-24 text-center">
+                    <div className="flex flex-col items-center">
+                       <Megaphone className="w-16 h-16 text-gray-100 mb-6" />
+                       <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.25em] italic">No active deployments detected in frequency grid.</p>
+                    </div>
                   </td>
                 </tr>
               ) : (
                 campaigns.map((campaign) => {
                   const percentSpent = campaign.budget > 0 ? (campaign.spent / campaign.budget) * 100 : 0
+                  const isHighBurn = percentSpent > 90
                   
                   return (
-                    <tr key={campaign.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
+                    <tr key={campaign.id} className="hover:bg-red-50/10 transition-all group">
+                      <td className="px-10 py-8">
                         <div className="flex items-center">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 shrink-0 ${campaign.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                            <Megaphone className="w-5 h-5" />
+                          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mr-5 shrink-0 transition-all shadow-inner border border-gray-50 ${campaign.status === 'active' ? 'bg-black text-white group-hover:bg-brand-red group-hover:rotate-3' : 'bg-gray-50 text-gray-300 group-hover:text-black group-hover:bg-white'}`}>
+                            <Megaphone className="w-6 h-6" />
                           </div>
                           <div>
-                            <p className="font-semibold text-gray-900">{campaign.name}</p>
-                            <div className="text-xs text-gray-400 mt-0.5">
-                              {campaign.start_date ? new Date(campaign.start_date).toLocaleDateString() : 'No dates'} - {campaign.end_date ? new Date(campaign.end_date).toLocaleDateString() : 'No dates'}
+                            <p className="font-black text-gray-900 uppercase tracking-tight text-base group-hover:text-brand-red transition-colors">{campaign.name}</p>
+                            <div className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1.5 flex items-center gap-2">
+                               <Calendar className="w-3 h-3 opacity-30" />
+                               {campaign.start_date ? new Date(campaign.start_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'NULL'} 
+                               <ArrowRight className="w-2 h-2 mx-1" />
+                               {campaign.end_date ? new Date(campaign.end_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'NULL'}
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-gray-900 mb-1 flex items-center">
-                          <Building2 className="w-3.5 h-3.5 mr-1 text-gray-400" />
-                          {(campaign.projects?.clients as any)?.company_name || (campaign.projects?.clients as any)?.[0]?.company_name || 'Unknown Client'}
+                      <td className="px-10 py-8">
+                        <div className="font-black text-gray-900 text-[11px] uppercase tracking-tight mb-2.5 flex items-center">
+                          <Building2 className="w-3.5 h-3.5 mr-2 text-gray-300 group-hover:text-black transition-colors" />
+                          {(campaign.projects?.clients as any)?.company_name || (campaign.projects?.clients as any)?.[0]?.company_name || 'SYSTEM_HUB'}
                         </div>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${platformColors[campaign.platform] || 'bg-gray-100 text-gray-600'}`}>
+                        <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg border transition-all ${platformColors[campaign.platform] || 'bg-gray-50 text-gray-400'}`}>
                           {campaign.platform}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="font-semibold text-gray-900">
-                          {campaign.spent.toLocaleString()} / {campaign.budget.toLocaleString()} AED
+                      <td className="px-10 py-8 text-right">
+                        <div className="font-black text-gray-900 text-xs uppercase tracking-tight mb-3">
+                          <span className={isHighBurn ? 'text-brand-red' : ''}>{campaign.spent.toLocaleString()}</span> / {campaign.budget.toLocaleString()} AED
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2 overflow-hidden">
+                        <div className="w-40 ml-auto bg-gray-50 rounded-full h-2 overflow-hidden border border-gray-100 relative">
                           <div 
-                            className={`h-1.5 rounded-full ${percentSpent > 90 ? 'bg-red-500' : 'bg-[#1A56DB]'}`} 
+                            className={`h-full rounded-full transition-all duration-1000 ${isHighBurn ? 'bg-brand-red animate-pulse' : 'bg-black'}`} 
                             style={{ width: `${Math.min(percentSpent, 100)}%` }}
                           ></div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="inline-flex items-center justify-center bg-emerald-50 text-emerald-700 font-bold px-3 py-1 rounded-lg border border-emerald-100">
-                          <TrendingUp className="w-4 h-4 mr-1" />
+                      <td className="px-10 py-8 text-center">
+                        <div className="inline-flex items-center justify-center bg-gray-50 group-hover:bg-black group-hover:text-white transition-all text-gray-900 font-black text-sm px-5 py-3 rounded-2xl border border-gray-100 shadow-sm">
+                          <TrendingUp className="w-4 h-4 mr-2.5 text-brand-red" />
                           {campaign.roas.toFixed(2)}x
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wider border ${statusColors[campaign.status] || 'bg-gray-100'}`}>
+                      <td className="px-10 py-8">
+                        <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${statusColors[campaign.status] || 'bg-gray-100'}`}>
                           {campaign.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        {campaign.status === 'paused' || campaign.status === 'draft' ? (
+                      <td className="px-10 py-8 text-right">
+                        <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
+                          {campaign.status === 'paused' || campaign.status === 'draft' ? (
+                            <button 
+                              onClick={() => handleQuickStatus(campaign.id, 'active')}
+                              className="p-3 bg-white border border-gray-100 rounded-xl text-emerald-500 hover:text-white hover:bg-emerald-500 hover:border-emerald-500 hover:shadow-lg transition-all active:scale-90"
+                              title="Commence Execution"
+                            >
+                              <PlayCircle className="w-4 h-4" />
+                            </button>
+                          ) : campaign.status === 'active' ? (
+                            <button 
+                              onClick={() => handleQuickStatus(campaign.id, 'paused')}
+                              className="p-3 bg-white border border-gray-100 rounded-xl text-amber-500 hover:text-white hover:bg-amber-500 hover:border-amber-500 hover:shadow-lg transition-all active:scale-90"
+                              title="Initiate Stasis"
+                            >
+                              <PauseCircle className="w-4 h-4" />
+                            </button>
+                          ) : null}
+                          
                           <button 
-                            onClick={() => handleQuickStatus(campaign.id, 'active')}
-                            className="p-2 border border-green-200 bg-green-50 rounded-lg text-green-600 hover:bg-green-100 transition-colors mr-1"
-                            title="Activate Campaign"
+                            onClick={() => openEdit(campaign)}
+                            className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-black hover:border-black hover:shadow-lg transition-all"
+                            title="Modify Directives"
                           >
-                            <PlayCircle className="w-4 h-4" />
+                            <Edit2 className="w-4 h-4" />
                           </button>
-                        ) : campaign.status === 'active' ? (
                           <button 
-                            onClick={() => handleQuickStatus(campaign.id, 'paused')}
-                            className="p-2 border border-amber-200 bg-amber-50 rounded-lg text-amber-600 hover:bg-amber-100 transition-colors mr-1"
-                            title="Pause Campaign"
+                            onClick={() => handleDelete(campaign.id)}
+                            className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-brand-red hover:border-brand-red hover:shadow-lg transition-all"
+                            title="Terminate Archive"
                           >
-                            <PauseCircle className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
-                        ) : null}
-                        
-                        <button 
-                          onClick={() => openEdit(campaign)}
-                          className="p-2 border border-gray-200 rounded-lg text-gray-600 hover:text-[#1A56DB] hover:bg-blue-50 hover:border-blue-200 transition-colors mr-1"
-                          title="Edit Campaign"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(campaign.id)}
-                          className="p-2 border border-gray-200 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors"
-                          title="Delete Campaign"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        </div>
                       </td>
                     </tr>
                   )
@@ -246,153 +256,160 @@ export default function CampaignList({
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {editingCampaign ? 'Edit Campaign' : 'Create Campaign'}
-              </h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                &times;
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-500">
+            <div className="flex justify-between items-center px-10 py-8 border-b border-gray-50 bg-gray-50/50">
+              <div>
+                 <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic">
+                   {editingCampaign ? 'Modify Deployment' : 'Launch Campaign'}
+                 </h2>
+                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Registry Operational Profile</p>
+              </div>
+              <button onClick={() => setIsModalOpen(false)} className="p-3 text-gray-300 hover:text-brand-red hover:bg-red-50 rounded-2xl transition-all">
+                <X className="w-6 h-6" />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-10 space-y-8">
               {error && (
-                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-center">
-                  <AlertCircle className="w-4 h-4 mr-2" />
-                  {error}
+                <div className="bg-red-50 text-brand-red p-6 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center border border-red-100 animate-in shake-200">
+                  <AlertCircle className="w-5 h-5 mr-4 shrink-0" />
+                  Kernel Override: {error}
                 </div>
               )}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Campaign Name *</label>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Campaign Operational Name <span className="text-brand-red font-black">*</span></label>
                 <input 
                   type="text" 
                   name="name" 
                   defaultValue={editingCampaign?.name || ''} 
                   required
-                  placeholder="e.g., Summer Lead Gen Q3"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                  placeholder="EX: Q4 BRAND DEPLOYMENT V8"
+                  className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all placeholder:text-gray-200"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Project *</label>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Initialization Lead (Project) <span className="text-brand-red font-black">*</span></label>
                   <select 
                     name="project_id" 
                     defaultValue={editingCampaign?.project_id || ''}
                     required
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] bg-white"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all cursor-pointer"
                   >
-                    <option value="" disabled>-- Select a project --</option>
+                    <option value="" disabled>-- SELECT COORDINATE --</option>
                     {projects.map(p => (
-                      <option key={p.id} value={p.id}>{p.title} ({(p.clients as any)?.company_name || (p.clients as any)?.[0]?.company_name || 'Unknown Client'})</option>
+                      <option key={p.id} value={p.id}>{p.title.toUpperCase()}</option>
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Platform *</label>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Distribution Hub <span className="text-brand-red font-black">*</span></label>
                   <select 
                     name="platform" 
                     defaultValue={editingCampaign?.platform || 'meta'}
                     required
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] bg-white"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all cursor-pointer"
                   >
-                    <option value="meta">Meta (FB/IG)</option>
-                    <option value="google">Google Ads</option>
-                    <option value="tiktok">TikTok Ads</option>
-                    <option value="linkedin">LinkedIn Ads</option>
-                    <option value="other">Other</option>
+                    <option value="meta">META (FB/IG)</option>
+                    <option value="google">GOOGLE ADS</option>
+                    <option value="tiktok">TIKTOK TRENDS</option>
+                    <option value="linkedin">B2B LINKEDIN</option>
+                    <option value="other">EXTERNAL GRID</option>
                   </select>
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Budget</label>
+              <div className="grid grid-cols-3 gap-6">
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 text-center">Fuel Budget</label>
                   <input 
                     type="number" 
                     name="budget" 
                     step="0.01"
                     defaultValue={editingCampaign?.budget || 0} 
                     required
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full h-14 px-4 text-center bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount Spent</label>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 text-center">Amount Spent</label>
                   <input 
                     type="number" 
                     name="spent" 
                     step="0.01"
                     defaultValue={editingCampaign?.spent || 0} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full h-14 px-4 text-center bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">ROAS</label>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 text-center">Target ROAS</label>
                   <input 
                     type="number" 
                     name="roas" 
                     step="0.01"
                     defaultValue={editingCampaign?.roas || 0} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full h-14 px-4 text-center bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Genesis Date</label>
                   <input 
                     type="date" 
                     name="start_date" 
                     defaultValue={editingCampaign?.start_date || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-[11px] uppercase tracking-widest transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Termination Date</label>
                   <input 
                     type="date" 
                     name="end_date" 
                     defaultValue={editingCampaign?.end_date || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-[11px] uppercase tracking-widest transition-all"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Lifecycle Status</label>
                 <select 
                   name="status" 
                   defaultValue={editingCampaign?.status || 'draft'}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] bg-white"
+                  className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all cursor-pointer"
                 >
-                  <option value="draft">Draft</option>
-                  <option value="active">Active</option>
-                  <option value="paused">Paused</option>
-                  <option value="completed">Completed</option>
+                  <option value="draft">INITIAL DRAFT</option>
+                  <option value="active">ACTIVE EXECUTION</option>
+                  <option value="paused">MISSION STASIS</option>
+                  <option value="completed">DEPLOYMENT DONE</option>
                 </select>
               </div>
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-gray-200">
+              <div className="pt-10 flex justify-end gap-5 border-t border-gray-50">
                 <button 
                   type="button" 
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50"
+                  className="px-8 py-4 bg-gray-50 text-gray-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95"
                   disabled={isLoading}
                 >
-                  Cancel
+                  Abort Protocol
                 </button>
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="px-4 py-2 bg-[#1A56DB] hover:bg-[#1e4eb8] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                  className="px-10 py-4 bg-black hover:bg-brand-red text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl hover:shadow-red-200 active:scale-95 flex items-center"
                 >
-                  {isLoading ? 'Saving...' : 'Save Campaign'}
+                  {isLoading ? (
+                    'COMMITTING...'
+                  ) : (
+                    <>SAVE DEPLOYMENT <ArrowRight className="ml-3 w-4 h-4" /></>
+                  )}
                 </button>
               </div>
             </form>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckSquare, X, FileText, Calendar, Share2, ImageIcon, AlertCircle } from 'lucide-react'
+import { CheckSquare, X, FileText, Calendar, Share2, ImageIcon, AlertCircle, ShieldCheck, Zap, Sparkles, Clock, Globe, Target, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { updateContentApproval } from './actions'
 
@@ -56,72 +56,92 @@ export default function ApprovalList({ initialItems }: { initialItems: ContentIt
   }
 
   const platformIcons: Record<string, any> = {
-    instagram: <Share2 className="w-4 h-4" />,
-    facebook: <Share2 className="w-4 h-4" />,
-    linkedin: <Share2 className="w-4 h-4" />,
-    twitter: <Share2 className="w-4 h-4" />,
-    tiktok: <Share2 className="w-4 h-4" />,
+    instagram: <Globe className="w-3 h-3" />,
+    facebook: <Globe className="w-3 h-3" />,
+    linkedin: <Globe className="w-3 h-3" />,
+    twitter: <Globe className="w-3 h-3" />,
+    tiktok: <Globe className="w-3 h-3" />,
   }
 
   return (
-    <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="space-y-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-40"></div>
+        <div className="relative z-10">
+          <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">Asset Approvals</h1>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Content Verification & Deployment Protocol</p>
+        </div>
+        <div className="flex items-center gap-4 relative z-10">
+           <div className="p-3 bg-red-50 rounded-2xl border border-red-100">
+              <Sparkles className="w-5 h-5 text-brand-red" />
+           </div>
+           <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest italic">Awaiting Final Verification</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
         {items.length === 0 ? (
-          <div className="col-span-full py-12 text-center bg-white rounded-xl border border-dashed border-gray-300">
-            <Calendar className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-            <p className="text-gray-500 font-medium">No content awaiting approval.</p>
-            <p className="text-sm text-gray-400 mt-1">Check back later when the agency uploads new posts.</p>
+          <div className="col-span-full py-32 text-center bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex flex-col items-center">
+            <ShieldCheck className="w-20 h-20 text-gray-100 mb-8" />
+            <h3 className="text-gray-900 font-black text-2xl uppercase tracking-tighter italic">Queue Clear</h3>
+            <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mt-2 max-w-sm">No pending assets require verification at this current temporal coordinate.</p>
           </div>
         ) : (
           items.map((item) => (
-            <div key={item.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col group hover:shadow-md transition-shadow">
+            <div key={item.id} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden flex flex-col group hover:shadow-2xl hover:border-gray-200 transition-all duration-500 hover:-translate-y-2">
               {/* Media Preview */}
-              <div className="aspect-square bg-gray-100 flex items-center justify-center relative overflow-hidden">
+              <div className="aspect-[4/5] bg-black flex items-center justify-center relative overflow-hidden">
                 {item.image_url ? (
-                  <Image src={item.image_url} alt={item.title} fill sizes="(max-width: 768px) 100vw, 300px" className="object-cover" />
+                  <Image src={item.image_url} alt={item.title} fill sizes="(max-width: 768px) 100vw, 300px" className="object-cover group-hover:scale-110 transition-transform duration-1000 grayscale-[20%] group-hover:grayscale-0" />
                 ) : (
-                  <div className="flex flex-col items-center text-gray-400">
-                    <ImageIcon className="w-12 h-12 mb-2" />
-                    <span className="text-xs uppercase font-bold tracking-widest">No Media Preview</span>
+                  <div className="flex flex-col items-center text-gray-700">
+                    <ImageIcon className="w-16 h-16 mb-4 opacity-20" />
+                    <span className="text-[9px] uppercase font-black tracking-[0.3em] text-gray-600 italic">No_Asset_Uplink</span>
                   </div>
                 )}
-                <div className="absolute top-3 left-3 px-2.5 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-gray-900 text-xs font-bold flex items-center shadow-sm">
-                  {platformIcons[item.platform]}
-                  <span className="ml-1.5 capitalize">{item.platform}</span>
+                
+                <div className="absolute top-6 left-6 px-4 py-2 bg-black/90 backdrop-blur-md rounded-xl text-white text-[9px] font-black uppercase tracking-widest flex items-center shadow-2xl border border-white/10 group-hover:bg-brand-red group-hover:border-brand-red transition-colors">
+                  {platformIcons[item.platform.toLowerCase()] || <Globe className="w-3 h-3" />}
+                  <span className="ml-3 italic">{item.platform}</span>
                 </div>
               </div>
 
               {/* Content Body */}
-              <div className="p-5 flex-grow">
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="font-bold text-gray-900 line-clamp-1">{item.title}</h3>
-                </div>
-                
-                <p className="text-sm text-gray-600 line-clamp-3 mb-4 min-h-[60px]">
-                  {item.content || 'No caption provided.'}
+              <div className="p-8 flex-grow space-y-4">
+                <h3 className="font-black text-gray-900 uppercase tracking-tight text-lg italic group-hover:text-brand-red transition-colors">{item.title}</h3>
+                <div className="h-px w-full bg-gray-50"></div>
+                <p className="text-[11px] font-black text-gray-500 uppercase tracking-tight leading-relaxed line-clamp-3">
+                  {item.content || 'System: No caption package detected.'}
                 </p>
 
-                <div className="flex items-center text-xs text-gray-500 font-medium pb-4 border-b border-gray-100">
-                  <Calendar className="w-3.5 h-3.5 mr-1.5 text-[#1A56DB]" />
-                  Scheduled for: {item.scheduled_for ? new Date(item.scheduled_for).toLocaleString() : 'Not scheduled'}
+                <div className="pt-4 flex items-center justify-between">
+                   <div className="flex items-center text-[9px] text-gray-400 font-black uppercase tracking-widest italic font-mono">
+                     <Clock className="w-3 h-3 mr-2 opacity-30" />
+                     {item.scheduled_for ? new Date(item.scheduled_for).toLocaleDateString([], { month: 'short', day: 'numeric' }) : 'PROTOCOL_TBD'}
+                   </div>
+                   <div className={`px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest ${item.status === 'pending' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                      {item.status}
+                   </div>
                 </div>
               </div>
 
               {/* Action Area */}
-              <div className="p-3 bg-gray-50 border-t border-gray-100">
+              <div className="px-8 pb-8">
                 {item.status === 'pending' ? (
                   <button 
                     onClick={() => openApproval(item)}
-                    className="w-full bg-[#1A56DB] hover:bg-[#1e4eb8] text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center transition-colors"
+                    className="w-full bg-black hover:bg-brand-red text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl hover:shadow-red-200 active:scale-95 group/btn flex items-center justify-center"
                   >
-                    Review & Decide
+                    Verification Interface <ArrowRight className="w-4 h-4 ml-3 group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                 ) : (
-                  <div className={`w-full py-2.5 px-4 rounded-lg text-sm font-bold flex items-center justify-center border ${
-                    item.status === 'approved' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'
+                  <div className={`w-full py-5 px-6 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center border shadow-inner ${
+                    item.status === 'approved' 
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
+                      : 'bg-red-50 text-brand-red border-red-100'
                   }`}>
-                    {item.status === 'approved' ? <CheckSquare className="w-4 h-4 mr-2" /> : <X className="w-4 h-4 mr-2" />}
-                    {item.status === 'approved' ? 'Post Approved' : 'Post Rejected'}
+                    {item.status === 'approved' ? <ShieldCheck className="w-4 h-4 mr-3" /> : <X className="w-4 h-4 mr-3" />}
+                    Asset {item.status}
                   </div>
                 )}
               </div>
@@ -132,76 +152,82 @@ export default function ApprovalList({ initialItems }: { initialItems: ContentIt
 
       {/* Decision Modal */}
       {isModalOpen && selectedItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-8 bg-black/90 backdrop-blur-md transition-all duration-300">
+          <div className="bg-white rounded-[3rem] shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col lg:flex-row animate-in zoom-in-95 duration-500">
             
             {/* Preview on Modal (Left) */}
-            <div className="md:w-1/2 bg-gray-100 shrink-0 relative min-h-[300px]">
+            <div className="lg:w-1/2 bg-black shrink-0 relative min-h-[400px]">
               {selectedItem.image_url ? (
-                <Image src={selectedItem.image_url} alt="" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+                <Image src={selectedItem.image_url} alt="" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-contain" />
               ) : (
-                <div className="h-full flex items-center justify-center text-gray-300">
-                   <ImageIcon className="w-20 h-20" />
+                <div className="h-full flex items-center justify-center text-white/10">
+                   <Target className="w-32 h-32" />
                 </div>
               )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+              <div className="absolute bottom-10 left-10">
+                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2 italic">Creative Preview</p>
+                 <h4 className="text-2xl font-black text-white uppercase tracking-tighter italic">{selectedItem.title}</h4>
+              </div>
             </div>
 
             {/* Decision Form (Right) */}
-            <div className="md:w-1/2 p-6 flex flex-col">
-              <div className="flex justify-between items-start mb-4">
+            <div className="lg:w-1/2 p-12 flex flex-col bg-white overflow-y-auto custom-scrollbar">
+              <div className="flex justify-between items-start mb-10">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">{selectedItem.title}</h2>
-                  <p className="text-xs text-gray-500 mt-1 capitalize">{selectedItem.platform} Channel</p>
+                  <h2 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">Verification Matrix</h2>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">{selectedItem.platform} Marketing Node • Registry Active</p>
                 </div>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-2xl group flex items-center">
-                   &times;
+                <button onClick={() => setIsModalOpen(false)} className="p-3 text-gray-300 hover:text-brand-red hover:bg-red-50 rounded-2xl transition-all">
+                   <X className="w-6 h-6" />
                 </button>
               </div>
 
-              <div className="flex-grow overflow-y-auto mb-6">
-                <p className="text-sm font-medium text-gray-700 mb-1">Preview Copy:</p>
-                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm text-gray-800 whitespace-pre-wrap">
-                  {selectedItem.content || 'No caption.'}
-                </div>
-              </div>
-
-              <div className="space-y-4">
+              <div className="space-y-8 flex-grow">
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1">
-                    <FileText className="w-4 h-4 inline mr-1 text-blue-600" />
-                    Feedback / Revisions (Optional)
+                  <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] mb-4 italic">Content Payload:</p>
+                  <div className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 text-sm font-black text-gray-800 uppercase tracking-tight whitespace-pre-wrap leading-relaxed shadow-inner italic">
+                    {selectedItem.content || 'System_Audit: No caption payload identified.'}
+                  </div>
+                </div>
+
+                <div>
+                   <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 italic ml-2">
+                    Operational Feedback / Revision Logic
                   </label>
                   <textarea 
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
-                    rows={3}
-                    placeholder="Provide feedback if you want changes made..."
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A56DB] text-sm resize-none"
+                    rows={4}
+                    placeholder="ENTER CALIBRATION FEEDBACK..."
+                    className="w-full px-8 py-6 border border-gray-100 rounded-[2rem] bg-gray-50 focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 text-xs font-black uppercase tracking-widest resize-none transition-all shadow-inner"
                   ></textarea>
                 </div>
 
-                {error && <div className="text-xs text-red-600 flex items-center bg-red-50 p-2 rounded border border-red-100">
-                   <AlertCircle className="w-3.5 h-3.5 mr-1" /> {error}
-                </div>}
+                {error && (
+                  <div className="bg-red-50 text-brand-red p-6 rounded-[2rem] text-[10px] font-black uppercase tracking-widest flex items-center border border-red-100 animate-in shake-200">
+                    <AlertCircle className="w-5 h-5 mr-4" /> Kernel Error: {error}
+                  </div>
+                )}
+              </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <button 
-                    onClick={() => handleAction('rejected')}
-                    disabled={isSubmitting}
-                    className="flex items-center justify-center px-4 py-3 border-2 border-red-100 text-red-600 font-bold rounded-xl hover:bg-red-50 transition-colors disabled:opacity-50"
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Reject
-                  </button>
-                  <button 
-                    onClick={() => handleAction('approved')}
-                    disabled={isSubmitting}
-                    className="flex items-center justify-center px-4 py-3 bg-[#1A56DB] text-white font-bold rounded-xl hover:bg-[#1e4eb8] transition-all shadow-lg shadow-blue-200 disabled:opacity-50"
-                  >
-                    <CheckSquare className="w-4 h-4 mr-2" />
-                    Approve
-                  </button>
-                </div>
+              <div className="mt-12 grid grid-cols-2 gap-6 pt-10 border-t border-gray-50">
+                <button 
+                  onClick={() => handleAction('rejected')}
+                  disabled={isSubmitting}
+                  className="flex items-center justify-center px-10 py-5 bg-gray-50 text-gray-400 font-black uppercase tracking-widest text-[10px] rounded-2xl hover:bg-brand-red hover:text-white transition-all disabled:opacity-50 active:scale-95 shadow-sm"
+                >
+                  <X className="w-4 h-4 mr-3" />
+                  Terminate Asset
+                </button>
+                <button 
+                  onClick={() => handleAction('approved')}
+                  disabled={isSubmitting}
+                  className="flex items-center justify-center px-10 py-5 bg-black hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all shadow-xl hover:shadow-emerald-200 disabled:opacity-50 active:scale-95"
+                >
+                  <ShieldCheck className="w-4 h-4 mr-3" />
+                  Verify Payload
+                </button>
               </div>
             </div>
           </div>

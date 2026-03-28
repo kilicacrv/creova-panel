@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit2, Trash2, Plus, Briefcase, AlertCircle, Building2, Calendar } from 'lucide-react'
+import { Edit2, Trash2, Plus, Briefcase, AlertCircle, Building2, Calendar, Zap, ArrowRight, DollarSign } from 'lucide-react'
 import { createProject, updateProject, deleteProject } from './actions'
 
 type Client = {
@@ -85,108 +85,119 @@ export default function ProjectList({ initialProjects, clients }: { initialProje
   }
 
   const statusColors = {
-    active: 'bg-blue-100 text-blue-700',
-    completed: 'bg-green-100 text-green-700',
-    paused: 'bg-amber-100 text-amber-700',
-    cancelled: 'bg-red-100 text-red-700'
+    active: 'bg-red-50 text-brand-red border-red-100',
+    completed: 'bg-black text-white border-black',
+    paused: 'bg-gray-100 text-gray-400 border-gray-200',
+    cancelled: 'bg-gray-50 text-gray-300 border-gray-100'
   }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage all client projects and track their status.</p>
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-40"></div>
+        <div className="relative z-10">
+          <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">Project Matrix</h1>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Operational Lifecycle Management</p>
         </div>
         <button
           onClick={openCreate}
-          className="bg-[#1A56DB] hover:bg-[#1e4eb8] text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors shadow-sm"
+          className="relative z-10 bg-black hover:bg-brand-red text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center transition-all shadow-xl hover:shadow-red-200 active:scale-95 group"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Project
+          <Plus className="w-4 h-4 mr-3 group-hover:rotate-90 transition-transform" />
+          Initialize Project
         </button>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-gray-100 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-medium">
-              <tr>
-                <th className="px-6 py-4">Project</th>
-                <th className="px-6 py-4">Client</th>
-                <th className="px-6 py-4">Progress/Dates</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+            <thead>
+              <tr className="bg-gray-50/50 border-b border-gray-100">
+                <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Core Initiative</th>
+                <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Client Hub</th>
+                <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Temporal Progress</th>
+                <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                <th className="px-10 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-50">
               {projects.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                    No projects found. Click "Add Project" to create one.
+                  <td colSpan={5} className="px-10 py-20 text-center">
+                    <div className="flex flex-col items-center">
+                       <Briefcase className="w-12 h-12 text-gray-100 mb-4" />
+                       <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic">Zero active projects in current sector.</p>
+                    </div>
                   </td>
                 </tr>
               ) : (
                 projects.map((project) => (
-                  <tr key={project.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
+                  <tr key={project.id} className="hover:bg-red-50/10 transition-colors group">
+                    <td className="px-10 py-8">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-700 mr-3 shrink-0">
-                          <Briefcase className="w-5 h-5" />
+                        <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 mr-5 shrink-0 transition-all group-hover:bg-brand-red group-hover:text-white group-hover:rotate-3 shadow-inner border border-gray-100 group-hover:border-transparent">
+                          <Briefcase className="w-6 h-6" />
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">{project.title}</p>
+                          <p className="font-black text-gray-900 uppercase tracking-tight text-base group-hover:text-brand-red transition-colors">{project.title}</p>
                           {project.budget && (
-                            <p className="text-xs text-gray-500 mt-0.5">Budget: {project.budget.toLocaleString()} {project.currency}</p>
+                            <div className="flex items-center gap-1.5 mt-1">
+                               <DollarSign className="w-3 h-3 text-emerald-500" />
+                               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cap: {project.budget.toLocaleString()} {project.currency}</p>
+                            </div>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center text-gray-700">
-                        <Building2 className="w-4 h-4 mr-2 text-gray-400" />
-                        {project.clients?.company_name || 'Unknown Client'}
+                    <td className="px-10 py-8">
+                      <div className="flex items-center text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                        <Building2 className="w-4 h-4 mr-2.5 text-gray-300 group-hover:text-black transition-colors" />
+                        {project.clients?.company_name || 'System Anonymous'}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="space-y-1">
+                    <td className="px-10 py-8">
+                      <div className="space-y-2">
                         {project.start_date && (
-                          <div className="flex items-center text-xs text-gray-600">
-                            <span className="w-10 text-gray-400">Start:</span>
-                            {new Date(project.start_date).toLocaleDateString()}
+                          <div className="flex items-center text-[9px] font-black uppercase tracking-tighter text-gray-400">
+                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2" />
+                            <span className="w-16">Genesis:</span>
+                            <span className="text-gray-900">{new Date(project.start_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                           </div>
                         )}
                         {project.end_date && (
-                          <div className="flex items-center text-xs text-gray-600">
-                            <span className="w-10 text-gray-400">End:</span>
-                            {new Date(project.end_date).toLocaleDateString()}
+                          <div className="flex items-center text-[9px] font-black uppercase tracking-tighter text-gray-400">
+                             <div className="w-1.5 h-1.5 rounded-full bg-brand-red mr-2" />
+                            <span className="w-16">Deadline:</span>
+                            <span className="text-gray-900">{new Date(project.end_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                           </div>
                         )}
                         {!project.start_date && !project.end_date && (
-                          <span className="text-gray-400 italic text-xs">No dates set</span>
+                          <span className="text-gray-300 italic text-[10px] font-black uppercase tracking-widest">Term undefined</span>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${statusColors[project.status] || 'bg-gray-100'}`}>
+                    <td className="px-10 py-8">
+                      <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${statusColors[project.status] || 'bg-gray-100'}`}>
                         {project.status.replace('_', ' ')}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <button 
-                        onClick={() => openEdit(project)}
-                        className="p-2 border border-gray-200 rounded-lg text-gray-600 hover:text-[#1A56DB] hover:bg-blue-50 hover:border-blue-200 transition-colors mr-2"
-                        title="Edit Project"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(project.id)}
-                        className="p-2 border border-gray-200 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors"
-                        title="Delete Project"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    <td className="px-10 py-8 text-right">
+                      <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0 transition-transform">
+                        <button 
+                          onClick={() => openEdit(project)}
+                          className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-black hover:border-black hover:shadow-lg transition-all"
+                          title="Edit Blueprint"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(project.id)}
+                          className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-brand-red hover:border-brand-red hover:shadow-lg transition-all"
+                          title="Terminate Archive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -198,123 +209,136 @@ export default function ProjectList({ initialProjects, clients }: { initialProje
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {editingProject ? 'Edit Project' : 'Add New Project'}
-              </h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                &times;
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-500">
+            <div className="flex justify-between items-center px-10 py-8 border-b border-gray-50 bg-gray-50/50">
+              <div>
+                 <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic">
+                   {editingProject ? 'Modify Initiative' : 'Initialize Blueprint'}
+                 </h2>
+                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Registry Entry Profile</p>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(false)} 
+                className="p-3 text-gray-300 hover:text-brand-red hover:bg-red-50 rounded-2xl transition-all"
+              >
+                <XIcon className="w-6 h-6" />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-10 space-y-8">
               {error && (
-                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm flex items-center">
-                  <AlertCircle className="w-4 h-4 mr-2" />
-                  {error}
+                <div className="bg-red-50 text-brand-red p-6 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center border border-red-100 animate-in shake-200">
+                  <AlertCircle className="w-5 h-5 mr-4 shrink-0" />
+                  Kernel Override: {error}
                 </div>
               )}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Project Title *</label>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Initiative Title <span className="text-brand-red font-black">*</span></label>
                 <input 
                   type="text" 
                   name="title" 
                   defaultValue={editingProject?.title || ''} 
                   required
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                  placeholder="EX: Q4 BRAND DEPLOYMENT PHASE"
+                  className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all placeholder:text-gray-200"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Select Client *</label>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Assigned Client Hub <span className="text-brand-red font-black">*</span></label>
                 <select 
                   name="client_id" 
                   defaultValue={editingProject?.client_id || ''}
                   required
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] bg-white"
+                  className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all cursor-pointer"
                 >
-                  <option value="" disabled>-- Select a client --</option>
+                  <option value="" disabled>-- SELECT RECIPIENT --</option>
                   {clients.map(c => (
-                    <option key={c.id} value={c.id}>{c.company_name}</option>
+                    <option key={c.id} value={c.id}>{c.company_name.toUpperCase()}</option>
                   ))}
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">System Description</label>
                 <textarea 
                   name="description" 
-                  rows={3}
+                  rows={4}
                   defaultValue={editingProject?.description || ''} 
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] resize-none"
+                  placeholder="METADATA & LOGISTICAL OVERVIEW..."
+                  className="w-full p-6 bg-gray-50 border border-gray-100 rounded-[2rem] focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-[11px] uppercase tracking-widest transition-all placeholder:text-gray-200 resize-none"
                 ></textarea>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Genesis Date</label>
                   <input 
                     type="date" 
                     name="start_date" 
                     defaultValue={editingProject?.start_date || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-[11px] uppercase tracking-widest transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Termination Date</label>
                   <input 
                     type="date" 
                     name="end_date" 
                     defaultValue={editingProject?.end_date || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-[11px] uppercase tracking-widest transition-all"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Budget (AED)</label>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Resource Cap (AED)</label>
                   <input 
                     type="number" 
                     name="budget"
                     step="0.01"
                     defaultValue={editingProject?.budget || ''} 
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB]"
+                    placeholder="0.00"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all placeholder:text-gray-200"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Lifecycle Phase</label>
                   <select 
                     name="status" 
                     defaultValue={editingProject?.status || 'active'}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A56DB] bg-white"
+                    className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-black text-xs uppercase tracking-widest transition-all cursor-pointer"
                   >
-                    <option value="active">Active</option>
-                    <option value="completed">Completed</option>
-                    <option value="paused">Paused</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="active">Active Execution</option>
+                    <option value="completed">Terminated / Done</option>
+                    <option value="paused">On Hold / Stasis</option>
+                    <option value="cancelled">Abort / Cancelled</option>
                   </select>
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-gray-200">
+              <div className="pt-10 flex justify-end gap-5 border-t border-gray-50">
                 <button 
                   type="button" 
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50"
+                  className="px-8 py-4 bg-gray-50 text-gray-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95"
                   disabled={isLoading}
                 >
-                  Cancel
+                  Cancel Protocol
                 </button>
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="px-4 py-2 bg-[#1A56DB] hover:bg-[#1e4eb8] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                  className="px-10 py-4 bg-black hover:bg-brand-red text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl hover:shadow-red-200 active:scale-95 flex items-center"
                 >
-                  {isLoading ? 'Saving...' : 'Save Project'}
+                  {isLoading ? (
+                    'COMMITTING...'
+                  ) : (
+                    <>SAVE BLUEPRINT <ArrowRight className="ml-3 w-4 h-4" /></>
+                  )}
                 </button>
               </div>
             </form>
@@ -322,5 +346,22 @@ export default function ProjectList({ initialProjects, clients }: { initialProje
         </div>
       )}
     </div>
+  )
+}
+
+function XIcon({ className }: { className?: string }) {
+  return (
+    <svg 
+      className={className} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="3" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
   )
 }

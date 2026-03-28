@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Activity, Clock, Monitor, User, MessageSquare } from 'lucide-react'
+import { Activity, Clock, Monitor, User, MessageSquare, ShieldCheck, Zap } from 'lucide-react'
 import Link from 'next/link'
 
 type Profile = {
@@ -23,17 +23,6 @@ export default function WatchPanel({ initialProfiles }: { initialProfiles: Profi
     return () => clearInterval(timer)
   }, [])
 
-  // In a real application, you would set up a Supabase Realtime subscription here 
-  // to listen for updates on the `profiles` table.
-  // Example pseudo-code for realtime:
-  // useEffect(() => {
-  //   const channel = supabase.channel('online-users')
-  //     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles' }, payload => {
-  //       setProfiles(prev => prev.map(p => p.id === payload.new.id ? payload.new as Profile : p))
-  //     }).subscribe()
-  //   return () => supabase.removeChannel(channel)
-  // }, [])
-
   const formatDuration = (startString: string | null) => {
     if (!startString) return ''
     const start = new Date(startString)
@@ -48,96 +37,116 @@ export default function WatchPanel({ initialProfiles }: { initialProfiles: Profi
   const offlineUsers = profiles.filter(p => !p.is_online)
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-center items-center">
-          <Monitor className="w-8 h-8 text-blue-500 mb-2" />
-          <div className="text-3xl font-bold text-gray-900">{profiles.length}</div>
-          <div className="text-sm font-medium text-gray-500">Total Team Members</div>
+    <div className="space-y-8">
+      {/* Top Status Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 flex flex-col items-center group hover:shadow-xl transition-all">
+          <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 mb-4 group-hover:bg-black group-hover:text-white transition-all shadow-inner">
+            <Monitor className="w-8 h-8" />
+          </div>
+          <div className="text-4xl font-black text-gray-900 tracking-tighter">{profiles.length}</div>
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mt-2">Total Personnel Nodes</div>
         </div>
-        <div className="bg-green-50 rounded-xl border border-green-100 p-6 flex flex-col justify-center items-center">
-          <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse mb-3" />
-          <div className="text-3xl font-bold text-green-700">{onlineUsers.length}</div>
-          <div className="text-sm font-medium text-green-600">Currently Online</div>
+        
+        <div className="bg-red-50/50 rounded-[2rem] border border-red-50 p-8 flex flex-col items-center group hover:shadow-2xl hover:shadow-red-100 transition-all relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-red-100 rounded-full blur-2xl -mr-12 -mt-12 opacity-50"></div>
+          <div className="w-4 h-4 bg-brand-red rounded-full animate-ping mb-6" />
+          <div className="text-4xl font-black text-brand-red tracking-tighter">{onlineUsers.length}</div>
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-400 mt-2">Active Live Uplinks</div>
         </div>
-        <div className="bg-gray-50 rounded-xl border border-gray-200 p-6 flex flex-col justify-center items-center">
-          <User className="w-8 h-8 text-gray-400 mb-2" />
-          <div className="text-3xl font-bold text-gray-700">{offlineUsers.length}</div>
-          <div className="text-sm font-medium text-gray-500">Offline</div>
+
+        <div className="bg-black rounded-[2rem] p-8 flex flex-col items-center group hover:bg-[#0a0a0a] transition-all border border-gray-900 shadow-2xl">
+          <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center text-gray-600 mb-4 group-hover:scale-110 transition-transform">
+            <Zap className="w-8 h-8" />
+          </div>
+          <div className="text-4xl font-black text-white tracking-tighter">{offlineUsers.length}</div>
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mt-2">Offline Nodes</div>
         </div>
       </div>
 
-      <h2 className="text-lg font-bold text-gray-900 mt-8 mb-4 border-b border-gray-200 pb-2">Live Team Grid</h2>
+      <div className="flex items-center justify-between mt-12 mb-6 border-b border-gray-100 pb-4">
+        <div>
+          <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Live Presence Grid</h2>
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">Real-time Agency Operational Awareness</p>
+        </div>
+        <div className="flex gap-2">
+           <div className="px-3 py-1 bg-red-50 text-brand-red text-[10px] font-black uppercase tracking-widest rounded-lg border border-red-100 ring-4 ring-red-50/50 animate-pulse">Live Feed</div>
+        </div>
+      </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {profiles.map(p => (
-          <div key={p.id} className={`rounded-xl border p-5 shadow-sm transition-all ${
-            p.is_online ? 'bg-white border-green-200 ring-1 ring-green-100 hover:shadow-md' : 'bg-gray-50 border-gray-200 opacity-75'
+          <div key={p.id} className={`rounded-[2rem] border p-6 transition-all relative group shadow-sm ${
+            p.is_online 
+              ? 'bg-white border-red-100 ring-4 ring-red-50/30 hover:shadow-2xl hover:shadow-red-100' 
+              : 'bg-gray-50/50 border-gray-100 grayscale hover:grayscale-0 opacity-80 hover:opacity-100'
           }`}>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 shrink-0">
-                  <User className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 line-clamp-1" title={p.full_name || 'Unknown'}>
-                    {p.full_name || 'Anonymous'}
-                  </h3>
-                  <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded ${
-                    p.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
-                  }`}>
-                    {p.role}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Link 
+            <div className="absolute top-6 right-6 flex gap-2">
+               <Link 
                   href="/admin/messages" 
-                  className="p-1.5 text-[#1A56DB] bg-blue-50 border border-blue-100 hover:bg-blue-100 rounded-lg transition-colors"
-                  title="Send Direct Message"
+                  className="p-2 text-gray-400 bg-white border border-gray-100 hover:text-brand-red hover:border-red-100 hover:shadow-lg rounded-xl transition-all"
+                  title="Direct Message"
                 >
                   <MessageSquare className="w-4 h-4" />
                 </Link>
                 {p.is_online ? (
-                  <span className="w-3 h-3 bg-green-500 rounded-full ring-4 ring-green-100" title="Online" />
+                  <div className="w-3 h-3 bg-brand-red rounded-full ring-4 ring-red-100 shadow-lg shadow-red-200" />
                 ) : (
-                  <span className="w-3 h-3 bg-gray-300 rounded-full" title="Offline" />
+                  <div className="w-3 h-3 bg-gray-300 rounded-full" />
                 )}
+            </div>
+
+            <div className="flex flex-col items-center pt-4 mb-8">
+              <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mb-4 transition-all duration-500 group-hover:scale-110 shadow-inner ${
+                p.is_online ? 'bg-red-50 text-brand-red group-hover:bg-brand-red group-hover:text-white ring-1 ring-red-100' : 'bg-white text-gray-400 border border-gray-100'
+              }`}>
+                <User className="w-10 h-10" />
+              </div>
+              <h3 className="font-black text-gray-900 uppercase tracking-tight text-lg text-center leading-tight">
+                {p.full_name || 'Generic ID'}
+              </h3>
+              <div className="flex items-center mt-2 group-hover:mt-1 transition-all">
+                {p.role === 'admin' && <ShieldCheck className="w-3 h-3 mr-1.5 text-black" />}
+                <span className={`text-[10px] uppercase font-black tracking-widest px-2.5 py-1 rounded-lg border ${
+                  p.role === 'admin' ? 'bg-black text-white border-black' : 'bg-gray-50 text-gray-500 border-gray-200'
+                }`}>
+                  {p.role}
+                </span>
               </div>
             </div>
 
             {p.is_online ? (
-              <div className="space-y-4 mt-2">
-                <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
-                  <div className="flex items-center text-xs text-gray-500 mb-1">
-                    <Activity className="w-3.5 h-3.5 mr-1.5" />
-                    Current Activity
+              <div className="space-y-4">
+                <div className="bg-gray-50/80 rounded-2xl p-4 border border-gray-100 group-hover:bg-white transition-colors duration-500">
+                  <div className="flex items-center text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 opacity-60">
+                    <Activity className="w-3.5 h-3.5 mr-2 text-brand-red" />
+                    Operational Node
                   </div>
-                  <div className="text-sm font-medium text-gray-900 break-words">
-                    {p.current_activity || <span className="text-gray-400 italic">No activity logged yet...</span>}
+                  <div className="text-xs font-bold text-gray-900 break-words leading-relaxed group-hover:text-brand-red transition-colors capitalize">
+                    {p.current_activity?.toLowerCase() || <span className="text-gray-300 italic font-medium">Idle standby mode...</span>}
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between text-xs font-medium text-gray-500">
-                  <div className="flex items-center">
-                    <Clock className="w-3.5 h-3.5 mr-1" />
-                    Shift Duration
+                <div className="flex items-center justify-between pt-2 border-t border-gray-50">
+                  <div className="flex items-center text-[9px] font-black uppercase tracking-widest text-gray-400">
+                    <Clock className="w-3 h-3 mr-1.5" />
+                    Session
                   </div>
-                  <span className="text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                  <span className="text-brand-red text-[10px] font-black font-mono">
                     {formatDuration(p.shift_start_time)}
                   </span>
                 </div>
               </div>
             ) : (
-              <div className="mt-4 text-center py-6 text-sm text-gray-400 italic">
-                Currently offline
+              <div className="py-8 text-center bg-gray-100/30 rounded-2xl border border-dashed border-gray-200">
+                <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Node Offline</p>
               </div>
             )}
           </div>
         ))}
         {profiles.length === 0 && (
-          <div className="col-span-full py-12 text-center text-gray-500 bg-white border border-gray-200 rounded-xl">
-             No team members found. Roles need to be assigned to users first.
+          <div className="col-span-full py-24 text-center bg-white border border-dashed border-gray-200 rounded-[3rem]">
+             <div className="text-[10px] font-black uppercase tracking-widest text-gray-300">Registry integrity compromised: Zero personnel nodes identified.</div>
           </div>
         )}
       </div>
