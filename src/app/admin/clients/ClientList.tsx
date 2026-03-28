@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit2, Trash2, Plus, Mail, Phone, MapPin, Building2, AlertCircle, FileText, ExternalLink, LogIn, ArrowRight, Target, Zap, Globe, Sparkles, X, ShieldCheck } from 'lucide-react'
+import { Edit2, Trash2, Plus, Mail, Phone, MapPin, Building2, AlertCircle, FileText, ExternalLink, LogIn, ArrowRight, Target, Zap, Globe, Sparkles, X, ShieldCheck, Clock } from 'lucide-react'
 import { createClient, updateClient, deleteClient } from './actions'
 import { createContract } from '../proposals/contractActions'
 import { createClientAccount } from './clientAuthActions'

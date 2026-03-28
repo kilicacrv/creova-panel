@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit2, Trash2, Plus, Megaphone, AlertCircle, Building2, TrendingUp, PlayCircle, PauseCircle, ArrowRight, Zap, Target, DollarSign, X } from 'lucide-react'
+import { Edit2, Trash2, Plus, Megaphone, AlertCircle, Building2, TrendingUp, PlayCircle, PauseCircle, ArrowRight, Zap, Target, DollarSign, X, Calendar } from 'lucide-react'
 import { createCampaign, updateCampaign, deleteCampaign, updateCampaignStatus } from './actions'
 
 type Project = { id: string; title: string; client_id: string; clients?: { company_name: string } | { company_name: string }[] }

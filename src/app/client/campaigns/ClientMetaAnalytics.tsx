@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
-import { Loader2, AlertCircle, Share2, Target, Users, MousePointerClick, Activity, TrendingUp, Download, ShieldCheck, Zap, Sparkles, Globe } from 'lucide-react'
+import { Loader2, AlertCircle, Share2, Target, Users, MousePointerClick, Activity, TrendingUp, Download, ShieldCheck, Zap, Sparkles, Globe, ArrowRight } from 'lucide-react'
 
 import { getShareLink } from './shareActions'
 

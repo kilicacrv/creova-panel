@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Sparkles, Copy, Check, MessageSquare, Megaphone, Presentation, RefreshCw, Zap, Type, Target, ArrowRight } from 'lucide-react'
+import { Sparkles, Copy, Check, MessageSquare, Megaphone, Presentation, RefreshCw, Zap, Type, Target, ArrowRight, AlertCircle } from 'lucide-react'
 import { generateCopy } from './actions'
 
 export default function AIAssistant() {

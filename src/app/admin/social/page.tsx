@@ -1,4 +1,4 @@
-import { TrendingUp, Activity, Users, MessageCircle, AlertTriangle, ArrowUpRight, ArrowDownRight, Share2, Heart, Award, Zap, Target, Sparkles, Globe, ShieldCheck } from 'lucide-react'
+import { TrendingUp, Activity, Users, MessageCircle, AlertTriangle, ArrowUpRight, ArrowDownRight, Share2, Heart, Award, Zap, Target, Sparkles, Globe, ShieldCheck, Plus } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
