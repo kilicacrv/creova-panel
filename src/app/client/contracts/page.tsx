@@ -23,17 +23,17 @@ export default async function ClientContractsPage({ searchParams }: { searchPara
 
   return (
     <div className="space-y-10">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white p-10 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-40"></div>
         <div className="relative z-10">
-          <h1 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">Legal Protocols</h1>
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Master Service Agreements & Integrated Registry Contracts</p>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight font-bold">Contracts</h1>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-normal mt-1">Master Service Agreements & Integrated Registry Contracts</p>
         </div>
         <div className="flex items-center gap-4 relative z-10">
            <div className="p-3 bg-black rounded-2xl shadow-xl">
               <ShieldCheck className="w-5 h-5 text-white" />
            </div>
-           <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest italic">Encrypted_Vault_Active</span>
+           <span className="text-[10px] font-bold text-gray-900 uppercase tracking-normal italic">Encrypted_Vault_Active</span>
         </div>
       </div>
       

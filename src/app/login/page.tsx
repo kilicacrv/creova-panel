@@ -48,7 +48,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center p-4 font-sans">
-      <div className="bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 p-10 w-full max-w-md relative overflow-hidden">
+      <div className="bg-white rounded-xl shadow-2xl border border-gray-100 p-10 w-full max-w-md relative overflow-hidden">
         {/* Background Accent */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
         

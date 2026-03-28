@@ -33,7 +33,7 @@ export default function RemoteCheckInWidget({ profile }: { profile: any }) {
   }
 
   return (
-    <div className={`bg-white border-b lg:border transition-all duration-500 lg:rounded-[2rem] shadow-2xl p-6 lg:mb-10 flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden ${isOnline ? 'border-red-100 ring-4 ring-red-50/30' : 'border-gray-200'}`}>
+    <div className={`bg-white border-b lg:border transition-all duration-500 lg:rounded-xl shadow-2xl p-6 lg:mb-10 flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden ${isOnline ? 'border-red-100 ring-4 ring-red-50/30' : 'border-gray-200'}`}>
       {isOnline && (
         <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-30 animate-pulse"></div>
       )}
@@ -43,7 +43,7 @@ export default function RemoteCheckInWidget({ profile }: { profile: any }) {
           <button 
             disabled={loading}
             onClick={handleClockOut}
-            className="group flex items-center px-8 py-4 bg-black text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-brand-red transition-all shadow-xl shadow-gray-200 hover:shadow-red-200 active:scale-95 disabled:opacity-50"
+            className="group flex items-center px-8 py-4 bg-black text-white rounded-2xl font-bold text-[10px] uppercase tracking-normal hover:bg-blue-600 transition-all shadow-xl shadow-gray-200 hover:shadow-blue-200 active:scale-95 disabled:opacity-50"
           >
             <StopCircle className="w-4 h-4 mr-3 group-hover:scale-110 transition-transform" />
             Terminate Link
@@ -52,7 +52,7 @@ export default function RemoteCheckInWidget({ profile }: { profile: any }) {
           <button 
             disabled={loading}
             onClick={handleClockIn}
-            className="group flex items-center px-8 py-4 bg-brand-red text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-red-200 hover:shadow-gray-200 active:scale-95 disabled:opacity-50"
+            className="group flex items-center px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-[10px] uppercase tracking-normal hover:bg-black transition-all shadow-xl shadow-blue-200 hover:shadow-gray-200 active:scale-95 disabled:opacity-50"
           >
             <PlayCircle className="w-4 h-4 mr-3 group-hover:rotate-12 transition-transform" />
             Establish Uplink
@@ -63,14 +63,14 @@ export default function RemoteCheckInWidget({ profile }: { profile: any }) {
 
         <div>
            <div className="flex items-center gap-2 mb-1">
-             <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-brand-red animate-ping' : 'bg-gray-300'}`} />
-             <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+             <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-blue-600 animate-ping' : 'bg-gray-300'}`} />
+             <div className="text-[10px] font-bold text-gray-400 uppercase tracking-normal">
                Operational Status: {isOnline ? <span className="text-gray-900">Uplink Active</span> : <span className="text-gray-400">Node Offline</span>}
              </div>
            </div>
           {isOnline && profile?.shift_start_time && (
-            <div className="text-[10px] font-black text-gray-900 uppercase tracking-tight italic flex items-center">
-              <Zap className="w-3 h-3 mr-1.5 text-brand-red" />
+            <div className="text-[10px] font-bold text-gray-900 uppercase tracking-tight italic flex items-center">
+              <Zap className="w-3 h-3 mr-1.5 text-blue-600" />
               Epoch Starts: {new Date(profile.shift_start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           )}
@@ -80,7 +80,7 @@ export default function RemoteCheckInWidget({ profile }: { profile: any }) {
       {isOnline && (
         <form onSubmit={handleUpdateActivity} className="flex-1 w-full max-w-2xl flex items-center gap-3 relative z-10 transition-all">
           <div className="relative flex-1 group">
-            <Target className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 group-hover:text-brand-red transition-colors" />
+            <Target className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 group-hover:text-blue-600 transition-colors" />
             <input 
               type="text" 
               placeholder="What is your current objective?"
@@ -92,10 +92,10 @@ export default function RemoteCheckInWidget({ profile }: { profile: any }) {
           <button 
             type="submit" 
             disabled={loading || activityInput === profile?.current_activity}
-            className="p-4 bg-black text-white rounded-2xl hover:bg-brand-red disabled:opacity-30 transition-all shadow-lg hover:shadow-red-200 active:scale-95"
+            className="p-4 bg-black text-white rounded-2xl hover:bg-blue-600 disabled:opacity-30 transition-all shadow-lg hover:shadow-blue-200 active:scale-95"
             title="Commit Status"
           >
-            <Check className="w-5 h-5 font-black" />
+            <Check className="w-5 h-5 font-bold" />
           </button>
         </form>
       )}

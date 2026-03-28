@@ -40,12 +40,12 @@ export default function TeamTaskList({ initialTasks }: { initialTasks: Task[] })
     low: 'bg-gray-50 text-gray-400 border-gray-100',
     medium: 'bg-black text-white border-black',
     high: 'bg-orange-50 text-orange-600 border-orange-100',
-    urgent: 'bg-red-50 text-brand-red border-red-100 animate-pulse',
+    urgent: 'bg-red-50 text-blue-600 border-red-100 animate-pulse',
   }
 
   const statusStyles = {
     todo: 'bg-gray-50 text-gray-500 border-gray-200',
-    in_progress: 'bg-red-50 text-brand-red border-red-100',
+    in_progress: 'bg-red-50 text-blue-600 border-red-100',
     review: 'bg-black text-white border-black',
     done: 'bg-emerald-50 text-emerald-600 border-emerald-100',
   }
@@ -53,33 +53,33 @@ export default function TeamTaskList({ initialTasks }: { initialTasks: Task[] })
   return (
     <div className="space-y-6">
       {tasks.length === 0 ? (
-        <div className="py-24 text-center bg-white rounded-[2.5rem] border border-dashed border-gray-200 shadow-sm transition-all hover:bg-gray-50/50">
+        <div className="py-24 text-center bg-white rounded-xl border border-dashed border-gray-200 shadow-sm transition-all hover:bg-gray-50/50">
           <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
              <CheckCircle2 className="w-10 h-10 text-gray-200" />
           </div>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 italic">Registry Secure: Zero active payloads assigned to this node.</p>
+          <p className="text-[10px] font-semibold text-sm text-gray-300 italic">Registry Secure: Zero active payloads assigned to this node.</p>
         </div>
       ) : (
         tasks.map((task) => (
-          <div key={task.id} className="bg-white rounded-[2rem] border border-gray-100 p-8 shadow-sm transition-all group hover:shadow-2xl hover:shadow-red-100 hover:border-red-100 border-l-8 border-l-transparent hover:border-l-brand-red relative overflow-hidden">
+          <div key={task.id} className="bg-white rounded-xl border border-gray-100 p-8 shadow-sm transition-all group hover:shadow-2xl hover:shadow-blue-100 hover:border-red-100 border-l-8 border-l-transparent hover:border-l-brand-red relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-0 group-hover:opacity-40 transition-opacity"></div>
             
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
               <div className="flex-grow">
                 <div className="flex items-center gap-3 mb-3">
-                  <span className={`text-[9px] px-3 py-1.5 rounded-xl font-black uppercase tracking-widest border transition-all ${priorityColors[task.priority]}`}>
+                  <span className={`text-[9px] px-3 py-1.5 rounded-xl font-semibold text-sm border transition-all ${priorityColors[task.priority]}`}>
                     {task.priority}
                   </span>
                   <div className="h-4 w-px bg-gray-100 mx-1" />
-                  <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest group-hover:text-brand-red transition-colors flex items-center shrink-0">
+                  <span className="text-[10px] font-bold text-gray-300 uppercase tracking-normal group-hover:text-blue-600 transition-colors flex items-center shrink-0">
                      <Zap className="w-3 h-3 mr-1.5 opacity-40 shrink-0" />
                      {task.projects.title}
                   </span>
                 </div>
-                <h3 className="text-xl font-black text-gray-900 group-hover:text-brand-red transition-colors uppercase tracking-tight">{task.title}</h3>
+                <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors uppercase tracking-tight">{task.title}</h3>
                 <p className="text-[11px] text-gray-400 mt-2 font-medium leading-relaxed max-w-2xl">{task.description || 'Static documentation node: No functional description provided.'}</p>
                 
-                <div className="flex items-center mt-6 text-[10px] font-black uppercase tracking-widest text-gray-300 group-hover:text-gray-900 transition-colors">
+                <div className="flex items-center mt-6 text-[10px] font-semibold text-sm text-gray-300 group-hover:text-gray-900 transition-colors">
                    <Calendar className="w-3.5 h-3.5 mr-2" />
                    Temporal Deadline: {task.due_date ? new Date(task.due_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'OPEN CLUSTER'}
                 </div>
@@ -92,7 +92,7 @@ export default function TeamTaskList({ initialTasks }: { initialTasks: Task[] })
                     disabled={loadingId === task.id}
                     onChange={(e) => handleStatusChange(task.id, e.target.value)}
                     className={`
-                      appearance-none px-6 py-4 pr-12 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all cursor-pointer focus:outline-none focus:ring-4 focus:ring-red-50 relative z-10
+                      appearance-none px-6 py-4 pr-12 rounded-2xl text-[10px] font-semibold text-sm border transition-all cursor-pointer focus:outline-none focus:ring-4 focus:ring-red-50 relative z-10
                       ${statusStyles[task.status] || 'bg-gray-50 text-gray-600 border-gray-200'}
                     `}
                   >
@@ -107,10 +107,10 @@ export default function TeamTaskList({ initialTasks }: { initialTasks: Task[] })
                 </div>
 
                 {loadingId === task.id && (
-                  <div className="w-6 h-6 border-2 border-brand-red border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                 )}
                 
-                <button className="p-4 bg-gray-50 text-gray-300 hover:text-brand-red hover:bg-white hover:shadow-lg rounded-2xl transition-all border border-transparent hover:border-red-50">
+                <button className="p-4 bg-gray-50 text-gray-300 hover:text-blue-600 hover:bg-white hover:shadow-lg rounded-2xl transition-all border border-transparent hover:border-red-50">
                     <ArrowRight className="w-5 h-5" />
                 </button>
               </div>

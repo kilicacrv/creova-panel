@@ -25,12 +25,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const navigation = [
-    { name: 'Terminal Overview', href: '/client', icon: LayoutDashboard },
-    { name: 'Active Nodes', href: '/client/projects', icon: FolderOpen },
-    { name: 'Financial Ledger', href: '/client/invoices', icon: Receipt },
-    { name: 'Asset Approvals', href: '/client/approvals', icon: CalendarCheck },
-    { name: 'Legal Protocols', href: '/client/contracts', icon: FileText },
-    { name: 'Growth Logistics', href: '/client/campaigns', icon: Megaphone },
+    { name: 'Dashboard', href: '/client', icon: LayoutDashboard },
+    { name: 'Projects', href: '/client/projects', icon: FolderOpen },
+    { name: 'Invoices', href: '/client/invoices', icon: Receipt },
+    { name: 'Approvals', href: '/client/approvals', icon: CalendarCheck },
+    { name: 'Contracts', href: '/client/contracts', icon: FileText },
+    { name: 'Ad Campaigns', href: '/client/campaigns', icon: Megaphone },
   ]
 
   const isActive = (path: string) => {
@@ -73,7 +73,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         {/* Navigation Content */}
         <div className="flex-1 overflow-y-auto px-6 py-10 space-y-10 custom-scrollbar">
            <div className="space-y-4">
-            <h3 className="px-5 text-[9px] font-black text-gray-300 uppercase tracking-[0.4em] mb-2 italic">Client Interface</h3>
+            <h3 className="px-5 text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Client Portal</h3>
             <div className="space-y-1.5">
                {navigation.map((item) => {
                 const active = isActive(item.href)
@@ -83,15 +83,15 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                     href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`
-                      flex items-center px-5 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all group/nav
+                      flex items-center px-5 py-3.5 rounded-lg text-sm font-medium transition-all group/nav
                       ${active 
-                        ? 'bg-black text-white shadow-2xl shadow-black/10 translate-x-1' 
-                        : 'text-gray-500 hover:text-black hover:bg-gray-50'}
+                        ? 'bg-blue-50 text-blue-700' 
+                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}
                     `}
                   >
-                    <item.icon className={`w-4 h-4 mr-4 shrink-0 transition-transform group-hover/nav:scale-110 ${active ? 'text-brand-red' : 'text-gray-300 group-hover/nav:text-black'}`} />
+                    <item.icon className={`w-[18px] h-[18px] mr-4 shrink-0 transition-transform group-hover/nav:scale-110 ${active ? 'text-blue-600' : 'text-gray-300 group-hover/nav:text-black'}`} />
                     {item.name}
-                    {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-red animate-pulse"></div>}
+                    {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></div>}
                   </Link>
                 )
               })}
@@ -101,21 +101,21 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
         {/* Bottom Area (Support & Logout) */}
         <div className="p-6 border-t border-gray-50 shrink-0 bg-gray-50/30">
-          <div className="bg-white p-5 rounded-[2rem] border border-gray-100 shadow-sm mb-4">
-             <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-red-50 rounded-xl">
-                   <ShieldCheck className="w-4 h-4 text-brand-red" />
+          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm mb-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-blue-50 rounded-lg">
+                   <ShieldCheck className="w-4 h-4 text-blue-600" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-900">Secure Protocol</span>
+                <span className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">Secure Connection</span>
              </div>
-             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-relaxed">End-to-end encrypted hub access active.</p>
+             <p className="text-[10px] font-medium text-gray-400 leading-relaxed">Your session is protected with end-to-end encryption.</p>
           </div>
           <button 
             onClick={handleLogout}
-            className="flex items-center w-full px-5 py-3.5 text-[10px] font-black uppercase tracking-widest text-gray-400 rounded-2xl hover:bg-black hover:text-white transition-all group shadow-sm hover:shadow-xl"
+            className="flex items-center w-full px-5 py-3.5 text-[10px] font-semibold text-sm text-gray-400 rounded-2xl hover:bg-black hover:text-white transition-all group shadow-sm hover:shadow-xl"
           >
-            <LogOut className="w-4 h-4 mr-4 shrink-0 text-gray-300 group-hover:text-brand-red transition-colors" />
-            Terminate Link
+            <LogOut className="w-4 h-4 mr-3 shrink-0 text-gray-400" />
+            Logout
           </button>
         </div>
       </aside>
@@ -130,23 +130,25 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 pt-20 lg:pt-0 overflow-y-auto custom-scrollbar">
-        <header className="h-24 lg:h-32 flex items-center justify-between px-6 lg:px-12 shrink-0 border-b border-gray-50 bg-white/50">
+        <header className="h-16 flex items-center justify-between px-6 lg:px-12 shrink-0 border-b border-gray-100 bg-white">
            <div>
-              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-300 italic mb-1">Authenticated Hub</h2>
               <div className="flex items-center gap-3">
-                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                 <span className="text-xl font-black text-gray-900 uppercase tracking-tighter">Command Environment</span>
+                 <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                 <span className="text-[15px] font-semibold text-gray-900">Portal Dashboard</span>
               </div>
            </div>
            <div className="hidden md:flex items-center gap-6">
-              <button className="p-3 bg-gray-50 text-gray-400 hover:text-black hover:bg-white border border-gray-100 hover:border-gray-200 rounded-2xl transition-all relative">
+              <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-lg transition-all relative">
                  <Bell className="w-5 h-5" />
-                 <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-brand-red rounded-full"></span>
+                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-600 rounded-full ring-2 ring-white"></span>
               </button>
-              <div className="w-px h-8 bg-gray-100"></div>
+              <div className="w-px h-6 bg-gray-200"></div>
               <div className="flex items-center gap-4">
-                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 italic">Client_01_Live</span>
-                 <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center font-black text-sm shadow-2xl shadow-black/10">C</div>
+                  <div className="text-right">
+                    <div className="text-sm font-medium text-gray-900">Client Portal</div>
+                    <div className="text-xs text-gray-500">Secure Connection</div>
+                  </div>
+                 <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">C</div>
               </div>
            </div>
         </header>

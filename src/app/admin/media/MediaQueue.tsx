@@ -111,15 +111,15 @@ export default function MediaQueue({
 
   return (
     <div className="space-y-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-40"></div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-40"></div>
         
-        <div className="flex items-center gap-4 bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 w-full md:w-[400px] focus-within:ring-8 focus-within:ring-red-50 focus-within:border-red-100 focus-within:bg-white transition-all group">
-          <Search className="w-5 h-5 text-gray-300 group-focus-within:text-brand-red transition-colors" />
+        <div className="flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 w-full md:w-[400px] focus-within:ring-2 focus-within:ring-blue-50 focus-within:border-blue-600 focus-within:bg-white transition-all group">
+          <Search className="w-5 h-5 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
           <input 
             type="text" 
-            placeholder="FILTER SOURCE CLIENT..." 
-            className="bg-transparent border-none focus:ring-0 text-[10px] font-black uppercase tracking-widest w-full outline-none placeholder:text-gray-300"
+            placeholder="Search by client..." 
+            className="bg-transparent border-none focus:ring-0 text-sm w-full outline-none placeholder:text-gray-400 font-medium"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -131,124 +131,123 @@ export default function MediaQueue({
               key={s}
               onClick={() => setFilter(s)}
               className={`
-                px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border
+                px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all border
                 ${filter === s 
-                  ? 'bg-black text-white border-black shadow-xl shadow-black/10' 
-                  : 'bg-white text-gray-400 border-gray-50 hover:bg-gray-50 hover:text-black'}
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm' 
+                  : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50 hover:text-gray-900'}
               `}
             >
-              {s.replace('_', ' ')}
+              {s === 'pending_admin' ? 'Pending' : s.replace('_', ' ')}
             </button>
           ))}
           <div className="w-px h-8 bg-gray-100 mx-3 hidden md:block"></div>
           <button
             onClick={handleCleanup}
-            className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-400 bg-white border border-gray-50 hover:bg-red-50 hover:text-brand-red hover:border-red-100 flex items-center gap-3 transition-all active:scale-95"
-            title={`${cleanupCount} files ready for extraction`}
+            className="px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-400 bg-white border border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-100 flex items-center gap-2 transition-all active:scale-95"
+            title={`${cleanupCount} files ready for cleanup`}
           >
-            <FileWarning className="w-4 h-4 text-brand-red" />
-            GC_CLEANUP
+            <FileWarning className="w-4 h-4" />
+            Cleanup
           </button>
         </div>
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-[2.5rem] shadow-2xl overflow-hidden overflow-x-auto relative">
+      <div className="bg-white border border-gray-100 rounded-xl shadow-2xl overflow-hidden overflow-x-auto relative">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
-              <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] w-32">Resource</th>
-              <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Metadata</th>
-              <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Origin Hub</th>
-              <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Neural Status</th>
-              <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Registry Phase</th>
-              <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-right">Actions</th>
+              <th className="px-8 py-5 text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">Media</th>
+              <th className="px-8 py-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Details</th>
+              <th className="px-8 py-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Client</th>
+              <th className="px-8 py-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">AI Status</th>
+              <th className="px-8 py-5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="px-8 py-5 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {filteredItems.map(item => (
               <tr key={item.id} className="hover:bg-red-50/10 transition-all group">
-                <td className="p-8">
+                <td className="px-8 py-6">
                   <a 
                     href={item.media_url} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="block relative w-20 h-20 rounded-[1.5rem] overflow-hidden bg-black shadow-xl group-hover:ring-4 ring-brand-red/20 transition-all group-hover:rotate-2"
+                    className="block relative w-16 h-16 rounded-xl overflow-hidden bg-gray-100 border border-gray-100 shadow-sm transition-all hover:ring-4 hover:ring-blue-50"
                   >
                     {item.media_type === 'video' ? (
-                      <video src={item.media_url} className="w-full h-full object-cover opacity-80" muted playsInline />
+                      <video src={item.media_url} className="w-full h-full object-cover" muted playsInline />
                     ) : (
                       <Image 
                         src={item.media_url} 
                         alt="Media Thumbnail"
                         fill
-                        sizes="128px"
-                        className="object-cover opacity-90 transition-transform group-hover:scale-110 duration-500" 
+                        sizes="64px"
+                        className="object-cover transition-transform group-hover:scale-105 duration-500" 
                       />
                     )}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-all backdrop-blur-[2px]">
                       <ExternalLink className="w-5 h-5 text-white" />
                     </div>
                   </a>
                 </td>
                 
-                <td className="p-8">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-50 rounded-lg text-gray-400 group-hover:bg-black group-hover:text-white transition-colors">
+                <td className="px-8 py-6">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-gray-50 rounded-lg text-gray-400 group-hover:text-blue-600 transition-colors">
                        {item.media_type === 'video' ? <Film className="w-4 h-4" /> : <ImageIcon className="w-4 h-4" />}
                     </div>
-                    <span className="font-black text-gray-900 text-sm uppercase tracking-tight truncate max-w-[200px]" title={item.file_name || 'unknown'}>
-                      {item.file_name || 'UNDEFINED_ASSET'}
+                    <span className="font-semibold text-gray-900 text-sm tracking-tight truncate max-w-[180px]" title={item.file_name || 'unknown'}>
+                      {item.file_name || 'Unnamed Asset'}
                     </span>
                   </div>
-                  <div className="text-[9px] font-black uppercase tracking-widest text-gray-400 mt-2.5 flex items-center gap-3">
-                    <span className="bg-gray-50 px-2 py-0.5 rounded">{formatBytes(item.file_size)}</span>
-                    <div className="w-1 h-1 rounded-full bg-red-400 animate-pulse"></div>
-                    <span>{new Date(item.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  <div className="text-[10px] font-semibold text-gray-400 mt-2 flex items-center gap-3 uppercase tracking-wider">
+                    <span>{formatBytes(item.file_size)}</span>
+                    <div className="w-1 h-1 rounded-full bg-gray-200"></div>
+                    <span>{new Date(item.created_at).toLocaleDateString()}</span>
                   </div>
                 </td>
 
-                <td className="p-8">
-                  <div className="font-black text-gray-900 text-xs uppercase tracking-tight mb-2 flex items-center gap-2">
-                     <div className="w-1.5 h-1.5 rounded-full bg-black" />
+                <td className="px-8 py-6">
+                  <div className="font-semibold text-gray-900 text-sm tracking-tight mb-1 flex items-center gap-2">
                      {item.clients?.company_name}
                   </div>
-                  <div className="flex items-center text-[9px] font-black uppercase tracking-widest text-gray-400 italic">
-                    <User className="w-3 h-3 mr-2 opacity-30" />
-                    {item.profiles?.full_name || 'DELETED_USER'}
+                  <div className="flex items-center text-[10px] font-medium text-gray-400">
+                    <User className="w-3 h-3 mr-1.5 opacity-40" />
+                    {item.profiles?.full_name || 'Member'}
                   </div>
                 </td>
 
-                <td className="p-8">
+                <td className="px-8 py-6">
                   <AiStatusBadge status={item.ai_status || 'pending'} />
                 </td>
 
-                <td className="p-8 text-sm">
+                <td className="px-8 py-6">
                   <AdminStatusBadge status={item.status} />
                 </td>
 
-                <td className="p-8 text-right">
+                <td className="px-8 py-6 text-right">
                   {item.status === 'pending_admin' ? (
-                    <div className="flex justify-end gap-3 translate-x-4 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <div className="flex justify-end gap-2.5">
                       <button
                         onClick={() => handleReject(item.id)}
                         disabled={loadingId === item.id}
-                        className="p-4 bg-white border border-gray-100 text-gray-300 hover:text-brand-red hover:bg-red-50 hover:border-red-100 rounded-2xl transition-all shadow-sm hover:shadow-xl active:scale-90"
-                        title="Reject Payload"
+                        className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                        title="Reject Media"
                       >
-                        <XCircle className="w-5 h-5" />
+                        <XCircle className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleApprove(item.id)}
                         disabled={loadingId === item.id}
-                        className="p-4 bg-black text-white hover:bg-brand-red rounded-2xl shadow-xl hover:shadow-red-200 transition-all active:scale-95 flex items-center"
-                        title="Commence Approval"
+                        className="p-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all shadow-sm active:scale-95 flex items-center"
+                        title="Approve Media"
                       >
-                        {loadingId === item.id ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
+                        {loadingId === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
                       </button>
                     </div>
                   ) : (
-                    <div className="flex justify-end pr-4">
-                       <ShieldCheck className="w-6 h-6 text-emerald-500 opacity-20" />
+                    <div className="flex justify-end pr-3">
+                       <ShieldCheck className="w-5 h-5 text-emerald-500 opacity-30" />
                     </div>
                   )}
                 </td>
@@ -258,14 +257,13 @@ export default function MediaQueue({
         </table>
         
         {filteredItems.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-40 bg-gray-50/20">
-            <div className="w-32 h-32 bg-white rounded-[3rem] shadow-2xl flex items-center justify-center mb-10 border border-gray-100 relative group">
-               <div className="absolute inset-0 bg-red-50 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-40 transition-opacity"></div>
-               <Clock className="w-12 h-12 text-gray-100 relative z-10 transition-transform group-hover:rotate-12" />
+          <div className="flex flex-col items-center justify-center py-32 bg-gray-50/20">
+            <div className="w-20 h-20 bg-white rounded-xl shadow-sm flex items-center justify-center mb-6 border border-gray-100 relative group">
+               <Clock className="w-8 h-8 text-gray-200 relative z-10" />
             </div>
-            <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter italic">Queue Silent</h2>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mt-3 max-w-sm mx-auto leading-loose text-center">
-               Operational matrix clear. Awaiting fresh payload ingestion from deployed personnel.
+            <h2 className="text-xl font-bold text-gray-900">Queue is empty</h2>
+            <p className="text-sm font-medium text-gray-400 mt-2 max-w-sm mx-auto text-center">
+               All media items have been processed. Awaiting new uploads from clients or team members.
             </p>
           </div>
         )}
@@ -277,17 +275,17 @@ export default function MediaQueue({
 
 function AiStatusBadge({ status }: { status: string }) {
   const map: any = {
-    pending: { bg: 'bg-gray-50', text: 'text-gray-400', icon: Clock },
-    processing: { bg: 'bg-red-50', text: 'text-brand-red', icon: Loader2 },
-    done: { bg: 'bg-black', text: 'text-white', icon: Sparkles },
-    failed: { bg: 'bg-red-50', text: 'text-brand-red', icon: FileWarning }
+    pending: { bg: 'bg-gray-50', text: 'text-gray-500', icon: Clock },
+    processing: { bg: 'bg-blue-50', text: 'text-blue-700', icon: Loader2 },
+    done: { bg: 'bg-emerald-50', text: 'text-emerald-700', icon: Sparkles },
+    failed: { bg: 'bg-red-50', text: 'text-red-700', icon: FileWarning }
   }
   const config = map[status] || map.pending
   const Icon = config.icon
 
   return (
-    <div className={`inline-flex items-center px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border border-gray-100/10 ${config.bg} ${config.text} transition-all`}>
-      <Icon className={`w-3.5 h-3.5 mr-2.5 ${status === 'processing' ? 'animate-spin' : ''}`} />
+    <div className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border border-gray-100/10 ${config.bg} ${config.text} transition-all`}>
+      <Icon className={`w-3 h-3 mr-1.5 ${status === 'processing' ? 'animate-spin' : ''}`} />
       {status}
     </div>
   )
@@ -295,15 +293,15 @@ function AiStatusBadge({ status }: { status: string }) {
 
 function AdminStatusBadge({ status }: { status: string }) {
   const styles: any = {
-    pending_admin: 'bg-amber-50 text-amber-600 border-amber-100',
-    ready: 'bg-emerald-50 text-emerald-600 border-emerald-100',
-    rejected: 'bg-red-50 text-brand-red border-red-100',
-    approved: 'bg-black text-white border-black'
+    pending_admin: 'bg-amber-50 text-amber-700 border-amber-100',
+    ready: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+    rejected: 'bg-red-50 text-red-700 border-red-100',
+    approved: 'bg-blue-50 text-blue-700 border-blue-100'
   }
 
   return (
-    <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-sm transition-all ${styles[status]}`}>
-      {status.replace('_', ' ')}
+    <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border transition-all ${styles[status]}`}>
+      {status === 'pending_admin' ? 'Pending Approval' : status.replace('_', ' ')}
     </span>
   )
 }
