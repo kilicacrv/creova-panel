@@ -424,9 +424,9 @@ export default function ClientList({ initialClients }: { initialClients: Client[
                <div>
                   <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
                     <Sparkles className="w-5 h-5 text-blue-600" />
-                    Generate Contract
+                    New Agreement
                   </h2>
-                  <p className="text-xs text-gray-500 mt-1">Creating agreement for {contractClient.company_name}</p>
+                  <p className="text-xs text-gray-500 mt-1">Generate contract for {contractClient.company_name}</p>
                </div>
                <button onClick={() => setIsContractModalOpen(false)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all">
                 <X className="w-5 h-5" />
@@ -436,39 +436,39 @@ export default function ClientList({ initialClients }: { initialClients: Client[
             <form onSubmit={handleCreateContract} className="p-10 space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-normal ml-1">Agreement identity *</label>
-                  <input name="title" required placeholder="EX: STRATEGIC GROWTH MSA" className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-xs uppercase tracking-normal transition-all" />
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Contract Title *</label>
+                  <input name="title" required placeholder="e.g. STRATEGIC GROWTH MSA" className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-blue-50 focus:bg-white focus:border-blue-100 font-bold text-xs transition-all" />
                 </div>
                 <div className="space-y-3">
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-normal ml-1">Monthly frequency ($) *</label>
-                  <input name="monthly_fee" type="number" step="0.01" required placeholder="0.00" className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-xs uppercase tracking-normal transition-all" />
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Monthly Retainer ($) *</label>
+                  <input name="monthly_fee" type="number" step="0.01" required placeholder="0.00" className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-blue-50 focus:bg-white focus:border-blue-100 font-bold text-xs transition-all" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-3">
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-normal ml-1">Genesis Date *</label>
-                  <input name="start_date" type="date" required className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-[11px] uppercase tracking-normal transition-all" />
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Start Date *</label>
+                  <input name="start_date" type="date" required className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-blue-50 focus:bg-white focus:border-blue-100 font-bold text-[11px] transition-all" />
                 </div>
                 <div className="space-y-3">
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-normal ml-1">Termination Date *</label>
-                  <input name="end_date" type="date" required className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-[11px] uppercase tracking-normal transition-all" />
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">End Date *</label>
+                  <input name="end_date" type="date" required className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-blue-50 focus:bg-white focus:border-blue-100 font-bold text-[11px] transition-all" />
                 </div>
               </div>
 
               <div className="space-y-3">
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-normal ml-1">Resource Manifest (Description)</label>
-                <textarea name="description" rows={3} placeholder="MANIFEST DIRECTIVES..." className="w-full p-6 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-[11px] uppercase tracking-normal transition-all placeholder:text-gray-200 resize-none"></textarea>
+                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Scope of Work</label>
+                <textarea name="description" rows={3} placeholder="Describe the project scope..." className="w-full p-6 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-8 focus:ring-blue-50 focus:bg-white focus:border-blue-100 font-bold text-[11px] transition-all placeholder:text-gray-200 resize-none"></textarea>
               </div>
 
               <div className="space-y-3">
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-normal ml-1">Liquid Capital Terms</label>
-                <input name="payment_terms" placeholder="EX: NET-30 AT EPOCH START" className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-xs uppercase tracking-normal transition-all" />
+                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Payment Terms</label>
+                <input name="payment_terms" placeholder="e.g. NET-30" className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-8 focus:ring-blue-50 focus:bg-white focus:border-blue-100 font-bold text-xs transition-all" />
               </div>
 
               <div className="space-y-3">
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-normal ml-1">Kernel Clauses (Custom)</label>
-                <textarea name="clauses" rows={3} placeholder="SPECIAL DIRECTIVES..." className="w-full p-6 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-8 focus:ring-red-50 focus:bg-white focus:border-red-100 font-bold text-[11px] uppercase tracking-normal transition-all placeholder:text-gray-200 resize-none"></textarea>
+                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Custom Clauses</label>
+                <textarea name="clauses" rows={3} placeholder="Any special requirements..." className="w-full p-6 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-8 focus:ring-blue-50 focus:bg-white focus:border-blue-100 font-bold text-[11px] transition-all placeholder:text-gray-200 resize-none"></textarea>
               </div>
 
               <div className="pt-6 flex justify-end gap-3 border-t border-gray-100">

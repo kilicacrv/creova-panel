@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS public.clients (
   contact_phone TEXT,
   address TEXT,
   notes TEXT,
+  meta_ad_account_id TEXT,
+  logo_url TEXT,
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

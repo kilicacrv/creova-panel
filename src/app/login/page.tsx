@@ -64,28 +64,28 @@ export default function LoginPage() {
         {/* Form Section */}
         <form onSubmit={handleLogin} className="space-y-6 relative z-10">
           <div className="space-y-2">
-            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Secure Identify</label>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">Account Email</label>
             <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 group-focus-within:text-brand-red transition-colors" />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 group-focus-within:text-blue-600 transition-colors" />
               <input 
                 type="email" 
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-14 bg-gray-50 border border-gray-100 text-gray-900 rounded-2xl pl-12 pr-4 font-bold focus:outline-none focus:ring-4 focus:ring-red-100/50 focus:bg-white transition-all text-sm placeholder:text-gray-300"
+                className="w-full h-14 bg-gray-50 border border-gray-100 text-gray-900 rounded-2xl pl-12 pr-4 font-bold focus:outline-none focus:ring-4 focus:ring-blue-100/50 focus:bg-white transition-all text-sm placeholder:text-gray-300"
                 placeholder="Email address"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Access Key</label>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">Password</label>
             <input 
               type="password" 
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-14 bg-gray-50 border border-gray-100 text-gray-900 rounded-2xl px-6 font-bold focus:outline-none focus:ring-4 focus:ring-red-100/50 focus:bg-white transition-all text-sm placeholder:text-gray-300"
+              className="w-full h-14 bg-gray-50 border border-gray-100 text-gray-900 rounded-2xl px-6 font-bold focus:outline-none focus:ring-4 focus:ring-blue-100/50 focus:bg-white transition-all text-sm placeholder:text-gray-300"
               placeholder="••••••••"
             />
           </div>
@@ -93,20 +93,20 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full h-14 bg-brand-red text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-red-100 disabled:opacity-50 flex items-center justify-center group active:scale-95"
+            className="w-full h-14 bg-blue-600 text-white rounded-2xl text-[10px] font-bold uppercase tracking-wider hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 disabled:opacity-50 flex items-center justify-center group active:scale-95"
           >
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <span className="flex items-center">
-                Initialize Login <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" />
+                Sign In <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" />
               </span>
             )}
           </button>
         </form>
 
         {error && (
-          <div className="mt-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center text-red-600 text-[10px] font-black uppercase tracking-widest animate-in fade-in slide-in-from-top-2">
+          <div className="mt-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center text-red-600 text-[10px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-top-2">
             <AlertCircle className="w-4 h-4 mr-3 shrink-0" />
             {error}
           </div>
@@ -117,7 +117,7 @@ export default function LoginPage() {
             <div className="w-full border-t border-gray-50"></div>
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-white px-6 text-[10px] font-black text-gray-300 uppercase tracking-widest">Global Auth</span>
+            <span className="bg-white px-6 text-[10px] font-bold text-gray-300 uppercase tracking-wider">Other Sign In Options</span>
           </div>
         </div>
 
@@ -125,7 +125,7 @@ export default function LoginPage() {
           onClick={handleGoogleLogin}
           type="button"
           disabled={loading}
-          className="w-full h-14 bg-white border border-gray-100 text-gray-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:border-gray-200 hover:bg-gray-50 transition-all flex items-center justify-center gap-4 shadow-sm active:scale-95 disabled:opacity-50"
+          className="w-full h-14 bg-white border border-gray-100 text-gray-900 rounded-2xl text-[10px] font-bold uppercase tracking-wider hover:border-gray-200 hover:bg-gray-50 transition-all flex items-center justify-center gap-4 shadow-sm active:scale-95 disabled:opacity-50"
         >
           <Globe className="w-5 h-5 text-gray-400" />
           Google Workspace
@@ -133,8 +133,8 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="mt-12 text-center space-y-4">
-          <p className="text-[10px] text-gray-300 font-black uppercase tracking-widest">
-            Identity Verified • SSL 256-Bit
+          <p className="text-[10px] text-gray-300 font-bold uppercase tracking-wider">
+            Secure Connection • SSL 256-Bit
           </p>
           <div className="flex items-center justify-center gap-6">
             <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
